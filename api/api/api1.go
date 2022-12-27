@@ -13,6 +13,7 @@ import (
 
 	mgrapi "github.com/NpoolPlatform/basal-manager/api/api"
 	mgrcli "github.com/NpoolPlatform/basal-manager/pkg/client/api"
+	mgrpb "github.com/NpoolPlatform/message/npool/basal/mgr/v1/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
 	"github.com/google/uuid"
@@ -86,7 +87,12 @@ func (s *Server) GetAPIs(ctx context.Context, in *npool.GetAPIsRequest) (*npool.
 		limit = in.GetLimit()
 	}
 
-	infos, total, err := mgrcli.GetAPIs(ctx, in.GetConds(), in.GetOffset(), limit)
+	conds := in.GetConds()
+	if conds == nil {
+		conds = &mgrpb.Conds{}
+	}
+
+	infos, total, err := mgrcli.GetAPIs(ctx, conds, in.GetOffset(), limit)
 	if err != nil {
 		logger.Sugar().Errorf("fail get apis: %v", err)
 		return &npool.GetAPIsResponse{}, status.Error(codes.Internal, err.Error())
