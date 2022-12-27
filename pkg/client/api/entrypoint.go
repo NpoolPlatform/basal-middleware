@@ -26,7 +26,9 @@ func (ep EntryPoint) ExportedPath() string {
 func (ep EntryPoint) PathPrefix() (string, error) {
 	path := ep.ExportedPath()
 	paths := strings.Split(path, "/")
-	if len(paths) < 3 {
+
+	const leastPathLen = 3
+	if len(paths) < leastPathLen {
 		return "", fmt.Errorf("invalid exported path")
 	}
 
@@ -36,7 +38,9 @@ func (ep EntryPoint) PathPrefix() (string, error) {
 func (ep EntryPoint) ServiceKey() (string, error) {
 	path := ep.ExportedPath()
 	paths := strings.Split(path, "/")
-	if len(paths) < 3 {
+
+	const leastPathLen = 3
+	if len(paths) < leastPathLen {
 		return "", fmt.Errorf("invalid exported path")
 	}
 
@@ -46,7 +50,9 @@ func (ep EntryPoint) ServiceKey() (string, error) {
 func (ep EntryPoint) Path() (string, error) {
 	path := ep.ExportedPath()
 	paths := strings.Split(path, "/")
-	if len(paths) < 3 {
+
+	const leastPathLen = 3
+	if len(paths) < leastPathLen {
 		return "", fmt.Errorf("invalid exported path")
 	}
 

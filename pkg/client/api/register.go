@@ -96,8 +96,9 @@ func grpcAPIs(server grpc.ServiceRegistrar) []*mgrpb.APIReq {
 }
 
 func getGatewayRouters(name string) ([]*EntryPoint, error) {
-	domain := strings.SplitN(name, ".", 2)
-	if len(domain) < 2 {
+	const leastDomainLen = 2
+	domain := strings.SplitN(name, ".", leastDomainLen)
+	if len(domain) < leastDomainLen {
 		return nil, errors.New("service name must like example.npool.top")
 	}
 
