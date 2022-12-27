@@ -1,0 +1,5 @@
+resources:
+  - 01-basal-middleware.viper.yaml
+  - 02-basal-middleware.yaml
+  - 03-strip-prefix.yaml
+  - 04-service-monitor.yaml

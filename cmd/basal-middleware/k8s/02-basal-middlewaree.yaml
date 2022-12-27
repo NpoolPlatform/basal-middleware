@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basal-middleware
+  namespace: kube-system
+  annotations:
+    "sidecar.jaegertracing.io/inject": "true"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: basal-middleware
+  template:
+    metadata:
+      labels:
+        app: basal-middleware
+    spec:
+      containers:
+        - name: basal-middleware
+          image: uhub.service.ucloud.cn/entropypool/basal-middleware:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: service-config
+              mountPath: /etc/BasalMiddleware
+          env:
+            - name: ENV_ENVIRONMENT_TARGET
+              valueFrom:
+                configMapKeyRef:
+                  name: system-environment
+                  key: environment.target
+            - name: ENV_CONSUL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: system-environment
+                  key: environment.consul_host
+            - name: ENV_CONSUL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: system-environment
+                  key: environment.consul_port
+            - name: ENV_CLUSTER_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+      volumes:
+        - name: service-config
+          configMap:
+            name: basal-middleware-config
+            items:
+              - key: service-conf
+                path: BasalMiddleware.viper.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: basal-middleware
+  namespace: kube-system
+spec:
+  ports:
+    - name: http
+      port: 50630
+      targetPort: 50630
+    - name: grpc
+      port: 50631
+      targetPort: 50631
+    - name: healthz
+      port: 50632
+      targetPort: 50632
+    - name: prometheus
+      port: 50633
+      targetPort: 50633
+  selector:
+    app: basal-middleware

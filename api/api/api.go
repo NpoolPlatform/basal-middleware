@@ -1,21 +1,18 @@
 package api
 
 import (
-	basal "github.com/NpoolPlatform/message/npool/basal/mw/v1"
-
-	api1 "github.com/NpoolPlatform/basal-middleware/api/api"
+	"github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 )
 
 type Server struct {
-	basal.UnimplementedMiddlewareServer
+	api.UnimplementedMiddlewareServer
 }
 
 func Register(server grpc.ServiceRegistrar) {
-	basal.RegisterMiddlewareServer(server, &Server{})
-	api1.Register(server)
+	api.RegisterMiddlewareServer(server, &Server{})
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {

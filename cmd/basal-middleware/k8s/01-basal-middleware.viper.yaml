@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: basal-middleware-config
+  namespace: kube-system
+data:
+  service-conf: |
+    config:
+      hostname: "basal-middleware.npool.top"
+      http_port: 50630
+      grpc_port: 50631
+      healthz_port: 50632
+      prometheus_port: 50633
+      appid: "89089012783789789719823798127398"
+      serviceid: "c157c3fc-8593-11ed-98d5-1e0b0807e20c"
+      logdir: "./"
+      apolloAccessKey: "0147fb70b815403790e8634b899fac07"
