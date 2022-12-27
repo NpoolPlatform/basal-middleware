@@ -11,7 +11,13 @@ import (
 
 	mgrapi "github.com/NpoolPlatform/basal-manager/api/api"
 	mgrcli "github.com/NpoolPlatform/basal-manager/pkg/client/api"
+	mgrpb "github.com/NpoolPlatform/message/npool/basal/mgr/v1/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
+
+	api1 "github.com/NpoolPlatform/basal-middleware/pkg/api"
+
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	commonpb "github.com/NpoolPlatform/message/npool"
 )
 
 func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*npool.CreateAPIResponse, error) {
@@ -22,7 +28,34 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 		return &npool.CreateAPIResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := mgrcli.CreateAPI(ctx, in.GetInfo())
+	info, err := mgrcli.GetAPIOnly(ctx, &mgrpb.Conds{
+		Protocol: &commonpb.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(in.GetInfo().GetProtocol()),
+		},
+		ServiceName: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetInfo().GetServiceName(),
+		},
+		Method: &commonpb.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(in.GetInfo().GetMethod()),
+		},
+		Path: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetInfo().GetPath(),
+		},
+	})
+	if err != nil {
+		return &npool.CreateAPIResponse{}, status.Error(codes.Internal, err.Error())
+	}
+	if info != nil {
+		return &npool.CreateAPIResponse{
+			Info: info,
+		}, nil
+	}
+
+	info, err = mgrcli.CreateAPI(ctx, in.GetInfo())
 	if err != nil {
 		logger.Sugar().Errorf("fail create api: %v", err.Error())
 		return &npool.CreateAPIResponse{}, status.Error(codes.Internal, err.Error())
@@ -45,7 +78,7 @@ func (s *Server) CreateAPIs(ctx context.Context, in *npool.CreateAPIsRequest) (*
 		return &npool.CreateAPIsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, err := mgrcli.CreateAPIs(ctx, in.GetInfos())
+	infos, err := api1.CreateAPIs(ctx, in.GetInfos())
 	if err != nil {
 		logger.Sugar().Errorf("fail create apis: %v", err)
 		return &npool.CreateAPIsResponse{}, status.Error(codes.Internal, err.Error())
