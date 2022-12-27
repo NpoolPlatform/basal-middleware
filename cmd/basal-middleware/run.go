@@ -6,8 +6,6 @@ import (
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	apimgrcli "github.com/NpoolPlatform/api-manager/pkg/client"
-
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 
 	cli "github.com/urfave/cli/v2"
@@ -35,8 +33,6 @@ var runCmd = &cli.Command{
 func rpcRegister(server grpc.ServiceRegistrar) error {
 	api.Register(server)
 
-	apimgrcli.RegisterGRPC(server)
-
 	return nil
 }
 
@@ -45,8 +41,6 @@ func rpcGatewayRegister(mux *runtime.ServeMux, endpoint string, opts []grpc.Dial
 	if err != nil {
 		return err
 	}
-
-	apimgrcli.Register(mux) //nolint
 
 	return nil
 }
