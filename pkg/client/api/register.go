@@ -22,15 +22,15 @@ import (
 )
 
 func reliableRegister(apis []*mgrpb.APIReq) {
-	tick := time.NewTicker(time.Minute)
-	defer tick.Stop()
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
 
-	for range tick.C {
+	for {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) //nolint
 		_, err := CreateAPIs(ctx, apis)
 		cancel()
 		if err != nil {
-			time.Sleep(10 * time.Second) //nolint
+			<-ticker.C
 			continue
 		}
 		break
