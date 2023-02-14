@@ -6,6 +6,8 @@ import (
 	"github.com/NpoolPlatform/basal-manager/pkg/db"
 	"github.com/NpoolPlatform/basal-manager/pkg/db/ent"
 
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+
 	converter "github.com/NpoolPlatform/basal-manager/pkg/converter/api"
 	crud "github.com/NpoolPlatform/basal-manager/pkg/crud/api"
 	entapi "github.com/NpoolPlatform/basal-manager/pkg/db/ent/api"
@@ -30,6 +32,9 @@ func CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
 				All(_ctx)
 			if err != nil {
 				return err
+			}
+			if len(rets) > 1 {
+				logger.Sugar().Warnw("CreateAPIs", "Rets", rets, "Warn", "> 1")
 			}
 			if len(rets) > 0 {
 				infos = append(infos, converter.Ent2Grpc(rets[0]))
