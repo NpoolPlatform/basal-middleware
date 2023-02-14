@@ -18,7 +18,7 @@ func CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
 
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		for _, info := range in {
-			info1, err := tx.
+			rets, err := tx.
 				API.
 				Query().
 				Where(
@@ -27,14 +27,12 @@ func CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
 					entapi.Method(info.GetMethod().String()),
 					entapi.Path(info.GetPath()),
 				).
-				Only(_ctx)
+				All(_ctx)
 			if err != nil {
-				if !ent.IsNotFound(err) {
-					return err
-				}
+				return err
 			}
-			if info1 != nil {
-				infos = append(infos, converter.Ent2Grpc(info1))
+			if len(rets) > 0 {
+				infos = append(infos, converter.Ent2Grpc(rets[0]))
 				continue
 			}
 
