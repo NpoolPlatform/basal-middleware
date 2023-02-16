@@ -6,6 +6,7 @@ import (
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/usercode"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 
+	google "github.com/NpoolPlatform/basal-middleware/pkg/google"
 	usercode1 "github.com/NpoolPlatform/basal-middleware/pkg/usercode"
 
 	"google.golang.org/grpc/codes"
@@ -31,6 +32,7 @@ func (s *Server) VerifyUserCode(ctx context.Context, in *npool.VerifyUserCodeReq
 	switch in.GetAccountType() {
 	case basetypes.SignMethod_Email:
 	case basetypes.SignMethod_Mobile:
+	case basetypes.SignMethod_Google:
 	default:
 		return &npool.VerifyUserCodeResponse{}, status.Error(codes.InvalidArgument, "AccountType is invalid")
 	}
@@ -49,16 +51,29 @@ func (s *Server) VerifyUserCode(ctx context.Context, in *npool.VerifyUserCodeReq
 		return &npool.VerifyUserCodeResponse{}, status.Error(codes.InvalidArgument, "UsedFor is invalid")
 	}
 
-	err := usercode1.VerifyUserCode(
-		ctx,
-		in.GetPrefix(),
-		in.GetAppID(),
-		in.GetAccount(),
-		in.GetCode(),
-		in.GetAccountType(),
-		in.GetUsedFor())
-	if err != nil {
-		return &npool.VerifyUserCodeResponse{}, status.Error(codes.Internal, err.Error())
+	switch in.GetAccountType() {
+	case basetypes.SignMethod_Email:
+		fallthrough //nolint
+	case basetypes.SignMethod_Mobile:
+		err := usercode1.VerifyUserCode(
+			ctx,
+			in.GetPrefix(),
+			in.GetAppID(),
+			in.GetAccount(),
+			in.GetCode(),
+			in.GetAccountType(),
+			in.GetUsedFor())
+		if err != nil {
+			return &npool.VerifyUserCodeResponse{}, status.Error(codes.Internal, err.Error())
+		}
+	case basetypes.SignMethod_Google:
+		valid, err := google.VerifyCode(in.GetAccount(), in.GetCode())
+		if err != nil {
+			return &npool.VerifyUserCodeResponse{}, status.Error(codes.Internal, err.Error())
+		}
+		if !valid {
+			return &npool.VerifyUserCodeResponse{}, status.Error(codes.Internal, "GoogleCode is invalid")
+		}
 	}
 
 	return &npool.VerifyUserCodeResponse{}, nil
