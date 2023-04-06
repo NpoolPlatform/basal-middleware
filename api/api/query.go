@@ -53,3 +53,22 @@ func (s *Server) GetDomains(ctx context.Context, in *npool.GetDomainsRequest) (*
 		Infos: infos,
 	}, nil
 }
+
+func (s *Server) GetAPIOnly(ctx context.Context, in *npool.GetAPIOnlyRequest) (*npool.GetAPIOnlyResponse, error) {
+	var err error
+
+	conds := in.GetConds()
+	if conds == nil {
+		conds = &mgrpb.Conds{}
+	}
+
+	info, err := mgrcli.GetAPIOnly(ctx, conds)
+	if err != nil {
+		logger.Sugar().Errorw("GetAPIOnly", "Error", err)
+		return &npool.GetAPIOnlyResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.GetAPIOnlyResponse{
+		Info: info,
+	}, nil
+}

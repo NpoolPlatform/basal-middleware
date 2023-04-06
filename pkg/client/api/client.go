@@ -116,3 +116,19 @@ func GetDomains(ctx context.Context) ([]string, error) {
 	}
 	return infos.([]string), nil
 }
+
+func GetAPIOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.API, error) {
+	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetAPIOnly(ctx, &npool.GetAPIOnlyRequest{
+			Conds: conds,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail get api only: %v", err)
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fail get api only: %v", err)
+	}
+	return info.(*mgrpb.API), nil
+}

@@ -6,7 +6,7 @@ require (
 	github.com/NpoolPlatform/basal-manager v0.0.0-20221228012600-11bf139e32da
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20221102072657-7fcc5e6f1012
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20220621110548-8f3f8049ecc5
-	github.com/NpoolPlatform/message v0.0.0-20230405093935-6eeb87da7956
+	github.com/NpoolPlatform/message v0.0.0-20230406095503-3b7bf0f1a6a9
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
