@@ -133,8 +133,8 @@ func GetAPIOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.API, error) {
 	return info.(*mgrpb.API), nil
 }
 
-func ExistAPI(ctx context.Context, in *mgrpb.APIReq) (*mgrpb.API, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+func ExistAPI(ctx context.Context, in *mgrpb.APIReq) (bool, error) {
+	_, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistAPI(ctx, &npool.ExistAPIRequest{
 			ID: *in.ID,
 		})
@@ -144,7 +144,7 @@ func ExistAPI(ctx context.Context, in *mgrpb.APIReq) (*mgrpb.API, error) {
 		return resp.Info, nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("fail exist api: %v", err)
+		return false, fmt.Errorf("fail exist api: %v", err)
 	}
-	return info.(*mgrpb.API), nil
+	return true, nil
 }
