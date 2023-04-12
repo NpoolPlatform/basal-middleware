@@ -3,7 +3,7 @@ module github.com/NpoolPlatform/basal-middleware
 go 1.17
 
 require (
-	github.com/NpoolPlatform/basal-manager v0.0.0-20230411075047-7e8ead1de1bb
+	github.com/NpoolPlatform/basal-manager v0.0.0-20230411082217-d762fc345924
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20221102072657-7fcc5e6f1012
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20220621110548-8f3f8049ecc5
 	github.com/NpoolPlatform/message v0.0.0-20230411074739-778fee62096f
@@ -18,7 +18,6 @@ require (
 
 require (
 	ariga.io/atlas v0.5.1-0.20220717122844-8593d7eb1a8e // indirect
-	cloud.google.com/go/compute v1.14.0 // indirect
 	entgo.io/ent v0.11.2 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
