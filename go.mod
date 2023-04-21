@@ -3,10 +3,10 @@ module github.com/NpoolPlatform/basal-middleware
 go 1.17
 
 require (
-	github.com/NpoolPlatform/basal-manager v0.0.0-20230412115226-229a0201e692
+	github.com/NpoolPlatform/basal-manager v0.0.0-20230421084046-e4053a4d8fe2
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230412082654-0f8f9e7ae58d
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20220621110548-8f3f8049ecc5
-	github.com/NpoolPlatform/message v0.0.0-20230412110246-1fd6805a4681
+	github.com/NpoolPlatform/message v0.0.0-20230421083233-6a21591a8c0e
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0

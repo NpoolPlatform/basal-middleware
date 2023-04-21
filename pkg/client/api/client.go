@@ -148,3 +148,19 @@ func ExistAPI(ctx context.Context, id string) (bool, error) {
 	}
 	return true, nil
 }
+
+func DeleteAPI(ctx context.Context, id string) (*mgrpb.API, error) {
+	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.DeleteAPI(ctx, &npool.DeleteAPIRequest{
+			ID: id,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail delete api: %v", err)
+		}
+		return resp.GetInfo(), nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fail delete api: %v", err)
+	}
+	return info.(*mgrpb.API), nil
+}
