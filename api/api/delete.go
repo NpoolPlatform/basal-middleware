@@ -16,13 +16,12 @@ import (
 )
 
 func (s *Server) DeleteAPI(ctx context.Context, in *npool.DeleteAPIRequest) (*npool.DeleteAPIResponse, error) {
-	id, err := uuid.Parse(in.GetID())
-	if err != nil {
+	if _, err := uuid.Parse(in.GetID()); err != nil {
 		logger.Sugar().Errorw("DeleteAPI", "Error", err)
 		return &npool.DeleteAPIResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := api1.DeleteAPI(ctx, id)
+	info, err := api1.DeleteAPI(ctx, in.ID)
 	if err != nil {
 		logger.Sugar().Errorw("DeleteAPI", "Error", err)
 		return &npool.DeleteAPIResponse{}, status.Error(codes.Internal, err.Error())
