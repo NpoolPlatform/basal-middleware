@@ -12,7 +12,7 @@ import (
 	crud "github.com/NpoolPlatform/basal-manager/pkg/crud/api"
 	entapi "github.com/NpoolPlatform/basal-manager/pkg/db/ent/api"
 
-	mgrpb "github.com/NpoolPlatform/message/npool/basal/mgr/v1/api"
+	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 )
 
 func CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {

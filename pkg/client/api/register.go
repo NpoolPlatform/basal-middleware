@@ -16,7 +16,7 @@ import (
 	config "github.com/NpoolPlatform/go-service-framework/pkg/config"
 	logger "github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	mgrpb "github.com/NpoolPlatform/message/npool/basal/mgr/v1/api"
+	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
 	"google.golang.org/grpc"
 )

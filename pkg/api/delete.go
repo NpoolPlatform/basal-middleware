@@ -4,7 +4,7 @@ import (
 	"context"
 
 	apicli "github.com/NpoolPlatform/basal-manager/pkg/client/api"
-	mgrpb "github.com/NpoolPlatform/message/npool/basal/mgr/v1/api"
+	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 )
 
 func DeleteAPI(ctx context.Context, id string) (*mgrpb.API, error) {
