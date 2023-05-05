@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	apicli "github.com/NpoolPlatform/basal-manager/pkg/client/api"
+	apicli "github.com/NpoolPlatform/basal-middleware/pkg/client/api"
 	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 )
 

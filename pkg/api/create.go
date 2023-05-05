@@ -3,14 +3,14 @@ package api
 import (
 	"context"
 
-	"github.com/NpoolPlatform/basal-manager/pkg/db"
-	"github.com/NpoolPlatform/basal-manager/pkg/db/ent"
+	"github.com/NpoolPlatform/basal-middleware/pkg/db"
+	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	converter "github.com/NpoolPlatform/basal-manager/pkg/converter/api"
-	crud "github.com/NpoolPlatform/basal-manager/pkg/crud/api"
-	entapi "github.com/NpoolPlatform/basal-manager/pkg/db/ent/api"
+	converter "github.com/NpoolPlatform/basal-middleware/pkg/converter/api"
+	crud "github.com/NpoolPlatform/basal-middleware/pkg/crud/api"
+	entapi "github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
 
 	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 )

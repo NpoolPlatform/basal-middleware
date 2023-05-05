@@ -3,9 +3,9 @@ package api
 import (
 	"context"
 
-	"github.com/NpoolPlatform/basal-manager/pkg/db"
-	"github.com/NpoolPlatform/basal-manager/pkg/db/ent"
-	entapi "github.com/NpoolPlatform/basal-manager/pkg/db/ent/api"
+	"github.com/NpoolPlatform/basal-middleware/pkg/db"
+	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent"
+	entapi "github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
 )
 
 func GetDomains(ctx context.Context) (domains []string, err error) {

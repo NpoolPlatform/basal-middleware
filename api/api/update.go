@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	mgrcli "github.com/NpoolPlatform/basal-manager/pkg/client/api"
+	mgrcli "github.com/NpoolPlatform/basal-middleware/pkg/client/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
 	"github.com/google/uuid"

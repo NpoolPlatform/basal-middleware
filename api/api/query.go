@@ -11,7 +11,7 @@ import (
 
 	constant "github.com/NpoolPlatform/basal-middleware/pkg/const"
 
-	mgrcli "github.com/NpoolPlatform/basal-manager/pkg/client/api"
+	mgrcli "github.com/NpoolPlatform/basal-middleware/pkg/client/api"
 	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 

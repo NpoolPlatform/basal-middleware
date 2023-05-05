@@ -4,7 +4,6 @@ go 1.17
 
 require (
 	entgo.io/ent v0.11.2
-	github.com/NpoolPlatform/basal-manager v0.0.0-20230505075521-d412c8755b67
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230412082654-0f8f9e7ae58d
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20220621110548-8f3f8049ecc5
 	github.com/NpoolPlatform/message v0.0.0-20230505074437-ef603867b997
