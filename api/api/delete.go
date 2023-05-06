@@ -14,9 +14,7 @@ import (
 )
 
 func (s *Server) DeleteAPI(ctx context.Context, in *npool.DeleteAPIRequest) (*npool.DeleteAPIResponse, error) {
-	handler, err := api1.NewHandler(ctx,
-		api1.WithID(in.GetInfo().ID),
-	)
+	handler, err := api1.NewHandler(ctx, api1.WithID(in.GetInfo().ID))
 	if err != nil {
 		logger.Sugar().Errorw(
 			"UpdateAPI",
