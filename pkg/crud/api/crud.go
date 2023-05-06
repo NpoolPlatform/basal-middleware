@@ -55,7 +55,7 @@ func CreateSet(c *ent.APICreate, req *Req) *ent.APICreate {
 	return c
 }
 
-func UpdateSet(u *ent.APIUpdate, req *Req) *ent.APIUpdate {
+func UpdateSet(u *ent.APIUpdateOne, req *Req) *ent.APIUpdateOne {
 	if req.Protocol != nil {
 		u.SetProtocol(req.Protocol.String())
 	}
