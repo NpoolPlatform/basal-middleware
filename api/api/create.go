@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	mgrapi "github.com/NpoolPlatform/basal-middleware/api/api"
+	mgrapi "github.com/NpoolPlatform/basal-middleware/api"
 	mgrcli "github.com/NpoolPlatform/basal-middleware/pkg/client/api"
 	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
