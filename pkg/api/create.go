@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/NpoolPlatform/basal-middleware/pkg/db"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent"
@@ -13,9 +14,34 @@ import (
 	entapi "github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
 
 	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
+	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 )
 
-func CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
+type createHandler struct {
+	*Handler
+}
+
+func (h *createHandler) validate() error {
+	if h.Protocol == nil {
+		return fmt.Errorf("invalid protocol")
+	}
+	if h.Method == nil {
+		return fmt.Errorf("invalid method")
+	}
+	if h.MethodName == nil {
+		return fmt.Errorf("invalid method name")
+	}
+	if h.Path == nil {
+		return fmt.Errorf("invalid path")
+	}
+	if h.PathPrefix == nil {
+		return fmt.Errorf("invalid path prefix")
+	}
+
+	return nil
+}
+
+func (h *Handler) CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
 	var infos []*mgrpb.API
 
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
@@ -40,8 +66,15 @@ func CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
 				infos = append(infos, converter.Ent2Grpc(rets[0]))
 				continue
 			}
-
-			info2, err := crud.CreateSet(tx.API.Create(), info).Save(_ctx)
+			info2, err := crud.CreateSet(tx.API.Create(), &crud.Req{
+				Protocol:    info.Protocol,
+				Method:      info.Method,
+				MethodName:  info.MethodName,
+				Path:        info.Path,
+				PathPrefix:  info.PathPrefix,
+				ServiceName: info.ServiceName,
+				Domains:     &info.Domains,
+			}).Save(_ctx)
 			if err != nil {
 				return err
 			}
@@ -55,4 +88,40 @@ func CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
 	}
 
 	return infos, nil
+}
+
+func (h *Handler) CreateAPI(ctx context.Context) (*npool.API, error) {
+	handler := &createHandler{
+		Handler: h,
+	}
+
+	if err := handler.validate(); err != nil {
+		return nil, err
+	}
+
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+		info, err := crud.CreateSet(
+			cli.API.Create(),
+			&crud.Req{
+				Protocol:    handler.Protocol,
+				Method:      handler.Method,
+				MethodName:  handler.MethodName,
+				Path:        handler.Path,
+				PathPrefix:  handler.PathPrefix,
+				ServiceName: handler.ServiceName,
+				Domains:     handler.Domains,
+			},
+		).Save(_ctx)
+		if err != nil {
+			return err
+		}
+
+		h.ID = &info.ID
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return h.GetAPI(ctx)
 }
