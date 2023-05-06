@@ -9,23 +9,28 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	mgrcli "github.com/NpoolPlatform/basal-middleware/pkg/client/api"
+	api1 "github.com/NpoolPlatform/basal-middleware/pkg/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
-
-	"github.com/google/uuid"
 )
 
 func (s *Server) ExistAPI(ctx context.Context, in *npool.ExistAPIRequest) (*npool.ExistAPIResponse, error) {
-	var err error
-
-	if _, err := uuid.Parse(in.GetID()); err != nil {
-		logger.Sugar().Errorw("ExistAPI", "Error", err)
+	handler, err := api1.NewHandler(ctx, api1.WithID(&in.ID))
+	if err != nil {
+		logger.Sugar().Errorw(
+			"ExistAPI",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.ExistAPIResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	exist, err := mgrcli.ExistAPI(ctx, in.GetID())
+	exist, err := handler.ExistAPI(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("ExistAPI", "Error", err)
+		logger.Sugar().Errorw(
+			"ExistAPI",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.ExistAPIResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
