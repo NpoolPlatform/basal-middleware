@@ -9,31 +9,33 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	constant "github.com/NpoolPlatform/basal-middleware/pkg/const"
-
-	mgrcli "github.com/NpoolPlatform/basal-middleware/pkg/client/api"
-	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
 	api1 "github.com/NpoolPlatform/basal-middleware/pkg/api"
 )
 
 func (s *Server) GetAPIs(ctx context.Context, in *npool.GetAPIsRequest) (*npool.GetAPIsResponse, error) {
-	var err error
-
-	limit := constant.DefaultRowLimit
-	if in.GetLimit() > 0 {
-		limit = in.GetLimit()
-	}
-
-	conds := in.GetConds()
-	if conds == nil {
-		conds = &mgrpb.Conds{}
-	}
-
-	infos, total, err := mgrcli.GetAPIs(ctx, conds, in.GetOffset(), limit)
+	handler, err := api1.NewHandler(ctx,
+		api1.WithConds(in.GetConds()),
+		api1.WithOffset(in.GetOffset()),
+		api1.WithLimit(in.GetLimit()),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("GetAPIs", "Error", err)
+		logger.Sugar().Errorw(
+			"GetAPIs",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetAPIsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	infos, total, err := handler.GetAPIs(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetAPIs",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetAPIsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -44,27 +46,51 @@ func (s *Server) GetAPIs(ctx context.Context, in *npool.GetAPIsRequest) (*npool.
 }
 
 func (s *Server) GetDomains(ctx context.Context, in *npool.GetDomainsRequest) (*npool.GetDomainsResponse, error) {
-	infos, err := api1.GetDomains(ctx)
+	handler, err := api1.NewHandler(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("GetDomains", "Error", err)
+		logger.Sugar().Errorw(
+			"GetDomains",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetDomainsResponse{}, status.Error(codes.Internal, err.Error())
 	}
+
+	infos, err := handler.GetDomains(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetDomains",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetDomainsResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
 	return &npool.GetDomainsResponse{
 		Infos: infos,
 	}, nil
 }
 
 func (s *Server) GetAPIOnly(ctx context.Context, in *npool.GetAPIOnlyRequest) (*npool.GetAPIOnlyResponse, error) {
-	var err error
-
-	conds := in.GetConds()
-	if conds == nil {
-		conds = &mgrpb.Conds{}
+	handler, err := api1.NewHandler(ctx,
+		api1.WithConds(in.GetConds()),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetAPIOnly",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetAPIOnlyResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := mgrcli.GetAPIOnly(ctx, conds)
+	info, err := handler.GetAPIOnly(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("GetAPIOnly", "Error", err)
+		logger.Sugar().Errorw(
+			"GetAPIOnly",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetAPIOnlyResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

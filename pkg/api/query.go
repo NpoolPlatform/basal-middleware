@@ -126,3 +126,28 @@ func (h *Handler) GetAPI(ctx context.Context) (*npool.API, error) {
 
 	return handler.infos[0], nil
 }
+
+func (h *Handler) GetAPIOnly(ctx context.Context) (*npool.API, error) {
+	handler := &queryHandler{
+		Handler: h,
+	}
+
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+		if err := handler.queryAPIsByConds(_ctx, cli); err != nil {
+			return err
+		}
+		if err := handler.scan(_ctx); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(handler.infos) == 0 {
+		return nil, fmt.Errorf("not found")
+	}
+
+	return handler.infos[0], nil
+}
