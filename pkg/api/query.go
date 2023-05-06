@@ -91,6 +91,9 @@ func (h *Handler) GetAPIs(ctx context.Context) ([]*npool.API, uint32, error) {
 		if err := handler.queryAPIsByConds(_ctx, cli); err != nil {
 			return err
 		}
+
+		handler.stm.Offset(int(h.Offset)).Limit(int(h.Limit))
+
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
@@ -143,10 +146,6 @@ func (h *Handler) GetAPIOnly(ctx context.Context) (*npool.API, error) {
 	})
 	if err != nil {
 		return nil, err
-	}
-
-	if len(handler.infos) == 0 {
-		return nil, fmt.Errorf("not found")
 	}
 
 	return handler.infos[0], nil
