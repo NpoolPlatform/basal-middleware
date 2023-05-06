@@ -29,4 +29,9 @@ func (h *Handler) UpdateAPI(ctx context.Context) (info *npool.API, err error) {
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return h.GetAPI(ctx)
 }
