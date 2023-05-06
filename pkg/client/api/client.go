@@ -9,7 +9,6 @@ import (
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
 	constant "github.com/NpoolPlatform/basal-middleware/pkg/message/const"
@@ -35,7 +34,7 @@ func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
 	return handler(_ctx, cli)
 }
 
-func CreateAPI(ctx context.Context, in *mgrpb.APIReq) (*mgrpb.API, error) {
+func CreateAPI(ctx context.Context, in *npool.APIReq) (*npool.API, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.CreateAPI(ctx, &npool.CreateAPIRequest{
 			Info: in,
@@ -48,10 +47,10 @@ func CreateAPI(ctx context.Context, in *mgrpb.APIReq) (*mgrpb.API, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail create api: %v", err)
 	}
-	return info.(*mgrpb.API), nil
+	return info.(*npool.API), nil
 }
 
-func CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
+func CreateAPIs(ctx context.Context, in []*npool.APIReq) ([]*npool.API, error) {
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.CreateAPIs(ctx, &npool.CreateAPIsRequest{
 			Infos: in,
@@ -64,10 +63,10 @@ func CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail create apis: %v", err)
 	}
-	return infos.([]*mgrpb.API), nil
+	return infos.([]*npool.API), nil
 }
 
-func UpdateAPI(ctx context.Context, in *mgrpb.APIReq) (*mgrpb.API, error) {
+func UpdateAPI(ctx context.Context, in *npool.APIReq) (*npool.API, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.UpdateAPI(ctx, &npool.UpdateAPIRequest{
 			Info: in,
@@ -80,10 +79,10 @@ func UpdateAPI(ctx context.Context, in *mgrpb.APIReq) (*mgrpb.API, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail update api: %v", err)
 	}
-	return info.(*mgrpb.API), nil
+	return info.(*npool.API), nil
 }
 
-func GetAPIs(ctx context.Context, conds *mgrpb.Conds, limit, offset int32) ([]*mgrpb.API, uint32, error) {
+func GetAPIs(ctx context.Context, conds *npool.Conds, limit, offset int32) ([]*npool.API, uint32, error) {
 	var total uint32
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetAPIs(ctx, &npool.GetAPIsRequest{
@@ -100,7 +99,7 @@ func GetAPIs(ctx context.Context, conds *mgrpb.Conds, limit, offset int32) ([]*m
 	if err != nil {
 		return nil, 0, fmt.Errorf("fail get apis: %v", err)
 	}
-	return infos.([]*mgrpb.API), total, nil
+	return infos.([]*npool.API), total, nil
 }
 
 func GetDomains(ctx context.Context) ([]string, error) {
@@ -117,7 +116,7 @@ func GetDomains(ctx context.Context) ([]string, error) {
 	return infos.([]string), nil
 }
 
-func GetAPIOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.API, error) {
+func GetAPIOnly(ctx context.Context, conds *npool.Conds) (*npool.API, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetAPIOnly(ctx, &npool.GetAPIOnlyRequest{
 			Conds: conds,
@@ -130,7 +129,7 @@ func GetAPIOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.API, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail get api only: %v", err)
 	}
-	return info.(*mgrpb.API), nil
+	return info.(*npool.API), nil
 }
 
 func ExistAPI(ctx context.Context, id string) (bool, error) {
@@ -149,10 +148,12 @@ func ExistAPI(ctx context.Context, id string) (bool, error) {
 	return true, nil
 }
 
-func DeleteAPI(ctx context.Context, id string) (*mgrpb.API, error) {
+func DeleteAPI(ctx context.Context, id string) (*npool.API, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteAPI(ctx, &npool.DeleteAPIRequest{
-			ID: id,
+			Info: &npool.APIReq{
+				ID: &id,
+			},
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail delete api: %v", err)
@@ -162,5 +163,5 @@ func DeleteAPI(ctx context.Context, id string) (*mgrpb.API, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail delete api: %v", err)
 	}
-	return info.(*mgrpb.API), nil
+	return info.(*npool.API), nil
 }
