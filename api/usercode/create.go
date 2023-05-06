@@ -22,7 +22,7 @@ func (s *Server) CreateUserCode(ctx context.Context, in *npool.CreateUserCodeReq
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateAPI",
+			"CreateUserCode",
 			"In", in,
 			"Error", err,
 		)
@@ -32,7 +32,7 @@ func (s *Server) CreateUserCode(ctx context.Context, in *npool.CreateUserCodeReq
 	info, err := handler.CreateUserCode(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateAPI",
+			"CreateUserCode",
 			"In", in,
 			"Error", err,
 		)

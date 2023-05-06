@@ -24,7 +24,7 @@ func (s *Server) VerifyUserCode(ctx context.Context, in *npool.VerifyUserCodeReq
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateAPI",
+			"VerifyUserCode",
 			"In", in,
 			"Error", err,
 		)
