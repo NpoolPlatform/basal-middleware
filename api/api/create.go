@@ -40,7 +40,7 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 	handler.Conds = &api.Conds{
 		Protocol: &cruder.Cond{
 			Op:  cruder.EQ,
-			Val: req.Protocol,
+			Val: req.Protocol.String(),
 		},
 		ServiceName: &cruder.Cond{
 			Op:  cruder.EQ,
@@ -48,7 +48,7 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 		},
 		Method: &cruder.Cond{
 			Op:  cruder.EQ,
-			Val: req.Method,
+			Val: req.Method.String(),
 		},
 		Path: &cruder.Cond{
 			Op:  cruder.EQ,
