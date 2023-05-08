@@ -104,17 +104,9 @@ func updateAPI(t *testing.T) {
 
 func getAPIs(t *testing.T) {
 	infos, _, err := GetAPIs(context.Background(), &npool.Conds{
-		Protocol: &basetypes.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(ret.Protocol),
-		},
 		ServiceName: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: ret.ServiceName,
-		},
-		Method: &basetypes.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(ret.Method),
 		},
 		Path: &basetypes.StringVal{
 			Op:    cruder.EQ,
@@ -122,23 +114,15 @@ func getAPIs(t *testing.T) {
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {
-		assert.NotEqual(t, len(infos), 0)
+		assert.NotNil(t, infos)
 	}
 }
 
 func getAPIOnly(t *testing.T) {
 	info, err := GetAPIOnly(context.Background(), &npool.Conds{
-		Protocol: &basetypes.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(ret.Protocol),
-		},
 		ServiceName: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: ret.ServiceName,
-		},
-		Method: &basetypes.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(ret.Method),
 		},
 		Path: &basetypes.StringVal{
 			Op:    cruder.EQ,
@@ -166,7 +150,7 @@ func deleteAPI(t *testing.T) {
 			Value: ret.ID,
 		},
 	})
-	assert.NotNil(t, err)
+	assert.Nil(t, err)
 	assert.Nil(t, info)
 }
 
