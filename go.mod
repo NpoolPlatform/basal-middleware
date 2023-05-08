@@ -3,6 +3,7 @@ module github.com/NpoolPlatform/basal-middleware
 go 1.17
 
 require (
+	bou.ke/monkey v1.0.2
 	entgo.io/ent v0.11.2
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230412082654-0f8f9e7ae58d
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20220621110548-8f3f8049ecc5
@@ -11,6 +12,7 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
+	github.com/stretchr/testify v1.8.1
 	github.com/urfave/cli/v2 v2.4.0
 	google.golang.org/grpc v1.54.0
 	google.golang.org/protobuf v1.28.1
@@ -29,6 +31,7 @@ require (
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be // indirect
 	github.com/coocood/freecache v1.0.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
@@ -63,6 +66,7 @@ require (
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.39.0 // indirect
