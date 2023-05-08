@@ -91,6 +91,8 @@ func updateAPI(t *testing.T) {
 			Path:        &ret.Path,
 			PathPrefix:  &ret.PathPrefix,
 			Domains:     ret.Domains,
+			Exported:    &ret.Exported,
+			Depracated:  &ret.Depracated,
 		}
 	)
 	info, err := UpdateAPI(context.Background(), req)
