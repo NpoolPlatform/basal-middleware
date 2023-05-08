@@ -11,7 +11,9 @@ import (
 	"github.com/NpoolPlatform/basal-middleware/pkg/testinit"
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
@@ -92,6 +94,31 @@ func updateAPI(t *testing.T) {
 	}
 }
 
+func getAPIs(t *testing.T) {
+	infos, _, err := GetAPIs(context.Background(), &npool.Conds{
+		Protocol: &basetypes.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(*ret.Protocol.Enum()),
+		},
+		ServiceName: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.ServiceName,
+		},
+		Method: &basetypes.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(*ret.Method.Enum()),
+		},
+		Path: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.Path,
+		},
+	}, 0, 1)
+	if assert.Nil(t, err) {
+		assert.NotEqual(t, len(infos), 0)
+		assert.Equal(t, infos[0], ret)
+	}
+}
+
 func TestClient(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction { //nolint
 		return
@@ -105,4 +132,5 @@ func TestClient(t *testing.T) {
 
 	t.Run("createAPI", createAPI)
 	t.Run("updateAPI", updateAPI)
+	t.Run("getAPIs", getAPIs)
 }
