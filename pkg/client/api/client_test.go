@@ -58,6 +58,37 @@ func createAPI(t *testing.T) {
 		ret.ID = info.ID
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, ret, info)
+	}
+}
+
+func updateAPI(t *testing.T) {
+	ret.Protocol = npool.Protocol_HTTP
+	ret.ServiceName = uuid.NewString()
+	ret.Method = npool.Method_STREAM
+	ret.MethodName = uuid.NewString()
+	ret.Path = uuid.NewString()
+	ret.PathPrefix = uuid.NewString()
+	ret.Domains = []string{"api.npool.top", "procyon.vip"}
+	ret.Exported = true
+	ret.Depracated = true
+
+	var (
+		req = &npool.APIReq{
+			ID:          &ret.ID,
+			Protocol:    &ret.Protocol,
+			ServiceName: &ret.ServiceName,
+			Method:      &ret.Method,
+			MethodName:  &ret.MethodName,
+			Path:        &ret.Path,
+			PathPrefix:  &ret.PathPrefix,
+			Domains:     ret.Domains,
+		}
+	)
+	info, err := UpdateAPI(context.Background(), req)
+	if assert.Nil(t, err) {
+		ret.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, ret, info)
 	}
 }
 
@@ -73,4 +104,5 @@ func TestClient(t *testing.T) {
 	})
 
 	t.Run("createAPI", createAPI)
+	t.Run("updateAPI", updateAPI)
 }
