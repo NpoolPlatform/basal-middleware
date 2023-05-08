@@ -172,13 +172,13 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.ID = &cruder.Cond{Op: conds.ID.Op, Val: id}
 		}
 		if conds.Protocol != nil {
-			h.Conds.Protocol = &cruder.Cond{Op: conds.Protocol.Op, Val: conds.Protocol}
+			h.Conds.Protocol = &cruder.Cond{Op: conds.Protocol.Op, Val: conds.Protocol.String()}
 		}
 		if conds.ServiceName != nil {
 			h.Conds.ServiceName = &cruder.Cond{Op: conds.ServiceName.Op, Val: conds.GetServiceName().GetValue()}
 		}
 		if conds.Method != nil {
-			h.Conds.Method = &cruder.Cond{Op: conds.Method.Op, Val: conds.Method}
+			h.Conds.Method = &cruder.Cond{Op: conds.Method.Op, Val: conds.Method.String()}
 		}
 		if conds.Path != nil {
 			h.Conds.Path = &cruder.Cond{Op: conds.Path.Op, Val: conds.Path}
