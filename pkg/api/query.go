@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	crud "github.com/NpoolPlatform/basal-middleware/pkg/crud/api"
@@ -83,6 +84,14 @@ func (h *Handler) GetDomains(ctx context.Context) (domains []string, err error) 
 	return
 }
 
+func (h *queryHandler) formalize() {
+	for _, info := range h.infos {
+		info.Protocol = npool.Protocol(npool.Protocol_value[info.ProtocolStr])
+		info.Method = npool.Method(npool.Method_value[info.MethodStr])
+		_ = json.Unmarshal([]byte(info.DomainsStr), &info.Domains)
+	}
+}
+
 func (h *Handler) GetAPIs(ctx context.Context) ([]*npool.API, uint32, error) {
 	handler := &queryHandler{
 		Handler: h,
@@ -97,6 +106,8 @@ func (h *Handler) GetAPIs(ctx context.Context) ([]*npool.API, uint32, error) {
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
@@ -118,6 +129,8 @@ func (h *Handler) GetAPI(ctx context.Context) (*npool.API, error) {
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
@@ -142,6 +155,8 @@ func (h *Handler) GetAPIOnly(ctx context.Context) (*npool.API, error) {
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
