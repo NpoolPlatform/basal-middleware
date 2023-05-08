@@ -124,7 +124,7 @@ func (h *Handler) GetAPI(ctx context.Context) (*npool.API, error) {
 		return nil, err
 	}
 	if len(handler.infos) == 0 {
-		return nil, fmt.Errorf("id %v not exist", *handler.ID)
+		return nil, nil
 	}
 
 	return handler.infos[0], nil
@@ -146,6 +146,9 @@ func (h *Handler) GetAPIOnly(ctx context.Context) (*npool.API, error) {
 	})
 	if err != nil {
 		return nil, err
+	}
+	if len(handler.infos) == 0 {
+		return nil, nil
 	}
 
 	return handler.infos[0], nil
