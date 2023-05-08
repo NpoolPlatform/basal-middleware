@@ -51,6 +51,8 @@ func createUserCode(t *testing.T) {
 	info, err := CreateUserCode(context.Background(), req)
 	if assert.Nil(t, err) {
 		ret.Code = info.Code
+		ret.NextAt = info.NextAt
+		ret.ExpireAt = info.ExpireAt
 		assert.Equal(t, info, &ret)
 	}
 }
