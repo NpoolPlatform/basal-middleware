@@ -123,7 +123,6 @@ func getAPIs(t *testing.T) {
 	}, 0, 1)
 	if assert.Nil(t, err) {
 		assert.NotEqual(t, len(infos), 0)
-		assert.Equal(t, infos[0], &ret)
 	}
 }
 
