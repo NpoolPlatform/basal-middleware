@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateUserCode(ctx context.Context, in *npool.CreateUserCodeRequest) (*npool.CreateUserCodeResponse, error) { //nolint
+func (s *Server) CreateUserCode(ctx context.Context, in *npool.CreateUserCodeRequest) (*npool.CreateUserCodeResponse, error) {
 	handler, err := usercode1.NewHandler(ctx,
 		usercode1.WithAppID(&in.AppID),
 		usercode1.WithPrefix(&in.Prefix),

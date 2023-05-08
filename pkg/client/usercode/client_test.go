@@ -72,7 +72,7 @@ func verifyUserCode(t *testing.T) {
 	assert.Nil(t, err)
 }
 func TestClient(t *testing.T) {
-	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction { //nolint
+	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
 	}
 	// Here won't pass test due to we always test with localhost

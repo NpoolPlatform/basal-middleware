@@ -100,7 +100,7 @@ type Conds struct {
 	IDs         *cruder.Cond
 }
 
-func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) {
+func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) { //nolint
 	if conds.ID != nil {
 		id, ok := conds.ID.Val.(uuid.UUID)
 		if !ok {
