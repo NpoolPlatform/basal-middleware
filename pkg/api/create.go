@@ -13,7 +13,6 @@ import (
 	crud "github.com/NpoolPlatform/basal-middleware/pkg/crud/api"
 	entapi "github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
 
-	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 )
 
@@ -41,8 +40,8 @@ func (h *createHandler) validate() error {
 	return nil
 }
 
-func (h *Handler) CreateAPIs(ctx context.Context, in []*mgrpb.APIReq) ([]*mgrpb.API, error) {
-	var infos []*mgrpb.API
+func (h *Handler) CreateAPIs(ctx context.Context, in []*npool.APIReq) ([]*npool.API, error) {
+	var infos []*npool.API
 
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		for _, info := range in {
