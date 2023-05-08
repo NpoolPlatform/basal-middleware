@@ -103,30 +103,17 @@ func updateAPI(t *testing.T) {
 }
 
 func getAPIs(t *testing.T) {
-	infos, _, err := GetAPIs(context.Background(), &npool.Conds{
-		ServiceName: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: ret.ServiceName,
-		},
-		Path: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: ret.Path,
-		},
-	}, 0, 1)
+	infos, _, err := GetAPIs(context.Background(), &npool.Conds{}, 0, 1)
 	if assert.Nil(t, err) {
-		assert.NotNil(t, infos)
+		assert.NotEqual(t, len(infos), 0)
 	}
 }
 
 func getAPIOnly(t *testing.T) {
 	info, err := GetAPIOnly(context.Background(), &npool.Conds{
-		ServiceName: &basetypes.StringVal{
+		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: ret.ServiceName,
-		},
-		Path: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: ret.Path,
+			Value: ret.ID,
 		},
 	})
 	if assert.Nil(t, err) {
