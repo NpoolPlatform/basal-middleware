@@ -32,12 +32,15 @@ func init() {
 var (
 	ret = npool.API{
 		Protocol:    npool.Protocol_GRPC,
+		ProtocolStr: npool.Protocol_GRPC.String(),
 		ServiceName: "basal-middleware.npool.top",
 		Method:      npool.Method_POST,
+		MethodStr:   npool.Method_POST.String(),
 		MethodName:  uuid.NewString(),
 		Path:        uuid.NewString(),
 		PathPrefix:  "/api/basal-middleware",
 		Domains:     []string{"api.npool.top"},
+		DomainsStr:  "[\"api.npool.top\"]",
 		Exported:    false,
 		Depracated:  false,
 	}
@@ -66,12 +69,15 @@ func createAPI(t *testing.T) {
 
 func updateAPI(t *testing.T) {
 	ret.Protocol = npool.Protocol_HTTP
+	ret.ProtocolStr = npool.Protocol_HTTP.String()
 	ret.ServiceName = uuid.NewString()
 	ret.Method = npool.Method_STREAM
+	ret.MethodStr = npool.Method_STREAM.String()
 	ret.MethodName = uuid.NewString()
 	ret.Path = uuid.NewString()
 	ret.PathPrefix = uuid.NewString()
 	ret.Domains = []string{"api.npool.top", "procyon.vip"}
+	ret.DomainsStr = "[\"api.npool.top\", \"procyon.vip\"]"
 	ret.Exported = true
 	ret.Depracated = true
 
