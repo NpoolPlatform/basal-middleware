@@ -60,7 +60,7 @@ func createAPI(t *testing.T) {
 		ret.ID = info.ID
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, ret, info)
+		assert.Equal(t, ret, &ret)
 	}
 }
 
@@ -90,7 +90,7 @@ func updateAPI(t *testing.T) {
 	info, err := UpdateAPI(context.Background(), req)
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, ret, info)
+		assert.Equal(t, ret, &ret)
 	}
 }
 
@@ -115,7 +115,7 @@ func getAPIs(t *testing.T) {
 	}, 0, 1)
 	if assert.Nil(t, err) {
 		assert.NotEqual(t, len(infos), 0)
-		assert.Equal(t, infos[0], ret)
+		assert.Equal(t, infos[0], &ret)
 	}
 }
 
@@ -139,8 +139,30 @@ func getAPIOnly(t *testing.T) {
 		},
 	})
 	if assert.Nil(t, err) {
-		assert.Equal(t, info, ret)
+		assert.Equal(t, info, &ret)
 	}
+}
+
+func existAPI(t *testing.T) {
+	exist, err := ExistAPI(context.Background(), ret.ID)
+	if assert.Nil(t, err) {
+		assert.True(t, exist)
+	}
+}
+
+func deleteAPI(t *testing.T) {
+	info, err := DeleteAPI(context.Background(), ret.ID)
+	if assert.Nil(t, err) {
+		assert.Equal(t, info, &ret)
+	}
+	info, err = GetAPIOnly(context.Background(), &npool.Conds{
+		ID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.ID,
+		},
+	})
+	assert.NotNil(t, err)
+	assert.Nil(t, info)
 }
 
 func TestClient(t *testing.T) {
@@ -158,4 +180,6 @@ func TestClient(t *testing.T) {
 	t.Run("updateAPI", updateAPI)
 	t.Run("getAPIs", getAPIs)
 	t.Run("getAPIOnly", getAPIOnly)
+	t.Run("existAPI", existAPI)
+	t.Run("deleteAPI", deleteAPI)
 }
