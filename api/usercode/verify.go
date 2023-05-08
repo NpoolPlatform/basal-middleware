@@ -15,7 +15,7 @@ import (
 
 func (s *Server) VerifyUserCode(ctx context.Context, in *npool.VerifyUserCodeRequest) (*npool.VerifyUserCodeResponse, error) { //nolint
 	handler, err := usercode1.NewHandler(ctx,
-		usercode1.WithAppID(&in.Account),
+		usercode1.WithAppID(&in.AppID),
 		usercode1.WithPrefix(&in.Prefix),
 		usercode1.WithAccount(&in.Account),
 		usercode1.WithCode(&in.Code),
