@@ -119,6 +119,30 @@ func getAPIs(t *testing.T) {
 	}
 }
 
+func getAPIOnly(t *testing.T) {
+	info, err := GetAPIOnly(context.Background(), &npool.Conds{
+		Protocol: &basetypes.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(*ret.Protocol.Enum()),
+		},
+		ServiceName: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.ServiceName,
+		},
+		Method: &basetypes.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(*ret.Method.Enum()),
+		},
+		Path: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.Path,
+		},
+	})
+	if assert.Nil(t, err) {
+		assert.Equal(t, info, ret)
+	}
+}
+
 func TestClient(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction { //nolint
 		return
@@ -133,4 +157,5 @@ func TestClient(t *testing.T) {
 	t.Run("createAPI", createAPI)
 	t.Run("updateAPI", updateAPI)
 	t.Run("getAPIs", getAPIs)
+	t.Run("getAPIOnly", getAPIOnly)
 }
