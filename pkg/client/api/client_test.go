@@ -63,7 +63,7 @@ func createAPI(t *testing.T) {
 		ret.ID = info.ID
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, ret, &ret)
+		assert.Equal(t, info, &ret)
 	}
 }
 
@@ -96,7 +96,7 @@ func updateAPI(t *testing.T) {
 	info, err := UpdateAPI(context.Background(), req)
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, ret, &ret)
+		assert.Equal(t, info, &ret)
 	}
 }
 
