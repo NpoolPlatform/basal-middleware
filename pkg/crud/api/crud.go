@@ -107,7 +107,7 @@ func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) { //nol
 	if conds.ServiceName != nil {
 		name, ok := conds.ServiceName.Val.(string)
 		if !ok {
-			return nil, fmt.Errorf("fail transfer %v to string", conds.ServiceName)
+			return nil, fmt.Errorf("fail transfer %v to string", *conds.ServiceName)
 		}
 		switch conds.ServiceName.Op {
 		case cruder.EQ:
