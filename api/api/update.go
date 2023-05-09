@@ -6,7 +6,7 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	api1 "github.com/NpoolPlatform/basal-middleware/pkg/api"
+	api1 "github.com/NpoolPlatform/basal-middleware/pkg/mw/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

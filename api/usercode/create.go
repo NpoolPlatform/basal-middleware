@@ -6,7 +6,7 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/usercode"
 
-	usercode1 "github.com/NpoolPlatform/basal-middleware/pkg/usercode"
+	usercode1 "github.com/NpoolPlatform/basal-middleware/pkg/mw/usercode"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

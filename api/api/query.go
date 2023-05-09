@@ -11,7 +11,7 @@ import (
 
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
-	api1 "github.com/NpoolPlatform/basal-middleware/pkg/api"
+	api1 "github.com/NpoolPlatform/basal-middleware/pkg/mw/api"
 )
 
 func (s *Server) GetAPIs(ctx context.Context, in *npool.GetAPIsRequest) (*npool.GetAPIsResponse, error) {

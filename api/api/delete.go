@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	api1 "github.com/NpoolPlatform/basal-middleware/pkg/api"
+	api1 "github.com/NpoolPlatform/basal-middleware/pkg/mw/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 )
 

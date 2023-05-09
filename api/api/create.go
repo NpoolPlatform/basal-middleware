@@ -12,7 +12,7 @@ import (
 	"github.com/NpoolPlatform/basal-middleware/pkg/crud/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
-	api1 "github.com/NpoolPlatform/basal-middleware/pkg/api"
+	api1 "github.com/NpoolPlatform/basal-middleware/pkg/mw/api"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 )
