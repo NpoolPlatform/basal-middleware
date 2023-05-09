@@ -105,9 +105,13 @@ func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) { //nol
 		}
 	}
 	if conds.ServiceName != nil {
+		name, ok := conds.ServiceName.Val.(string)
+		if !ok {
+			return nil, fmt.Errorf("fail transfer %v to string", conds.ServiceName)
+		}
 		switch conds.ServiceName.Op {
 		case cruder.EQ:
-			q.Where(api.ServiceName(conds.ServiceName.Op))
+			q.Where(api.ServiceName(name))
 		default:
 			return nil, fmt.Errorf("invalid service name field")
 		}
@@ -125,9 +129,13 @@ func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) { //nol
 		}
 	}
 	if conds.Path != nil {
+		path, ok := conds.Path.Val.(string)
+		if !ok {
+			return nil, fmt.Errorf("fail transfer %v to string", conds.Path)
+		}
 		switch conds.Path.Op {
 		case cruder.EQ:
-			q.Where(api.Path(conds.Path.Op))
+			q.Where(api.Path(path))
 		default:
 			return nil, fmt.Errorf("invalid path field")
 		}

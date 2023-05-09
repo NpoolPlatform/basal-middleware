@@ -9,11 +9,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/NpoolPlatform/basal-middleware/pkg/crud/api"
+	crud "github.com/NpoolPlatform/basal-middleware/pkg/crud/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
 	api1 "github.com/NpoolPlatform/basal-middleware/pkg/mw/api"
-
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 )
 
@@ -39,7 +38,7 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 		return &npool.CreateAPIResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	handler.Conds = &api.Conds{
+	handler.Conds = &crud.Conds{
 		Protocol: &cruder.Cond{
 			Op:  cruder.EQ,
 			Val: req.Protocol.String(),
