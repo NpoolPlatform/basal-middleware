@@ -82,7 +82,7 @@ func UpdateAPI(ctx context.Context, in *npool.APIReq) (*npool.API, error) {
 	return info.(*npool.API), nil
 }
 
-func GetAPIs(ctx context.Context, conds *npool.Conds, limit, offset int32) ([]*npool.API, uint32, error) {
+func GetAPIs(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.API, uint32, error) {
 	var total uint32
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetAPIs(ctx, &npool.GetAPIsRequest{
