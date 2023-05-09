@@ -16,15 +16,7 @@ func (s *Server) UpdateAPI(ctx context.Context, in *npool.UpdateAPIRequest) (*np
 	req := in.GetInfo()
 	handler, err := api1.NewHandler(ctx,
 		api1.WithID(req.ID),
-		api1.WithProtocol(req.Protocol),
-		api1.WithServiceName(req.ServiceName),
-		api1.WithMethod(req.Method),
-		api1.WithMethodName(req.MethodName),
-		api1.WithPath(req.Path),
-		api1.WithPathPrefix(req.PathPrefix),
-		api1.WithDomains(&req.Domains),
 		api1.WithDeprecated(req.Depracated),
-		api1.WithExported(req.Exported),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

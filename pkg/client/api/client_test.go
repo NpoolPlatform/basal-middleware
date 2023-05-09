@@ -68,31 +68,11 @@ func createAPI(t *testing.T) {
 }
 
 func updateAPI(t *testing.T) {
-	ret.Protocol = npool.Protocol_HTTP
-	ret.ProtocolStr = npool.Protocol_HTTP.String()
-	ret.ServiceName = uuid.NewString()
-	ret.Method = npool.Method_STREAM
-	ret.MethodStr = npool.Method_STREAM.String()
-	ret.MethodName = uuid.NewString()
-	ret.Path = uuid.NewString()
-	ret.PathPrefix = uuid.NewString()
-	ret.Domains = []string{"api.npool.top", "procyon.vip"}
-	ret.DomainsStr = "[\"api.npool.top\", \"procyon.vip\"]"
-	ret.Exported = true
 	ret.Depracated = true
-
 	var (
 		req = &npool.APIReq{
-			ID:          &ret.ID,
-			Protocol:    &ret.Protocol,
-			ServiceName: &ret.ServiceName,
-			Method:      &ret.Method,
-			MethodName:  &ret.MethodName,
-			Path:        &ret.Path,
-			PathPrefix:  &ret.PathPrefix,
-			Domains:     ret.Domains,
-			Exported:    &ret.Exported,
-			Depracated:  &ret.Depracated,
+			ID:         &ret.ID,
+			Depracated: &ret.Depracated,
 		}
 	)
 	info, err := UpdateAPI(context.Background(), req)
