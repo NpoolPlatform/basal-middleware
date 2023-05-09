@@ -56,27 +56,6 @@ func CreateSet(c *ent.APICreate, req *Req) *ent.APICreate {
 }
 
 func UpdateSet(u *ent.APIUpdateOne, req *Req) *ent.APIUpdateOne {
-	if req.Protocol != nil {
-		u.SetProtocol(req.Protocol.String())
-	}
-	if req.ServiceName != nil {
-		u.SetServiceName(*req.ServiceName)
-	}
-	if req.Method != nil {
-		u.SetMethod(req.Method.String())
-	}
-	if req.MethodName != nil {
-		u.SetMethodName(*req.MethodName)
-	}
-	if req.Path != nil {
-		u.SetPath(*req.Path)
-	}
-	if req.PathPrefix != nil {
-		u.SetPathPrefix(*req.PathPrefix)
-	}
-	if req.Domains != nil {
-		u.SetDomains(*req.Domains)
-	}
 	if req.Exported != nil {
 		u.SetExported(*req.Exported)
 	}

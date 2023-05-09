@@ -27,6 +27,8 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 		api1.WithPath(req.Path),
 		api1.WithPathPrefix(req.PathPrefix),
 		api1.WithDomains(&req.Domains),
+		api1.WithDeprecated(req.Depracated),
+		api1.WithExported(req.Exported),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -73,7 +75,11 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 
 	info, err = handler.CreateAPI(ctx)
 	if err != nil {
-		logger.Sugar().Errorf("fail create api: %v", err.Error())
+		logger.Sugar().Errorw(
+			"CreateAPI",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.CreateAPIResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

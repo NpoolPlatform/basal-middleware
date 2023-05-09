@@ -51,13 +51,13 @@ func WithID(id *string) func(context.Context, *Handler) error {
 func WithProtocol(protocol *npool.Protocol) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if protocol == nil {
-			return nil
+			return fmt.Errorf("invalid protocol %v: ", *protocol)
 		}
 		switch *protocol {
 		case npool.Protocol_HTTP:
 		case npool.Protocol_GRPC:
 		default:
-			return fmt.Errorf("invalid protocol %v: ", protocol)
+			return fmt.Errorf("invalid protocol %v: ", *protocol)
 		}
 
 		h.Protocol = protocol
@@ -68,7 +68,7 @@ func WithProtocol(protocol *npool.Protocol) func(context.Context, *Handler) erro
 func WithServiceName(name *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if name == nil {
-			return nil
+			return fmt.Errorf("service name %v too short", *name)
 		}
 		const leastNameLen = 2
 		if len(*name) < leastNameLen {
@@ -83,14 +83,14 @@ func WithServiceName(name *string) func(context.Context, *Handler) error {
 func WithMethod(method *npool.Method) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if method == nil {
-			return nil
+			return fmt.Errorf("invalid method %v: ", *method)
 		}
 		switch *method {
 		case npool.Method_GET:
 		case npool.Method_POST:
 		case npool.Method_STREAM:
 		default:
-			return fmt.Errorf("invalid method %v: ", method)
+			return fmt.Errorf("invalid method %v: ", *method)
 		}
 
 		h.Method = method
@@ -101,7 +101,7 @@ func WithMethod(method *npool.Method) func(context.Context, *Handler) error {
 func WithMethodName(name *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if name == nil {
-			return nil
+			return fmt.Errorf("invalid method name %v: ", *name)
 		}
 		h.MethodName = name
 		return nil
@@ -111,7 +111,7 @@ func WithMethodName(name *string) func(context.Context, *Handler) error {
 func WithPath(path *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if path == nil {
-			return nil
+			return fmt.Errorf("invalid path %v", *path)
 		}
 		h.Path = path
 		return nil
@@ -121,7 +121,7 @@ func WithPath(path *string) func(context.Context, *Handler) error {
 func WithPathPrefix(prefix *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if prefix == nil {
-			return nil
+			return fmt.Errorf("invalid path prefix %v", *prefix)
 		}
 		h.PathPrefix = prefix
 		return nil

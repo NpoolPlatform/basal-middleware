@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/NpoolPlatform/basal-middleware/pkg/db"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent"
@@ -21,22 +20,6 @@ type createHandler struct {
 }
 
 func (h *createHandler) validate() error {
-	if h.Protocol == nil {
-		return fmt.Errorf("invalid protocol")
-	}
-	if h.Method == nil {
-		return fmt.Errorf("invalid method")
-	}
-	if h.MethodName == nil {
-		return fmt.Errorf("invalid method name")
-	}
-	if h.Path == nil {
-		return fmt.Errorf("invalid path")
-	}
-	if h.PathPrefix == nil {
-		return fmt.Errorf("invalid path prefix")
-	}
-
 	return nil
 }
 
@@ -109,6 +92,8 @@ func (h *Handler) CreateAPI(ctx context.Context) (*npool.API, error) {
 				PathPrefix:  handler.PathPrefix,
 				ServiceName: handler.ServiceName,
 				Domains:     handler.Domains,
+				Exported:    handler.Exported,
+				Depracated:  handler.Deprecated,
 			},
 		).Save(_ctx)
 		if err != nil {
