@@ -47,7 +47,7 @@ func finish(ctx context.Context, msg *pubsub.Msg, err error) error {
 
 func prepare(mid, body string) (req interface{}, err error) {
 	switch mid {
-	case basetypes.MsgID_CreateAPIsReq.String():
+	case basetypes.MsgID_APIRegisterReq.String():
 		req, err = api.Prepare(body)
 	default:
 		return nil, nil
@@ -107,11 +107,7 @@ func statReq(ctx context.Context, mid string, uid uuid.UUID) (bool, error) {
 //   error   error message
 func statMsg(ctx context.Context, mid string, uid uuid.UUID, rid *uuid.UUID) (bool, error) { //nolint
 	switch mid {
-	case basetypes.MsgID_IncreaseUserActionCreditsReq.String():
-		fallthrough //nolint
-	case basetypes.MsgID_CreateLoginHistoryReq.String():
-		fallthrough //nolint
-	case basetypes.MsgID_CreateAuthHistoryReq.String():
+	case basetypes.MsgID_APIRegisterReq.String():
 		return statReq(ctx, mid, uid)
 	default:
 		return false, fmt.Errorf("invalid message")
@@ -143,7 +139,7 @@ func process(ctx context.Context, mid string, uid uuid.UUID, req interface{}) (e
 	}()
 
 	switch mid {
-	case basetypes.MsgID_CreateAPIsReq.String():
+	case basetypes.MsgID_APIRegisterReq.String():
 		err = api.Apply(ctx, req)
 	default:
 		return nil
