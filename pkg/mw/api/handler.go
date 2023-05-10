@@ -68,7 +68,7 @@ func WithProtocol(protocol *npool.Protocol) func(context.Context, *Handler) erro
 func WithServiceName(name *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if name == nil {
-			return fmt.Errorf("service name too short")
+			return fmt.Errorf("service name is empty")
 		}
 		const leastNameLen = 2
 		if len(*name) < leastNameLen {
@@ -101,7 +101,7 @@ func WithMethod(method *npool.Method) func(context.Context, *Handler) error {
 func WithMethodName(name *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if name == nil {
-			return fmt.Errorf("invalid method name")
+			return nil
 		}
 		h.MethodName = name
 		return nil
@@ -121,7 +121,7 @@ func WithPath(path *string) func(context.Context, *Handler) error {
 func WithPathPrefix(prefix *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if prefix == nil {
-			return fmt.Errorf("invalid path prefix")
+			return nil
 		}
 		h.PathPrefix = prefix
 		return nil
