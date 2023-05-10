@@ -25,11 +25,11 @@ import (
 func reliableRegister(apis []*mgrpb.APIReq) {
 	// Add PubSub Impl
 	if err := pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
-		req := &eventpb.APIsRegisterRequest{
+		req := &eventpb.RegisterAPIsRequest{
 			Info: apis,
 		}
 		return publisher.Update(
-			basetypes.MsgID_APIRegisterReq.String(),
+			basetypes.MsgID_RegisterAPIsReq.String(),
 			nil,
 			nil,
 			nil,

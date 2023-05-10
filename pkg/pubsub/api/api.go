@@ -11,7 +11,7 @@ import (
 )
 
 func Prepare(body string) (interface{}, error) {
-	req := eventpb.APIsRegisterRequest{}
+	req := eventpb.RegisterAPIsRequest{}
 	if err := json.Unmarshal([]byte(body), &req); err != nil {
 		return nil, err
 	}
