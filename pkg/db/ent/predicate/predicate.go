@@ -8,3 +8,6 @@ import (
 
 // API is the predicate function for api builders.
 type API func(*sql.Selector)
+
+// PubsubMessage is the predicate function for pubsubmessage builders.
+type PubsubMessage func(*sql.Selector)

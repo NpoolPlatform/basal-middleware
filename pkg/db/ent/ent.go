@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
+	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent/pubsubmessage"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -31,7 +32,8 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		api.Table: api.ValidColumn,
+		api.Table:           api.ValidColumn,
+		pubsubmessage.Table: pubsubmessage.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {
