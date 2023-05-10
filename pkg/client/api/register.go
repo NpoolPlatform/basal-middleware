@@ -10,18 +10,39 @@ import (
 	"time"
 	"unsafe"
 
+	config "github.com/NpoolPlatform/go-service-framework/pkg/config"
+	logger "github.com/NpoolPlatform/go-service-framework/pkg/logger"
+	"github.com/NpoolPlatform/go-service-framework/pkg/pubsub"
 	"github.com/go-resty/resty/v2"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 
-	config "github.com/NpoolPlatform/go-service-framework/pkg/config"
-	logger "github.com/NpoolPlatform/go-service-framework/pkg/logger"
-
 	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
-
+	eventpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/event"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"google.golang.org/grpc"
 )
 
 func reliableRegister(apis []*mgrpb.APIReq) {
+	// Add PubSub Impl
+	if err := pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
+		req := &eventpb.APIsRegisterRequest{
+			Infos: apis,
+		}
+		return publisher.Update(
+			basetypes.MsgID_APIRegisterReq.String(),
+			nil,
+			nil,
+			nil,
+			req,
+		)
+	}); err != nil {
+		logger.Sugar().Errorw(
+			"reliableRegister",
+			"APIs", apis,
+			"Error", err,
+		)
+	}
+
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
 
