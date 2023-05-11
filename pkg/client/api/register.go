@@ -1,13 +1,11 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
 	"strings"
-	"time"
 	"unsafe"
 
 	config "github.com/NpoolPlatform/go-service-framework/pkg/config"
@@ -41,20 +39,6 @@ func reliableRegister(apis []*mgrpb.APIReq) {
 			"APIs", apis,
 			"Error", err,
 		)
-	}
-
-	ticker := time.NewTicker(time.Minute)
-	defer ticker.Stop()
-
-	for {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second) //nolint
-		_, err := CreateAPIs(ctx, apis)
-		cancel()
-		if err != nil {
-			<-ticker.C
-			continue
-		}
-		break
 	}
 }
 
