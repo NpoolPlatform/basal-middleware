@@ -22,7 +22,15 @@ import (
 
 func reliableRegister(apis []*mgrpb.APIReq) {
 	// Add PubSub Impl
+	logger.Sugar().Info(
+		"reliableRegister",
+		"len", len(apis),
+	)
 	if err := pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
+		logger.Sugar().Info(
+			"reliableRegister",
+			"In",
+		)
 		req := &eventpb.RegisterAPIsRequest{
 			Info: apis,
 		}
