@@ -6,8 +6,9 @@ import (
 	"github.com/NpoolPlatform/basal-middleware/api"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db"
 	"github.com/NpoolPlatform/basal-middleware/pkg/migrator"
+	"github.com/NpoolPlatform/basal-middleware/pkg/pubsub"
 	"github.com/NpoolPlatform/go-service-framework/pkg/action"
-
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 
 	cli "github.com/urfave/cli/v2"
@@ -39,6 +40,21 @@ func run(ctx context.Context) error {
 	if err := db.Init(); err != nil {
 		return err
 	}
+	return nil
+}
+
+func shutdown(ctx context.Context) {
+	<-ctx.Done()
+	logger.Sugar().Infow(
+		"Watch",
+		"State", "Done",
+		"Error", ctx.Err(),
+	)
+	_ = pubsub.Shutdown(ctx)
+}
+
+func watch(ctx context.Context, cancel context.CancelFunc) error {
+	go shutdown(ctx)
 	return nil
 }
 
