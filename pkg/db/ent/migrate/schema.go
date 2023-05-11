@@ -41,7 +41,7 @@ var (
 		{Name: "state", Type: field.TypeString, Nullable: true, Default: "DefaultMsgState"},
 		{Name: "resp_to_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "undo_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "arguments", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "arguments", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
 	}
 	// PubsubMessagesTable holds the schema information for the "pubsub_messages" table.
 	PubsubMessagesTable = &schema.Table{

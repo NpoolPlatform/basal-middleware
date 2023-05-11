@@ -47,7 +47,7 @@ func (PubsubMessage) Fields() []ent.Field {
 				return uuid.UUID{}
 			}),
 		field.
-			String("arguments").
+			Text("arguments").
 			Optional().
 			Default(""),
 	}
