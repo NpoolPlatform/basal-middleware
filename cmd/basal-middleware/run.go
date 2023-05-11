@@ -40,7 +40,7 @@ func run(ctx context.Context) error {
 	if err := db.Init(); err != nil {
 		return err
 	}
-	return nil
+	return pubsub.Subscribe(ctx)
 }
 
 func shutdown(ctx context.Context) {
