@@ -169,19 +169,19 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{Op: conds.ID.Op, Val: id}
+			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: id}
 		}
 		if conds.Protocol != nil {
 			h.Conds.Protocol = &cruder.Cond{Op: conds.Protocol.Op, Val: conds.Protocol.String()}
 		}
 		if conds.ServiceName != nil {
-			h.Conds.ServiceName = &cruder.Cond{Op: conds.ServiceName.Op, Val: conds.GetServiceName().GetValue()}
+			h.Conds.ServiceName = &cruder.Cond{Op: conds.GetServiceName().GetOp(), Val: conds.GetServiceName().GetValue()}
 		}
 		if conds.Method != nil {
-			h.Conds.Method = &cruder.Cond{Op: conds.Method.Op, Val: conds.Method.String()}
+			h.Conds.Method = &cruder.Cond{Op: conds.GetMethod().GetOp(), Val: conds.Method.String()}
 		}
 		if conds.Path != nil {
-			h.Conds.Path = &cruder.Cond{Op: conds.Path.Op, Val: conds.Path}
+			h.Conds.Path = &cruder.Cond{Op: conds.GetPath().GetOp(), Val: conds.GetPath().GetValue()}
 		}
 		if conds.Exported != nil {
 			h.Conds.Exported = &cruder.Cond{Op: conds.Exported.Op, Val: conds.Exported}
