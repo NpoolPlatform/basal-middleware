@@ -200,7 +200,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 					ids = append(ids, _id)
 				}
 
-				h.Conds.IDs = &cruder.Cond{Op: conds.ID.Op, Val: ids}
+				h.Conds.IDs = &cruder.Cond{Op: conds.IDs.Op, Val: ids}
 			}
 		}
 		return nil
