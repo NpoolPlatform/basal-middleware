@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/NpoolPlatform/basal-middleware/api"
+	"context"
 
-	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
-	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+	"github.com/NpoolPlatform/basal-middleware/api"
+	"github.com/NpoolPlatform/basal-middleware/pkg/db"
+	"github.com/NpoolPlatform/basal-middleware/pkg/migrator"
+	"github.com/NpoolPlatform/go-service-framework/pkg/action"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 
@@ -20,14 +22,24 @@ var runCmd = &cli.Command{
 	Aliases: []string{"s"},
 	Usage:   "Run the daemon",
 	Action: func(c *cli.Context) error {
-		go func() {
-			if err := grpc2.RunGRPC(rpcRegister); err != nil {
-				logger.Sugar().Errorf("fail to run grpc server: %v", err)
-			}
-		}()
-
-		return grpc2.RunGRPCGateWay(rpcGatewayRegister)
+		return action.Run(
+			c.Context,
+			run,
+			rpcRegister,
+			rpcGatewayRegister,
+			nil,
+		)
 	},
+}
+
+func run(ctx context.Context) error {
+	if err := migrator.Migrate(ctx); err != nil {
+		return err
+	}
+	if err := db.Init(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func rpcRegister(server grpc.ServiceRegistrar) error {
