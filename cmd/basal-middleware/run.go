@@ -28,7 +28,7 @@ var runCmd = &cli.Command{
 			run,
 			rpcRegister,
 			rpcGatewayRegister,
-			nil,
+			watch,
 		)
 	},
 }
