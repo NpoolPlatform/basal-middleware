@@ -161,7 +161,12 @@ func handler(ctx context.Context, msg *pubsub.Msg) (err error) {
 	defer func() {
 		msg.Ack()
 		if req != nil && appliable {
-			_ = finish(ctx, msg, err)
+			err = finish(ctx, msg, err)
+			if err != nil {
+				logger.Sugar().Warnw(
+					"Error", err,
+				)
+			}
 		}
 	}()
 
