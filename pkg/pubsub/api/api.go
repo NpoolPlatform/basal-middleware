@@ -29,6 +29,10 @@ func Apply(ctx context.Context, req interface{}) error {
 	}
 	handler := &APIHandler{}
 
+	if len(apis) == 0 {
+		return nil
+	}
+
 	serviceName := apis[0].ServiceName
 	protocol := apis[0].Protocol
 	_key := key(*serviceName, protocol.String())
