@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/NpoolPlatform/basal-middleware/api"
+	apicli "github.com/NpoolPlatform/basal-middleware/pkg/client/api"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db"
 	"github.com/NpoolPlatform/basal-middleware/pkg/migrator"
 	"github.com/NpoolPlatform/basal-middleware/pkg/pubsub"
@@ -60,6 +61,7 @@ func watch(ctx context.Context, cancel context.CancelFunc) error {
 
 func rpcRegister(server grpc.ServiceRegistrar) error {
 	api.Register(server)
+	apicli.RegisterGRPC(server)
 	return nil
 }
 
@@ -68,5 +70,6 @@ func rpcGatewayRegister(mux *runtime.ServeMux, endpoint string, opts []grpc.Dial
 	if err != nil {
 		return err
 	}
+	_ = apicli.Register(mux)
 	return nil
 }
