@@ -51,26 +51,25 @@ func muxAPIs(mux *runtime.ServeMux) []*mgrpb.APIReq {
 	handlers := valueOfMux.FieldByName("handlers")
 	methIter := handlers.MapRange()
 
-	i := 0
 	for methIter.Next() {
-		pat := methIter.Value().Index(i).FieldByName("pat")
-		tmp := reflect.NewAt(pat.Type(), unsafe.Pointer(pat.UnsafeAddr())).Elem()
-		str := tmp.MethodByName("String").Call(nil)[0].String()
-		method, ok := mgrpb.Method_value[methIter.Key().String()]
-		if !ok {
-			logger.Sugar().Warnw("muxAPIs", "Method", methIter.Key().String())
-			continue
+		for i := 0; i < methIter.Value().Len(); i++ {
+			pat := methIter.Value().Index(i).FieldByName("pat")
+			tmp := reflect.NewAt(pat.Type(), unsafe.Pointer(pat.UnsafeAddr())).Elem()
+			str := tmp.MethodByName("String").Call(nil)[0].String()
+			method, ok := mgrpb.Method_value[methIter.Key().String()]
+			if !ok {
+				logger.Sugar().Warnw("muxAPIs", "Method", methIter.Key().String())
+				continue
+			}
+			_method := mgrpb.Method(method)
+
+			apis = append(apis, &mgrpb.APIReq{
+				Protocol:    &protocol,
+				ServiceName: &serviceName,
+				Method:      &_method,
+				Path:        &str,
+			})
 		}
-		_method := mgrpb.Method(method)
-
-		apis = append(apis, &mgrpb.APIReq{
-			Protocol:    &protocol,
-			ServiceName: &serviceName,
-			Method:      &_method,
-			Path:        &str,
-		})
-
-		i += 1
 	}
 
 	return apis
@@ -139,8 +138,31 @@ func Register(mux *runtime.ServeMux) error {
 	}
 
 	resultAPIs := []*mgrpb.APIReq{}
+	resultRouters := []*EntryPoint{}
 
-	for _, router := range gatewayRouters {
+	for i := 0; i < len(gatewayRouters); i++ {
+		repeat := false
+		for j := i + 1; j < len(gatewayRouters); j++ {
+			path1, err := gatewayRouters[i].Path()
+			if err != nil {
+				return err
+			}
+			path2, err := gatewayRouters[j].Path()
+			if err != nil {
+				return err
+			}
+
+			if path1 == path2 {
+				repeat = true
+				break
+			}
+			if !repeat {
+				resultRouters = append(resultRouters, gatewayRouters[i])
+			}
+		}
+	}
+
+	for _, router := range resultRouters {
 		prefix, err := router.PathPrefix()
 		if err != nil {
 			return err
