@@ -149,9 +149,6 @@ func Register(mux *runtime.ServeMux) error {
 
 		exported := true
 		for _, _api := range apis {
-			if !strings.HasPrefix(*_api.Path, "/v1") {
-				continue
-			}
 			if !strings.HasPrefix(*_api.Path, routerPath) {
 				continue
 			}
@@ -161,7 +158,15 @@ func Register(mux *runtime.ServeMux) error {
 		}
 	}
 
-	go reliableRegister(apis)
+	resultAPIs := []*mgrpb.APIReq{}
+	for _, _api := range apis {
+		if !strings.HasPrefix(*_api.Path, "/v1") {
+			continue
+		}
+		resultAPIs = append(resultAPIs, _api)
+	}
+
+	go reliableRegister(resultAPIs)
 
 	return nil
 }
