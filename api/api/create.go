@@ -103,6 +103,8 @@ func (s *Server) CreateAPIs(ctx context.Context, in *npool.CreateAPIsRequest) (*
 			api1.WithPath(info.Path),
 			api1.WithPathPrefix(info.PathPrefix),
 			api1.WithDomains(&info.Domains),
+			api1.WithDeprecated(info.Depracated),
+			api1.WithExported(info.Exported),
 		)
 		if err != nil {
 			logger.Sugar().Errorw(

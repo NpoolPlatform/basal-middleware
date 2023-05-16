@@ -56,6 +56,8 @@ func (h *Handler) CreateAPIs(ctx context.Context, in []*npool.APIReq) ([]*npool.
 				PathPrefix:  info.PathPrefix,
 				ServiceName: info.ServiceName,
 				Domains:     &info.Domains,
+				Depracated:  info.Depracated,
+				Exported:    info.Exported,
 			}).Save(_ctx)
 			if err != nil {
 				return err
