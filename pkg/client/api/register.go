@@ -138,7 +138,12 @@ func Register(mux *runtime.ServeMux) error {
 	}
 
 	for _, router := range gatewayRouters {
-		fmt.Println("Path", router.Path())
+		path, err := router.Path()
+		if err != nil {
+			return err
+		}
+		fmt.Println("Path", path)
+
 		prefix, err := router.PathPrefix()
 		if err != nil {
 			return err
