@@ -36,12 +36,15 @@ func Apply(ctx context.Context, req interface{}) error {
 	if err != nil {
 		return err
 	}
-	defer Unlock(_key)
-	
+
 	_, err = handler.CreateAPIs(ctx, apis)
 	if err != nil {
 		return err
 	}
 
+	err = Unlock(_key)
+	if err != nil {
+		return err
+	}
 	return nil
 }
