@@ -51,7 +51,8 @@ func muxAPIs(mux *runtime.ServeMux) []*mgrpb.APIReq {
 	handlers := valueOfMux.FieldByName("handlers")
 	methIter := handlers.MapRange()
 
-	for i := 0; i < methIter.Value().Len(); i++ {
+	i := 0
+	for methIter.Next() {
 		pat := methIter.Value().Index(i).FieldByName("pat")
 		tmp := reflect.NewAt(pat.Type(), unsafe.Pointer(pat.UnsafeAddr())).Elem()
 		str := tmp.MethodByName("String").Call(nil)[0].String()
@@ -68,6 +69,8 @@ func muxAPIs(mux *runtime.ServeMux) []*mgrpb.APIReq {
 			Method:      &_method,
 			Path:        &str,
 		})
+
+		i += 1
 	}
 
 	return apis
