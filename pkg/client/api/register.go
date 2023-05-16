@@ -133,6 +133,9 @@ func Register(mux *runtime.ServeMux) error {
 	apis := muxAPIs(mux)
 
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
+	logger.Sugar().Infow("Register", "ServiceName", serviceName, "State", "Start")
+	defer logger.Sugar().Infow("Register", "ServiceName", serviceName, "State", "End")
+
 	gatewayRouters, err := getGatewayRouters(serviceName)
 	if err != nil {
 		return err
