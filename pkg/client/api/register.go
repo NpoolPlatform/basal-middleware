@@ -145,7 +145,7 @@ func Register(mux *runtime.ServeMux) error {
 
 		exported := true
 		for _, _api := range apis {
-			fmt.Println("Path: ", _api.Path)
+			fmt.Println("Path: ", *_api.Path)
 			_api.PathPrefix = &prefix
 			_api.Exported = &exported
 			_api.Domains = append(_api.Domains, router.Domain())
