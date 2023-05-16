@@ -29,9 +29,14 @@ func Apply(ctx context.Context, req interface{}) error {
 	}
 	handler := &APIHandler{}
 
+	serviceName := apis[0].ServiceName
+	_key := key(*serviceName)
+
+	Lock(_key)
 	_, err := handler.CreateAPIs(ctx, apis)
 	if err != nil {
 		return err
 	}
+	defer Unlock(_key)
 	return nil
 }
