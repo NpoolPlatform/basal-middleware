@@ -138,6 +138,7 @@ func Register(mux *runtime.ServeMux) error {
 	}
 
 	for _, router := range gatewayRouters {
+		fmt.Println("Path", router.Path())
 		prefix, err := router.PathPrefix()
 		if err != nil {
 			return err
@@ -147,7 +148,6 @@ func Register(mux *runtime.ServeMux) error {
 		for _, _api := range apis {
 			_api.PathPrefix = &prefix
 			_api.Exported = &exported
-			_api.Domains = append(_api.Domains, router.Domain())
 		}
 	}
 
