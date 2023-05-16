@@ -30,9 +30,10 @@ func Apply(ctx context.Context, req interface{}) error {
 	handler := &APIHandler{}
 
 	serviceName := apis[0].ServiceName
-	_key := key(*serviceName)
+	protocol := apis[0].Protocol
+	_key := key(*serviceName, protocol.String())
 
-	err := Lock(_key)
+	err := Lock(_key, protocol.String())
 	if err != nil {
 		return err
 	}
@@ -42,7 +43,7 @@ func Apply(ctx context.Context, req interface{}) error {
 		return err
 	}
 
-	err = Unlock(_key)
+	err = Unlock(_key, protocol.String())
 	if err != nil {
 		return err
 	}

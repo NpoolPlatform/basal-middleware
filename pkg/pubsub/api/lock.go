@@ -7,14 +7,14 @@ import (
 	prefix "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
-func key(servicename string) string {
-	return fmt.Sprintf("%v:%v", prefix.Prefix_PrefixAPIRegister, servicename)
+func key(servicename, protocol string) string {
+	return fmt.Sprintf("%v:%v%v", prefix.Prefix_PrefixAPIRegister, servicename, protocol)
 }
 
-func Lock(servicename string) error {
-	return redis2.TryLock(key(servicename), 0)
+func Lock(servicename, protocol string) error {
+	return redis2.TryLock(key(servicename, protocol), 0)
 }
 
-func Unlock(servicename string) error {
-	return redis2.Unlock(key(servicename))
+func Unlock(servicename, protocol string) error {
+	return redis2.Unlock(key(servicename, protocol))
 }
