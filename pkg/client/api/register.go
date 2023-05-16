@@ -137,15 +137,20 @@ func Register(mux *runtime.ServeMux) error {
 		return err
 	}
 
+	resultAPIs := []*mgrpb.APIReq{}
+
 	for _, router := range gatewayRouters {
 		prefix, err := router.PathPrefix()
+		if err != nil {
+			return err
+		}
+		routerPath, err := router.Path()
 		if err != nil {
 			return err
 		}
 
 		exported := true
 		for _, _api := range apis {
-			routerPath, err := router.Path()
 			if err != nil {
 				return err
 			}
@@ -153,11 +158,12 @@ func Register(mux *runtime.ServeMux) error {
 				_api.PathPrefix = &prefix
 				_api.Exported = &exported
 				_api.Domains = append(_api.Domains, router.Domain())
+				resultAPIs = append(resultAPIs, _api)
 			}
 		}
 	}
 
-	go reliableRegister(apis)
+	go reliableRegister(resultAPIs)
 
 	return nil
 }
