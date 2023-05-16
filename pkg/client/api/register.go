@@ -51,25 +51,23 @@ func muxAPIs(mux *runtime.ServeMux) []*mgrpb.APIReq {
 	handlers := valueOfMux.FieldByName("handlers")
 	methIter := handlers.MapRange()
 
-	for methIter.Next() {
-		for i := 0; i < methIter.Value().Len(); i++ {
-			pat := methIter.Value().Index(i).FieldByName("pat")
-			tmp := reflect.NewAt(pat.Type(), unsafe.Pointer(pat.UnsafeAddr())).Elem()
-			str := tmp.MethodByName("String").Call(nil)[0].String()
-			method, ok := mgrpb.Method_value[methIter.Key().String()]
-			if !ok {
-				logger.Sugar().Warnw("muxAPIs", "Method", methIter.Key().String())
-				continue
-			}
-			_method := mgrpb.Method(method)
-
-			apis = append(apis, &mgrpb.APIReq{
-				Protocol:    &protocol,
-				ServiceName: &serviceName,
-				Method:      &_method,
-				Path:        &str,
-			})
+	for i := 0; i < methIter.Value().Len(); i++ {
+		pat := methIter.Value().Index(i).FieldByName("pat")
+		tmp := reflect.NewAt(pat.Type(), unsafe.Pointer(pat.UnsafeAddr())).Elem()
+		str := tmp.MethodByName("String").Call(nil)[0].String()
+		method, ok := mgrpb.Method_value[methIter.Key().String()]
+		if !ok {
+			logger.Sugar().Warnw("muxAPIs", "Method", methIter.Key().String())
+			continue
 		}
+		_method := mgrpb.Method(method)
+
+		apis = append(apis, &mgrpb.APIReq{
+			Protocol:    &protocol,
+			ServiceName: &serviceName,
+			Method:      &_method,
+			Path:        &str,
+		})
 	}
 
 	return apis
