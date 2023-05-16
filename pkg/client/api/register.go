@@ -26,6 +26,7 @@ func reliableRegister(apis []*mgrpb.APIReq) {
 		req := &eventpb.RegisterAPIsRequest{
 			Info: apis,
 		}
+		logger.Sugar().Info("req", apis)
 		return publisher.Update(
 			basetypes.MsgID_RegisterAPIsReq.String(),
 			nil,
@@ -150,9 +151,11 @@ func Register(mux *runtime.ServeMux) error {
 		exported := true
 		for _, _api := range apis {
 			if !strings.HasPrefix(*_api.Path, "/v1") {
+				logger.Sugar().Infow("Register", "Path", *_api.Path, "State", "Not v1 api")
 				continue
 			}
 			if !strings.HasPrefix(*_api.Path, routerPath) {
+				logger.Sugar().Infow("Register", "Path", *_api.Path, "State", "Not ingress api")
 				continue
 			}
 			_api.PathPrefix = &prefix
