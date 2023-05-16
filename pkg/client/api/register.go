@@ -137,32 +137,7 @@ func Register(mux *runtime.ServeMux) error {
 		return err
 	}
 
-	resultAPIs := []*mgrpb.APIReq{}
-	resultRouters := []*EntryPoint{}
-
-	for i := 0; i < len(gatewayRouters); i++ {
-		repeat := false
-		for j := i + 1; j < len(gatewayRouters); j++ {
-			path1, err := gatewayRouters[i].Path()
-			if err != nil {
-				return err
-			}
-			path2, err := gatewayRouters[j].Path()
-			if err != nil {
-				return err
-			}
-
-			if path1 == path2 {
-				repeat = true
-				break
-			}
-			if !repeat {
-				resultRouters = append(resultRouters, gatewayRouters[i])
-			}
-		}
-	}
-
-	for _, router := range resultRouters {
+	for _, router := range gatewayRouters {
 		prefix, err := router.PathPrefix()
 		if err != nil {
 			return err
@@ -174,19 +149,16 @@ func Register(mux *runtime.ServeMux) error {
 
 		exported := true
 		for _, _api := range apis {
-			if err != nil {
-				return err
+			if !strings.HasPrefix(*_api.Path, routerPath) {
+				continue
 			}
-			if strings.HasPrefix(*_api.Path, routerPath) {
-				_api.PathPrefix = &prefix
-				_api.Exported = &exported
-				_api.Domains = append(_api.Domains, router.Domain())
-				resultAPIs = append(resultAPIs, _api)
-			}
+			_api.PathPrefix = &prefix
+			_api.Exported = &exported
+			_api.Domains = append(_api.Domains, router.Domain())
 		}
 	}
 
-	go reliableRegister(resultAPIs)
+	go reliableRegister(apis)
 
 	return nil
 }
