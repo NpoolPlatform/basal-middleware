@@ -140,6 +140,7 @@ func Register(mux *runtime.ServeMux) error {
 	if err != nil {
 		return err
 	}
+	logger.Sugar().Infow("Register", "ServiceName", serviceName, "getGatewayRouters", gatewayRouters)
 
 	for _, router := range gatewayRouters {
 		prefix, err := router.PathPrefix()
