@@ -33,10 +33,11 @@ func Apply(ctx context.Context, req interface{}) error {
 	_key := key(*serviceName)
 
 	Lock(_key)
+	defer Unlock(_key)
 	_, err := handler.CreateAPIs(ctx, apis)
 	if err != nil {
 		return err
 	}
-	defer Unlock(_key)
+
 	return nil
 }
