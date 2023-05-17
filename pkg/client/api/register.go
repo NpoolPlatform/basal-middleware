@@ -165,7 +165,7 @@ func registerHttp(apis []*mgrpb.APIReq) error { //nolint
 
 		exported := true
 		for _, _api := range apis {
-			logger.Sugar().Info(routerPath, *_api.Path, prefix)
+			logger.Sugar().Info(routerPath, *_api.Path, prefix, router.Domain())
 			if !strings.HasPrefix(*_api.Path, "/v1") {
 				continue
 			}
