@@ -143,8 +143,7 @@ func Register(mux *runtime.ServeMux) error {
 			case <-done:
 				return
 			case <-ticker.C:
-				gatewayRouters, _ := getGatewayRouters(serviceName)
-				logger.Sugar().Info("routers", gatewayRouters)
+				_, _ = getGatewayRouters(serviceName)
 			}
 		}
 	}()
