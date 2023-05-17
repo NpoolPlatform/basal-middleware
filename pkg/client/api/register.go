@@ -113,6 +113,7 @@ func getGatewayRouters(name string) ([]*EntryPoint, error) {
 			page, perPage, domain[0],
 		)
 
+		logger.Sugar().Info("Url: ", url)
 		// internal already set timeout
 		resp, err := resty.New().R().Get(url)
 		if err != nil {
@@ -128,7 +129,6 @@ func getGatewayRouters(name string) ([]*EntryPoint, error) {
 		page += 1
 	}
 
-	logger.Sugar().Info("AllRouters: ", allRouters)
 	return allRouters, nil
 }
 
