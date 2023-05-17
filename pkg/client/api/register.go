@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -139,8 +140,10 @@ func Register(mux *runtime.ServeMux) error {
 	defer ticker.Stop()
 
 	for {
+		_, cancel := context.WithTimeout(context.Background(), 5*time.Second) //nolint
 		routers, err := getGatewayRouters(serviceName)
 		logger.Sugar().Infow("routers: ", routers)
+		cancel()
 		if err != nil {
 			<-ticker.C
 			if len(routers) > 0 {
