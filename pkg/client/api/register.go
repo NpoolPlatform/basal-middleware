@@ -146,10 +146,6 @@ func Register(mux *runtime.ServeMux) error {
 				gatewayRouters, _ := getGatewayRouters(serviceName)
 				fmt.Println("t: ", t)
 				logger.Sugar().Info("routers", gatewayRouters)
-				if len(gatewayRouters) > 0 {
-					logger.Sugar().Info("_______________")
-					return
-				}
 			}
 		}
 	}()
