@@ -135,21 +135,24 @@ func Register(mux *runtime.ServeMux) error {
 
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
 
-	ticker := time.NewTicker(400 * time.Millisecond)
+	ticker := time.NewTicker(500 * time.Millisecond)
 	done := make(chan bool)
 	go func() {
 		for {
 			select {
 			case <-done:
 				return
-			case t := <-ticker.C:
-				fmt.Println("Tick at", t)
+			case <-ticker.C:
 				gatewayRouters, _ := getGatewayRouters(serviceName)
-				logger.Sugar().Infow("routers", gatewayRouters)
+				logger.Sugar().Info("routers", gatewayRouters)
+				if len(gatewayRouters) > 0 {
+					logger.Sugar().Info("_______________")
+					return
+				}
 			}
 		}
 	}()
-	time.Sleep(2000 * time.Millisecond)
+	time.Sleep(1 * time.Minute)
 	ticker.Stop()
 	done <- true
 
