@@ -144,9 +144,8 @@ func Register(mux *runtime.ServeMux) error {
 				return
 			case <-ticker.C:
 				gatewayRouters, _ := getGatewayRouters(serviceName)
-				logger.Sugar().Info("routers", gatewayRouters)
 				if len(gatewayRouters) > 0 {
-					logger.Sugar().Info("_______________")
+					ticker.Stop()
 					return
 				}
 			}
