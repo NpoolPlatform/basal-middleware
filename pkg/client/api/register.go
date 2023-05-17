@@ -135,15 +135,28 @@ func Register(mux *runtime.ServeMux) error {
 
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
 
-	ticker := time.NewTicker(500 * time.Millisecond)
+	ticker := time.NewTicker(1 * time.Second)
 	done := make(chan bool)
+
+	flag := false
+
 	go func() {
 		for {
 			select {
 			case <-done:
 				return
 			case <-ticker.C:
-				_, _ = getGatewayRouters(serviceName)
+				if flag {
+					break
+				}
+				routers, _ := getGatewayRouters(serviceName)
+				if len(routers) > 0 {
+					flag = true
+					err := RegisterHttp(serviceName, apis)
+					if err != nil {
+						logger.Sugar().Errorf("error: ", err)
+					}
+				}
 			}
 		}
 	}()
@@ -151,6 +164,10 @@ func Register(mux *runtime.ServeMux) error {
 	ticker.Stop()
 	done <- true
 
+	return nil
+}
+
+func RegisterHttp(serviceName string, apis []*mgrpb.APIReq) error {
 	gatewayRouters, err := getGatewayRouters(serviceName)
 	if err != nil {
 		return err
@@ -179,7 +196,6 @@ func Register(mux *runtime.ServeMux) error {
 			_api.Domains = append(_api.Domains, router.Domain())
 		}
 	}
-
 	go reliableRegister(apis)
 
 	return nil
