@@ -137,7 +137,6 @@ func Register(mux *runtime.ServeMux) error {
 
 	ticker := time.NewTicker(400 * time.Millisecond)
 	done := make(chan bool)
-	fmt.Println("Started!")
 	go func() {
 		for {
 			select {
@@ -145,13 +144,14 @@ func Register(mux *runtime.ServeMux) error {
 				return
 			case t := <-ticker.C:
 				fmt.Println("Tick at", t)
+				gatewayRouters, _ := getGatewayRouters(serviceName)
+				logger.Sugar().Infow("routers", gatewayRouters)
 			}
 		}
 	}()
 	time.Sleep(2000 * time.Millisecond)
 	ticker.Stop()
 	done <- true
-	fmt.Println("Stopped!")
 
 	gatewayRouters, err := getGatewayRouters(serviceName)
 	if err != nil {
