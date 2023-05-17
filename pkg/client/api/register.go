@@ -101,25 +101,35 @@ func getGatewayRouters(name string) ([]*EntryPoint, error) {
 		return nil, errors.New("service name must like example.npool.top")
 	}
 
-	// provider can use kubernetes or k8s
-	url := fmt.Sprintf(
-		"http://traefik.kube-system.svc.cluster.local:38080/api/http/routers?provider=kubernetes&search=%v",
-		domain[0],
-	)
+	allRouters := []*EntryPoint{}
 
-	// internal already set timeout
-	resp, err := resty.New().R().Get(url)
-	if err != nil {
-		return nil, err
+	page := 1
+	perPage := 1000
+
+	for {
+		// provider can use kubernetes or k8s
+		url := fmt.Sprintf(
+			"http://traefik.kube-system.svc.cluster.local:38080/api/http/routers?provider=kubernetes&page=%v&per_page=%v&search=%v",
+			page, perPage, domain[0],
+		)
+
+		// internal already set timeout
+		resp, err := resty.New().R().Get(url)
+		if err != nil {
+			break
+		}
+
+		routers := make([]*EntryPoint, 0)
+		err = json.Unmarshal(resp.Body(), &routers)
+		if err != nil {
+			break
+		}
+		allRouters = append(allRouters, routers...)
+		page += 1
 	}
 
-	routers := make([]*EntryPoint, 0)
-	err = json.Unmarshal(resp.Body(), &routers)
-	if err != nil {
-		return nil, err
-	}
-
-	return routers, nil
+	logger.Sugar().Info("AllRouters: ", allRouters)
+	return allRouters, nil
 }
 
 func Register(mux *runtime.ServeMux) error {
