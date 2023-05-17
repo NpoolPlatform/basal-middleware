@@ -143,6 +143,9 @@ func Register(mux *runtime.ServeMux) error {
 		logger.Sugar().Infow("routers: ", routers)
 		if err != nil {
 			<-ticker.C
+			if len(routers) > 0 {
+				break
+			}
 			continue
 		}
 		break
