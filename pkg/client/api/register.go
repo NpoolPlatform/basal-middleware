@@ -135,31 +135,28 @@ func Register(mux *runtime.ServeMux) error {
 
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
 
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(400 * time.Millisecond)
 	done := make(chan bool)
-
+	fmt.Println("Started!")
 	go func() {
 		for {
 			select {
 			case <-done:
 				return
-			case <-ticker.C:
-				routers, err := getGatewayRouters(serviceName)
-				if err != nil {
-					logger.Sugar().Infow("routers: ", routers)
-				}
+			case t := <-ticker.C:
+				fmt.Println("Tick at", t)
 			}
 		}
 	}()
-	time.Sleep(1 * time.Minute)
+	time.Sleep(2000 * time.Millisecond)
 	ticker.Stop()
+	done <- true
+	fmt.Println("Stopped!")
 
 	gatewayRouters, err := getGatewayRouters(serviceName)
 	if err != nil {
 		return err
 	}
-
-	logger.Sugar().Infow("Register", "ServiceName", serviceName, "getGatewayRouters", gatewayRouters)
 
 	for _, router := range gatewayRouters {
 		prefix, err := router.PathPrefix()
