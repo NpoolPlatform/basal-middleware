@@ -165,7 +165,7 @@ func registerHttp(apis []*mgrpb.APIReq) error { //nolint
 
 		exported := true
 		for _, _api := range apis {
-			logger.Sugar().Info(routerPath, *_api.Path, prefix, router.Domain())
+			logger.Sugar().Info("RouterPath", routerPath, "Path", *_api.Path, "Prefix", prefix, "Domains", router.Domain())
 			if !strings.HasPrefix(*_api.Path, "/v1") {
 				continue
 			}
@@ -175,7 +175,7 @@ func registerHttp(apis []*mgrpb.APIReq) error { //nolint
 			_api.PathPrefix = &prefix
 			_api.Exported = &exported
 			_api.Domains = append(_api.Domains, router.Domain())
-			logger.Sugar().Info("------------", exported, _api.Domains)
+			logger.Sugar().Info("Exported", exported, "Domains", _api.Domains)
 		}
 	}
 
