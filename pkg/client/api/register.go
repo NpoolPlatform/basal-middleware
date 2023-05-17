@@ -122,8 +122,9 @@ func getGatewayRouters(name string) ([]*EntryPoint, error) {
 	return routers, nil
 }
 
-func Register(mux *runtime.ServeMux) {
+func Register(mux *runtime.ServeMux) error {
 	go reliableRegister(mux)
+	return nil
 }
 
 func reliableRegister(mux *runtime.ServeMux) {
