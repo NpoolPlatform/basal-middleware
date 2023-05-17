@@ -181,7 +181,9 @@ func registerHttp(apis []*mgrpb.APIReq) error { //nolint
 func reliablePublish(apis []*mgrpb.APIReq) {
 	for {
 		<-time.After(5 * time.Second) //nolint
-		_ = publish(apis)
+		if err := publish(apis); err == nil {
+			break
+		}
 	}
 }
 
