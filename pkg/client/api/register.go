@@ -160,7 +160,7 @@ func Register(mux *runtime.ServeMux) error {
 			}
 		}
 	}()
-	time.Sleep(10 * time.Second)
+	time.Sleep(15 * time.Second)
 	ticker.Stop()
 	done <- true
 
