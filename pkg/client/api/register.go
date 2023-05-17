@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -136,23 +135,24 @@ func Register(mux *runtime.ServeMux) error {
 
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
 
-	ticker := time.NewTicker(time.Minute)
-	defer ticker.Stop()
+	ticker := time.NewTicker(5 * time.Second)
+	done := make(chan bool)
 
-	for {
-		_, cancel := context.WithTimeout(context.Background(), 5*time.Second) //nolint
-		routers, err := getGatewayRouters(serviceName)
-		logger.Sugar().Infow("routers: ", routers)
-		cancel()
-		if err != nil {
-			<-ticker.C
-			if len(routers) > 0 {
-				break
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				routers, err := getGatewayRouters(serviceName)
+				if err != nil {
+					logger.Sugar().Infow("routers: ", routers)
+				}
 			}
-			continue
 		}
-		break
-	}
+	}()
+	time.Sleep(1 * time.Minute)
+	ticker.Stop()
 
 	gatewayRouters, err := getGatewayRouters(serviceName)
 	if err != nil {
