@@ -160,14 +160,14 @@ func Register(mux *runtime.ServeMux) error {
 			}
 		}
 	}()
-	time.Sleep(15 * time.Second)
+	time.Sleep(15 * time.Second) //nolint
 	ticker.Stop()
 	done <- true
 
 	return nil
 }
 
-func RegisterHttp(serviceName string, apis []*mgrpb.APIReq) error {
+func RegisterHttp(serviceName string, apis []*mgrpb.APIReq) error { //nolint
 	gatewayRouters, err := getGatewayRouters(serviceName)
 	if err != nil {
 		return err
