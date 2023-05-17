@@ -184,10 +184,10 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.Path = &cruder.Cond{Op: conds.GetPath().GetOp(), Val: conds.GetPath().GetValue()}
 		}
 		if conds.Exported != nil {
-			h.Conds.Exported = &cruder.Cond{Op: conds.Exported.Op, Val: conds.Exported}
+			h.Conds.Exported = &cruder.Cond{Op: conds.Exported.Op, Val: conds.GetExported().GetValue()}
 		}
 		if conds.Depracated != nil {
-			h.Conds.Depracated = &cruder.Cond{Op: conds.Depracated.Op, Val: conds.Depracated}
+			h.Conds.Depracated = &cruder.Cond{Op: conds.Depracated.Op, Val: conds.GetDepracated().GetValue()}
 		}
 		if conds.IDs != nil {
 			if len(conds.GetIDs().GetValue()) > 0 {
