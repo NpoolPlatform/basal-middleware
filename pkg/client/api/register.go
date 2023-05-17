@@ -21,12 +21,11 @@ import (
 	"google.golang.org/grpc"
 )
 
-func publish(apis []*mgrpb.APIReq) {
+func publish(apis []*mgrpb.APIReq) error {
 	return pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
 		req := &eventpb.RegisterAPIsRequest{
 			Info: apis,
 		}
-		logger.Sugar().Info("req", apis)
 		return publisher.Update(
 			basetypes.MsgID_RegisterAPIsReq.String(),
 			nil,
@@ -129,9 +128,10 @@ func Register(mux *runtime.ServeMux) {
 
 func reliableRegister(mux *runtime.ServeMux) {
 	apis := muxAPIs(mux)
+	var err error
 	for {
-		<-time.After(5 * time.Duration)
-		if err := registerHttp(apis); err == nil {
+		<-time.After(5 * time.Second) //nolint
+		if err = registerHttp(apis); err == nil {
 			break
 		}
 		logger.Sugar().Warnw("Register", "Error", err)
@@ -179,8 +179,8 @@ func registerHttp(apis []*mgrpb.APIReq) error { //nolint
 
 func reliablePublish(apis []*mgrpb.APIReq) {
 	for {
-		<-time.After(5 * time.Second)
-		publish(apis)
+		<-time.After(5 * time.Second) //nolint
+		_ = publish(apis)
 	}
 }
 
