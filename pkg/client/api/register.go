@@ -142,9 +142,12 @@ func Register(mux *runtime.ServeMux) error {
 			select {
 			case <-done:
 				return
-			case <-ticker.C:
+			case t := <-ticker.C:
 				gatewayRouters, _ := getGatewayRouters(serviceName)
+				fmt.Println("t: ", t)
+				logger.Sugar().Info("routers", gatewayRouters)
 				if len(gatewayRouters) > 0 {
+					logger.Sugar().Info("_______________")
 					ticker.Stop()
 					return
 				}
