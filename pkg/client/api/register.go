@@ -21,9 +21,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-func reliableRegister(apis []*mgrpb.APIReq) {
-	// Add PubSub Impl
-	if err := pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
+func publish(apis []*mgrpb.APIReq) {
+	return pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
 		req := &eventpb.RegisterAPIsRequest{
 			Info: apis,
 		}
@@ -35,13 +34,7 @@ func reliableRegister(apis []*mgrpb.APIReq) {
 			nil,
 			req,
 		)
-	}); err != nil {
-		logger.Sugar().Errorw(
-			"reliableRegister",
-			"APIs", apis,
-			"Error", err,
-		)
-	}
+	})
 }
 
 func muxAPIs(mux *runtime.ServeMux) []*mgrpb.APIReq {
@@ -130,47 +123,30 @@ func getGatewayRouters(name string) ([]*EntryPoint, error) {
 	return routers, nil
 }
 
-func Register(mux *runtime.ServeMux) error {
-	apis := muxAPIs(mux)
-
-	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
-
-	ticker := time.NewTicker(1 * time.Second)
-	done := make(chan bool)
-
-	flag := false
-
-	go func() {
-		for {
-			select {
-			case <-done:
-				return
-			case <-ticker.C:
-				if flag {
-					break
-				}
-				routers, _ := getGatewayRouters(serviceName)
-				if len(routers) > 0 {
-					flag = true
-					err := RegisterHttp(serviceName, apis)
-					if err != nil {
-						logger.Sugar().Errorf("error: ", err)
-					}
-				}
-			}
-		}
-	}()
-	time.Sleep(15 * time.Second) //nolint
-	ticker.Stop()
-	done <- true
-
-	return nil
+func Register(mux *runtime.ServeMux) {
+	go reliableRegister(mux)
 }
 
-func RegisterHttp(serviceName string, apis []*mgrpb.APIReq) error { //nolint
+func reliableRegister(mux *runtime.ServeMux) {
+	apis := muxAPIs(mux)
+	for {
+		<-time.After(5 * time.Duration)
+		if err := registerHttp(apis); err == nil {
+			break
+		}
+		logger.Sugar().Warnw("Register", "Error", err)
+	}
+}
+
+func registerHttp(apis []*mgrpb.APIReq) error { //nolint
+	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
 	gatewayRouters, err := getGatewayRouters(serviceName)
 	if err != nil {
 		return err
+	}
+
+	if len(gatewayRouters) == 0 {
+		return fmt.Errorf("invalid routers")
 	}
 
 	for _, router := range gatewayRouters {
@@ -196,12 +172,19 @@ func RegisterHttp(serviceName string, apis []*mgrpb.APIReq) error { //nolint
 			_api.Domains = append(_api.Domains, router.Domain())
 		}
 	}
-	go reliableRegister(apis)
 
+	go reliablePublish(apis)
 	return nil
+}
+
+func reliablePublish(apis []*mgrpb.APIReq) {
+	for {
+		<-time.After(5 * time.Second)
+		publish(apis)
+	}
 }
 
 func RegisterGRPC(server grpc.ServiceRegistrar) {
 	apis := grpcAPIs(server)
-	go reliableRegister(apis)
+	go reliablePublish(apis)
 }
