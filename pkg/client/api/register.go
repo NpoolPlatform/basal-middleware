@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 	"unsafe"
 
 	config "github.com/NpoolPlatform/go-service-framework/pkg/config"
@@ -133,13 +134,25 @@ func Register(mux *runtime.ServeMux) error {
 	apis := muxAPIs(mux)
 
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
-	logger.Sugar().Infow("Register", "ServiceName", serviceName, "State", "Start")
-	defer logger.Sugar().Infow("Register", "ServiceName", serviceName, "State", "End")
+
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+
+	for {
+		routers, err := getGatewayRouters(serviceName)
+		logger.Sugar().Infow("routers: ", routers)
+		if err != nil {
+			<-ticker.C
+			continue
+		}
+		break
+	}
 
 	gatewayRouters, err := getGatewayRouters(serviceName)
 	if err != nil {
 		return err
 	}
+
 	logger.Sugar().Infow("Register", "ServiceName", serviceName, "getGatewayRouters", gatewayRouters)
 
 	for _, router := range gatewayRouters {
@@ -155,11 +168,9 @@ func Register(mux *runtime.ServeMux) error {
 		exported := true
 		for _, _api := range apis {
 			if !strings.HasPrefix(*_api.Path, "/v1") {
-				logger.Sugar().Infow("Register", "Path", *_api.Path, "State", "Not v1 api")
 				continue
 			}
 			if !strings.HasPrefix(*_api.Path, routerPath) {
-				logger.Sugar().Infow("Register", "Path", *_api.Path, "State", "Not ingress api")
 				continue
 			}
 			_api.PathPrefix = &prefix
