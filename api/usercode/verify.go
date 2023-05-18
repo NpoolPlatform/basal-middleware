@@ -14,13 +14,16 @@ import (
 )
 
 func (s *Server) VerifyUserCode(ctx context.Context, in *npool.VerifyUserCodeRequest) (*npool.VerifyUserCodeResponse, error) {
+	accountType := in.GetAccountType().String()
+	usedFor := in.GetUsedFor().String()
+
 	handler, err := usercode1.NewHandler(ctx,
 		usercode1.WithAppID(&in.AppID),
 		usercode1.WithPrefix(&in.Prefix),
 		usercode1.WithAccount(&in.Account),
 		usercode1.WithCode(&in.Code),
-		usercode1.WithAccountType(&in.AccountType),
-		usercode1.WithUsedFor(&in.UsedFor),
+		usercode1.WithAccountType(&accountType),
+		usercode1.WithUsedFor(&usedFor),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

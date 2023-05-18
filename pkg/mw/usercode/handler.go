@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/google/uuid"
 )
 
@@ -12,8 +11,8 @@ type Handler struct {
 	Prefix      *string
 	AppID       *string
 	Account     *string
-	AccountType *basetypes.SignMethod
-	UsedFor     *basetypes.UsedFor
+	AccountType *string
+	UsedFor     *string
 	VCode       *string
 }
 
@@ -58,37 +57,21 @@ func WithAccount(account *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithAccountType(_type *basetypes.SignMethod) func(context.Context, *Handler) error {
+func WithAccountType(_type *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		switch *_type {
-		case basetypes.SignMethod_Email:
-		case basetypes.SignMethod_Mobile:
-		default:
-			return fmt.Errorf("AccountType is invalid")
+		if _type == nil {
+			return fmt.Errorf("account type is empty")
 		}
-
 		h.AccountType = _type
 		return nil
 	}
 }
 
-func WithUsedFor(usedFor *basetypes.UsedFor) func(context.Context, *Handler) error {
+func WithUsedFor(usedFor *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		switch *usedFor {
-		case basetypes.UsedFor_Signup:
-		case basetypes.UsedFor_Signin:
-		case basetypes.UsedFor_Update:
-		case basetypes.UsedFor_Contact:
-		case basetypes.UsedFor_SetWithdrawAddress:
-		case basetypes.UsedFor_Withdraw:
-		case basetypes.UsedFor_CreateInvitationCode:
-		case basetypes.UsedFor_SetCommission:
-		case basetypes.UsedFor_SetTransferTargetUser:
-		case basetypes.UsedFor_Transfer:
-		default:
+		if usedFor == nil {
 			return fmt.Errorf("UsedFor %v is invalid", *usedFor)
 		}
-
 		h.UsedFor = usedFor
 		return nil
 	}
