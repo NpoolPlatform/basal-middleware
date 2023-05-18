@@ -9,44 +9,61 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	mgrapi "github.com/NpoolPlatform/basal-manager/api/api"
-	mgrcli "github.com/NpoolPlatform/basal-manager/pkg/client/api"
-	mgrpb "github.com/NpoolPlatform/message/npool/basal/mgr/v1/api"
+	crud "github.com/NpoolPlatform/basal-middleware/pkg/crud/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 
-	api1 "github.com/NpoolPlatform/basal-middleware/pkg/api"
-
+	api1 "github.com/NpoolPlatform/basal-middleware/pkg/mw/api"
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
 )
 
 func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*npool.CreateAPIResponse, error) {
-	var err error
-
-	err = mgrapi.Validate(in.GetInfo())
+	req := in.GetInfo()
+	handler, err := api1.NewHandler(ctx,
+		api1.WithProtocol(req.Protocol),
+		api1.WithServiceName(req.ServiceName),
+		api1.WithMethod(req.Method),
+		api1.WithMethodName(req.MethodName),
+		api1.WithPath(req.Path),
+		api1.WithPathPrefix(req.PathPrefix),
+		api1.WithDomains(&req.Domains),
+		api1.WithDeprecated(req.Depracated),
+		api1.WithExported(req.Exported),
+	)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"CreateAPI",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.CreateAPIResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := mgrcli.GetAPIOnly(ctx, &mgrpb.Conds{
-		Protocol: &commonpb.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(in.GetInfo().GetProtocol()),
+	handler.Conds = &crud.Conds{
+		Protocol: &cruder.Cond{
+			Op:  cruder.EQ,
+			Val: req.Protocol.String(),
 		},
-		ServiceName: &commonpb.StringVal{
-			Op:    cruder.EQ,
-			Value: in.GetInfo().GetServiceName(),
+		ServiceName: &cruder.Cond{
+			Op:  cruder.EQ,
+			Val: *req.ServiceName,
 		},
-		Method: &commonpb.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(in.GetInfo().GetMethod()),
+		Method: &cruder.Cond{
+			Op:  cruder.EQ,
+			Val: req.Method.String(),
 		},
-		Path: &commonpb.StringVal{
-			Op:    cruder.EQ,
-			Value: in.GetInfo().GetPath(),
+		Path: &cruder.Cond{
+			Op:  cruder.EQ,
+			Val: *req.Path,
 		},
-	})
+	}
+
+	info, err := handler.GetAPIOnly(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"CreateAPI",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.CreateAPIResponse{}, status.Error(codes.Internal, err.Error())
 	}
 	if info != nil {
@@ -55,9 +72,13 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 		}, nil
 	}
 
-	info, err = mgrcli.CreateAPI(ctx, in.GetInfo())
+	info, err = handler.CreateAPI(ctx)
 	if err != nil {
-		logger.Sugar().Errorf("fail create api: %v", err.Error())
+		logger.Sugar().Errorw(
+			"CreateAPI",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.CreateAPIResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -73,12 +94,39 @@ func (s *Server) CreateAPIs(ctx context.Context, in *npool.CreateAPIsRequest) (*
 		return &npool.CreateAPIsResponse{}, status.Error(codes.InvalidArgument, "Infos is empty")
 	}
 
-	err = mgrapi.ValidateMany(in.GetInfos())
-	if err != nil {
-		return &npool.CreateAPIsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	for _, info := range in.GetInfos() {
+		_, err := api1.NewHandler(ctx,
+			api1.WithProtocol(info.Protocol),
+			api1.WithServiceName(info.ServiceName),
+			api1.WithMethod(info.Method),
+			api1.WithMethodName(info.MethodName),
+			api1.WithPath(info.Path),
+			api1.WithPathPrefix(info.PathPrefix),
+			api1.WithDomains(&info.Domains),
+			api1.WithDeprecated(info.Depracated),
+			api1.WithExported(info.Exported),
+		)
+		if err != nil {
+			logger.Sugar().Errorw(
+				"CreateAPIs",
+				"In", in,
+				"Error", err,
+			)
+			return &npool.CreateAPIsResponse{}, status.Error(codes.Internal, err.Error())
+		}
 	}
 
-	infos, err := api1.CreateAPIs(ctx, in.GetInfos())
+	handler, err := api1.NewHandler(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"CreateAPI",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.CreateAPIsResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	infos, err := handler.CreateAPIs(ctx, in.GetInfos())
 	if err != nil {
 		logger.Sugar().Errorf("fail create apis: %v", err)
 		return &npool.CreateAPIsResponse{}, status.Error(codes.Internal, err.Error())

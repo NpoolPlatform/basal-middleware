@@ -8,7 +8,6 @@ import (
 
 	redis2 "github.com/NpoolPlatform/go-service-framework/pkg/redis"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/usercode"
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -27,12 +26,7 @@ func key(c *npool.UserCode) string {
 		c.GetUsedFor())
 }
 
-func CreateUserCode(
-	ctx context.Context,
-	prefix, appID, account string,
-	accountType basetypes.SignMethod,
-	usedFor basetypes.UsedFor,
-) (*npool.UserCode, error) {
+func (h *Handler) CreateUserCode(ctx context.Context) (*npool.UserCode, error) {
 	cli, err := redis2.GetClient()
 	if err != nil {
 		return nil, fmt.Errorf("fail get redis client: %v", err)
@@ -43,24 +37,17 @@ func CreateUserCode(
 
 	vCode := generate(codeLen)
 	code := &npool.UserCode{
-		Prefix:      prefix,
-		AppID:       appID,
-		Account:     account,
-		AccountType: accountType,
-		UsedFor:     usedFor,
+		Prefix:      *h.Prefix,
+		AppID:       *h.AppID,
+		Account:     *h.Account,
+		AccountType: *h.AccountType,
+		UsedFor:     *h.UsedFor,
 		Code:        vCode,
 		NextAt:      uint32(time.Now().Add(time.Minute).Unix()),
 		ExpireAt:    uint32(time.Now().Add(expireMins * time.Minute).Unix()),
 	}
 
-	yes, err := nextable(
-		ctx,
-		prefix,
-		appID,
-		account,
-		accountType,
-		usedFor,
-	)
+	yes, err := h.nextable(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -84,12 +71,7 @@ func CreateUserCode(
 	return code, nil
 }
 
-func VerifyUserCode(
-	ctx context.Context,
-	prefix, appID, account, vCode string,
-	accountType basetypes.SignMethod,
-	usedFor basetypes.UsedFor,
-) error {
+func (h *Handler) VerifyUserCode(ctx context.Context) error {
 	cli, err := redis2.GetClient()
 	if err != nil {
 		return fmt.Errorf("fail get redis client: %v", err)
@@ -99,12 +81,12 @@ func VerifyUserCode(
 	defer cancel()
 
 	code := &npool.UserCode{
-		Prefix:      prefix,
-		AppID:       appID,
-		Account:     account,
-		AccountType: accountType,
-		UsedFor:     usedFor,
-		Code:        vCode,
+		Prefix:      *h.Prefix,
+		AppID:       *h.AppID,
+		Account:     *h.Account,
+		AccountType: *h.AccountType,
+		UsedFor:     *h.UsedFor,
+		Code:        *h.VCode,
 	}
 
 	val, err := cli.Get(ctx, key(code)).Result()
@@ -128,14 +110,7 @@ func VerifyUserCode(
 		return fmt.Errorf("code expired")
 	}
 
-	err = deleteUserCode(
-		ctx,
-		prefix,
-		appID,
-		account,
-		accountType,
-		usedFor,
-	)
+	err = h.deleteUserCode(ctx)
 	if err != nil {
 		return fmt.Errorf("fail delete code: %v", err)
 	}
@@ -143,11 +118,7 @@ func VerifyUserCode(
 	return nil
 }
 
-func nextable(ctx context.Context,
-	prefix, appID, account string,
-	accountType basetypes.SignMethod,
-	usedFor basetypes.UsedFor,
-) (bool, error) {
+func (h *Handler) nextable(ctx context.Context) (bool, error) {
 	cli, err := redis2.GetClient()
 	if err != nil {
 		return false, fmt.Errorf("fail get redis client: %v", err)
@@ -157,11 +128,11 @@ func nextable(ctx context.Context,
 	defer cancel()
 
 	code := &npool.UserCode{
-		Prefix:      prefix,
-		AppID:       appID,
-		Account:     account,
-		AccountType: accountType,
-		UsedFor:     usedFor,
+		Prefix:      *h.Prefix,
+		AppID:       *h.AppID,
+		Account:     *h.Account,
+		AccountType: *h.AccountType,
+		UsedFor:     *h.UsedFor,
 	}
 
 	val, err := cli.Get(ctx, key(code)).Result()
@@ -183,11 +154,7 @@ func nextable(ctx context.Context,
 	return true, nil
 }
 
-func deleteUserCode(ctx context.Context,
-	prefix, appID, account string,
-	accountType basetypes.SignMethod,
-	usedFor basetypes.UsedFor,
-) error {
+func (h *Handler) deleteUserCode(ctx context.Context) error {
 	cli, err := redis2.GetClient()
 	if err != nil {
 		return fmt.Errorf("fail get redis client: %v", err)
@@ -197,11 +164,11 @@ func deleteUserCode(ctx context.Context,
 	defer cancel()
 
 	code := &npool.UserCode{
-		Prefix:      prefix,
-		AppID:       appID,
-		Account:     account,
-		AccountType: accountType,
-		UsedFor:     usedFor,
+		Prefix:      *h.Prefix,
+		AppID:       *h.AppID,
+		Account:     *h.Account,
+		AccountType: *h.AccountType,
+		UsedFor:     *h.UsedFor,
 	}
 
 	err = cli.Del(ctx, key(code)).Err()
