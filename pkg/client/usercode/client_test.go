@@ -34,7 +34,7 @@ var (
 		AppID:       uuid.NewString(),
 		Account:     uuid.NewString(),
 		AccountType: "Email",
-		UsedFor:     "SignIn",
+		UsedFor:     "Signin",
 	}
 )
 
