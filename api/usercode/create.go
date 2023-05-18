@@ -13,15 +13,12 @@ import (
 )
 
 func (s *Server) CreateUserCode(ctx context.Context, in *npool.CreateUserCodeRequest) (*npool.CreateUserCodeResponse, error) {
-	accountType := in.GetAccountType().String()
-	usedFor := in.GetUsedFor().String()
-
 	handler, err := usercode1.NewHandler(ctx,
 		usercode1.WithAppID(&in.AppID),
 		usercode1.WithPrefix(&in.Prefix),
 		usercode1.WithAccount(&in.Account),
-		usercode1.WithAccountType(&accountType),
-		usercode1.WithUsedFor(&usedFor),
+		usercode1.WithAccountType(&in.AccountType),
+		usercode1.WithUsedFor(&in.UsedFor),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -33,8 +33,8 @@ var (
 		Prefix:      uuid.NewString(),
 		AppID:       uuid.NewString(),
 		Account:     uuid.NewString(),
-		AccountType: "Email",
-		UsedFor:     "Signin",
+		AccountType: basetypes.SignMethod_Email,
+		UsedFor:     basetypes.UsedFor_Signin,
 	}
 )
 
@@ -44,8 +44,8 @@ func createUserCode(t *testing.T) {
 			Prefix:      ret.Prefix,
 			AppID:       ret.AppID,
 			Account:     ret.Account,
-			AccountType: basetypes.SignMethod_Email,
-			UsedFor:     basetypes.UsedFor_Signin,
+			AccountType: ret.AccountType,
+			UsedFor:     ret.UsedFor,
 		}
 	)
 	info, err := CreateUserCode(context.Background(), req)
@@ -63,8 +63,8 @@ func verifyUserCode(t *testing.T) {
 			Prefix:      ret.Prefix,
 			AppID:       ret.AppID,
 			Account:     ret.Account,
-			AccountType: basetypes.SignMethod_Email,
-			UsedFor:     basetypes.UsedFor_Signin,
+			AccountType: ret.AccountType,
+			UsedFor:     ret.UsedFor,
 			Code:        ret.Code,
 		}
 	)
