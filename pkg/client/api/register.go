@@ -112,8 +112,6 @@ func getGatewayRouters(name string) ([]*EntryPoint, error) {
 			"http://traefik.kube-system.svc.cluster.local:38080/api/http/routers?provider=kubernetes&page=%v&per_page=%v&search=%v",
 			page, perPage, domain[0],
 		)
-
-		logger.Sugar().Info("Url: ", url)
 		// internal already set timeout
 		resp, err := resty.New().R().Get(url)
 		if err != nil {
