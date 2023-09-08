@@ -145,7 +145,6 @@ func reliableRegister(mux *runtime.ServeMux) {
 		if err = registerHttp(apis); err == nil {
 			break
 		}
-		logger.Sugar().Warnw("Register", "Error", err)
 	}
 }
 
