@@ -11,10 +11,11 @@ import (
 var (
 	// ApisColumns holds the columns for the "apis" table.
 	ApisColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "protocol", Type: field.TypeString, Nullable: true, Default: "DefaultProtocol"},
 		{Name: "service_name", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "method", Type: field.TypeString, Nullable: true, Default: "DefaultMethod"},
@@ -33,10 +34,11 @@ var (
 	}
 	// PubsubMessagesColumns holds the columns for the "pubsub_messages" table.
 	PubsubMessagesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "message_id", Type: field.TypeString, Nullable: true, Default: "DefaultMsgID"},
 		{Name: "state", Type: field.TypeString, Nullable: true, Default: "DefaultMsgState"},
 		{Name: "resp_to_id", Type: field.TypeUUID, Nullable: true},
@@ -52,12 +54,12 @@ var (
 			{
 				Name:    "pubsubmessage_state_resp_to_id",
 				Unique:  false,
-				Columns: []*schema.Column{PubsubMessagesColumns[5], PubsubMessagesColumns[6]},
+				Columns: []*schema.Column{PubsubMessagesColumns[6], PubsubMessagesColumns[7]},
 			},
 			{
 				Name:    "pubsubmessage_state_undo_id",
 				Unique:  false,
-				Columns: []*schema.Column{PubsubMessagesColumns[5], PubsubMessagesColumns[7]},
+				Columns: []*schema.Column{PubsubMessagesColumns[6], PubsubMessagesColumns[8]},
 			},
 		},
 	}

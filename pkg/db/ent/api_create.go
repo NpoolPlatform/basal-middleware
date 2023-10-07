@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,6 +60,20 @@ func (ac *APICreate) SetDeletedAt(u uint32) *APICreate {
 func (ac *APICreate) SetNillableDeletedAt(u *uint32) *APICreate {
 	if u != nil {
 		ac.SetDeletedAt(*u)
+	}
+	return ac
+}
+
+// SetEntID sets the "ent_id" field.
+func (ac *APICreate) SetEntID(u uuid.UUID) *APICreate {
+	ac.mutation.SetEntID(u)
+	return ac
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (ac *APICreate) SetNillableEntID(u *uuid.UUID) *APICreate {
+	if u != nil {
+		ac.SetEntID(*u)
 	}
 	return ac
 }
@@ -184,16 +197,8 @@ func (ac *APICreate) SetNillableDepracated(b *bool) *APICreate {
 }
 
 // SetID sets the "id" field.
-func (ac *APICreate) SetID(u uuid.UUID) *APICreate {
+func (ac *APICreate) SetID(u uint32) *APICreate {
 	ac.mutation.SetID(u)
-	return ac
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (ac *APICreate) SetNillableID(u *uuid.UUID) *APICreate {
-	if u != nil {
-		ac.SetID(*u)
-	}
 	return ac
 }
 
@@ -297,6 +302,13 @@ func (ac *APICreate) defaults() error {
 		v := api.DefaultDeletedAt()
 		ac.mutation.SetDeletedAt(v)
 	}
+	if _, ok := ac.mutation.EntID(); !ok {
+		if api.DefaultEntID == nil {
+			return fmt.Errorf("ent: uninitialized api.DefaultEntID (forgotten import ent/runtime?)")
+		}
+		v := api.DefaultEntID()
+		ac.mutation.SetEntID(v)
+	}
 	if _, ok := ac.mutation.Protocol(); !ok {
 		v := api.DefaultProtocol
 		ac.mutation.SetProtocol(v)
@@ -333,13 +345,6 @@ func (ac *APICreate) defaults() error {
 		v := api.DefaultDepracated
 		ac.mutation.SetDepracated(v)
 	}
-	if _, ok := ac.mutation.ID(); !ok {
-		if api.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized api.DefaultID (forgotten import ent/runtime?)")
-		}
-		v := api.DefaultID()
-		ac.mutation.SetID(v)
-	}
 	return nil
 }
 
@@ -354,6 +359,9 @@ func (ac *APICreate) check() error {
 	if _, ok := ac.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "API.deleted_at"`)}
 	}
+	if _, ok := ac.mutation.EntID(); !ok {
+		return &ValidationError{Name: "ent_id", err: errors.New(`ent: missing required field "API.ent_id"`)}
+	}
 	return nil
 }
 
@@ -365,12 +373,9 @@ func (ac *APICreate) sqlSave(ctx context.Context) (*API, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint32(id)
 	}
 	return _node, nil
 }
@@ -381,7 +386,7 @@ func (ac *APICreate) createSpec() (*API, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: api.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: api.FieldID,
 			},
 		}
@@ -389,7 +394,7 @@ func (ac *APICreate) createSpec() (*API, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = ac.conflict
 	if id, ok := ac.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -414,6 +419,14 @@ func (ac *APICreate) createSpec() (*API, *sqlgraph.CreateSpec) {
 			Column: api.FieldDeletedAt,
 		})
 		_node.DeletedAt = value
+	}
+	if value, ok := ac.mutation.EntID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: api.FieldEntID,
+		})
+		_node.EntID = value
 	}
 	if value, ok := ac.mutation.Protocol(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -592,6 +605,18 @@ func (u *APIUpsert) UpdateDeletedAt() *APIUpsert {
 // AddDeletedAt adds v to the "deleted_at" field.
 func (u *APIUpsert) AddDeletedAt(v uint32) *APIUpsert {
 	u.Add(api.FieldDeletedAt, v)
+	return u
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *APIUpsert) SetEntID(v uuid.UUID) *APIUpsert {
+	u.Set(api.FieldEntID, v)
+	return u
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *APIUpsert) UpdateEntID() *APIUpsert {
+	u.SetExcluded(api.FieldEntID)
 	return u
 }
 
@@ -870,6 +895,20 @@ func (u *APIUpsertOne) UpdateDeletedAt() *APIUpsertOne {
 	})
 }
 
+// SetEntID sets the "ent_id" field.
+func (u *APIUpsertOne) SetEntID(v uuid.UUID) *APIUpsertOne {
+	return u.Update(func(s *APIUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *APIUpsertOne) UpdateEntID() *APIUpsertOne {
+	return u.Update(func(s *APIUpsert) {
+		s.UpdateEntID()
+	})
+}
+
 // SetProtocol sets the "protocol" field.
 func (u *APIUpsertOne) SetProtocol(v string) *APIUpsertOne {
 	return u.Update(func(s *APIUpsert) {
@@ -1075,12 +1114,7 @@ func (u *APIUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *APIUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
-	if u.create.driver.Dialect() == dialect.MySQL {
-		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
-		// fields from the database since MySQL does not support the RETURNING clause.
-		return id, errors.New("ent: APIUpsertOne.ID is not supported by MySQL driver. Use APIUpsertOne.Exec instead")
-	}
+func (u *APIUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1089,7 +1123,7 @@ func (u *APIUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *APIUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *APIUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1140,6 +1174,10 @@ func (acb *APICreateBulk) Save(ctx context.Context) ([]*API, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = uint32(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1335,6 +1373,20 @@ func (u *APIUpsertBulk) AddDeletedAt(v uint32) *APIUpsertBulk {
 func (u *APIUpsertBulk) UpdateDeletedAt() *APIUpsertBulk {
 	return u.Update(func(s *APIUpsert) {
 		s.UpdateDeletedAt()
+	})
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *APIUpsertBulk) SetEntID(v uuid.UUID) *APIUpsertBulk {
+	return u.Update(func(s *APIUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *APIUpsertBulk) UpdateEntID() *APIUpsertBulk {
+	return u.Update(func(s *APIUpsert) {
+		s.UpdateEntID()
 	})
 }
 

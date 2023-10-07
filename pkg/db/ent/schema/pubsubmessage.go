@@ -5,7 +5,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/mixin"
-	msgpb "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	crudermixin "github.com/NpoolPlatform/libent-cruder/pkg/mixin"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/google/uuid"
 )
 
@@ -17,6 +18,7 @@ type PubsubMessage struct {
 func (PubsubMessage) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.TimeMixin{},
+		crudermixin.AutoIDMixin{},
 	}
 }
 
@@ -24,16 +26,13 @@ func (PubsubMessage) Mixin() []ent.Mixin {
 func (PubsubMessage) Fields() []ent.Field {
 	return []ent.Field{
 		field.
-			UUID("id", uuid.UUID{}).
-			Unique(),
-		field.
 			String("message_id").
 			Optional().
-			Default(msgpb.MsgID_DefaultMsgID.String()),
+			Default(basetypes.MsgID_DefaultMsgID.String()),
 		field.
 			String("state").
 			Optional().
-			Default(msgpb.MsgState_DefaultMsgState.String()),
+			Default(basetypes.MsgState_DefaultMsgState.String()),
 		field.
 			UUID("resp_to_id", uuid.UUID{}).
 			Optional().

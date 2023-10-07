@@ -84,6 +84,20 @@ func (pmu *PubsubMessageUpdate) AddDeletedAt(u int32) *PubsubMessageUpdate {
 	return pmu
 }
 
+// SetEntID sets the "ent_id" field.
+func (pmu *PubsubMessageUpdate) SetEntID(u uuid.UUID) *PubsubMessageUpdate {
+	pmu.mutation.SetEntID(u)
+	return pmu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (pmu *PubsubMessageUpdate) SetNillableEntID(u *uuid.UUID) *PubsubMessageUpdate {
+	if u != nil {
+		pmu.SetEntID(*u)
+	}
+	return pmu
+}
+
 // SetMessageID sets the "message_id" field.
 func (pmu *PubsubMessageUpdate) SetMessageID(s string) *PubsubMessageUpdate {
 	pmu.mutation.SetMessageID(s)
@@ -270,7 +284,7 @@ func (pmu *PubsubMessageUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Table:   pubsubmessage.Table,
 			Columns: pubsubmessage.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: pubsubmessage.FieldID,
 			},
 		},
@@ -322,6 +336,13 @@ func (pmu *PubsubMessageUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: pubsubmessage.FieldDeletedAt,
+		})
+	}
+	if value, ok := pmu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: pubsubmessage.FieldEntID,
 		})
 	}
 	if value, ok := pmu.mutation.MessageID(); ok {
@@ -462,6 +483,20 @@ func (pmuo *PubsubMessageUpdateOne) SetNillableDeletedAt(u *uint32) *PubsubMessa
 // AddDeletedAt adds u to the "deleted_at" field.
 func (pmuo *PubsubMessageUpdateOne) AddDeletedAt(u int32) *PubsubMessageUpdateOne {
 	pmuo.mutation.AddDeletedAt(u)
+	return pmuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (pmuo *PubsubMessageUpdateOne) SetEntID(u uuid.UUID) *PubsubMessageUpdateOne {
+	pmuo.mutation.SetEntID(u)
+	return pmuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (pmuo *PubsubMessageUpdateOne) SetNillableEntID(u *uuid.UUID) *PubsubMessageUpdateOne {
+	if u != nil {
+		pmuo.SetEntID(*u)
+	}
 	return pmuo
 }
 
@@ -664,7 +699,7 @@ func (pmuo *PubsubMessageUpdateOne) sqlSave(ctx context.Context) (_node *PubsubM
 			Table:   pubsubmessage.Table,
 			Columns: pubsubmessage.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: pubsubmessage.FieldID,
 			},
 		},
@@ -733,6 +768,13 @@ func (pmuo *PubsubMessageUpdateOne) sqlSave(ctx context.Context) (_node *PubsubM
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: pubsubmessage.FieldDeletedAt,
+		})
+	}
+	if value, ok := pmuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: pubsubmessage.FieldEntID,
 		})
 	}
 	if value, ok := pmuo.mutation.MessageID(); ok {

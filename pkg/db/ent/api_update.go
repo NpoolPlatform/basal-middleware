@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // APIUpdate is the builder for updating API entities.
@@ -80,6 +81,20 @@ func (au *APIUpdate) SetNillableDeletedAt(u *uint32) *APIUpdate {
 // AddDeletedAt adds u to the "deleted_at" field.
 func (au *APIUpdate) AddDeletedAt(u int32) *APIUpdate {
 	au.mutation.AddDeletedAt(u)
+	return au
+}
+
+// SetEntID sets the "ent_id" field.
+func (au *APIUpdate) SetEntID(u uuid.UUID) *APIUpdate {
+	au.mutation.SetEntID(u)
+	return au
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (au *APIUpdate) SetNillableEntID(u *uuid.UUID) *APIUpdate {
+	if u != nil {
+		au.SetEntID(*u)
+	}
 	return au
 }
 
@@ -341,7 +356,7 @@ func (au *APIUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   api.Table,
 			Columns: api.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: api.FieldID,
 			},
 		},
@@ -393,6 +408,13 @@ func (au *APIUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: api.FieldDeletedAt,
+		})
+	}
+	if value, ok := au.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: api.FieldEntID,
 		})
 	}
 	if value, ok := au.mutation.Protocol(); ok {
@@ -585,6 +607,20 @@ func (auo *APIUpdateOne) SetNillableDeletedAt(u *uint32) *APIUpdateOne {
 // AddDeletedAt adds u to the "deleted_at" field.
 func (auo *APIUpdateOne) AddDeletedAt(u int32) *APIUpdateOne {
 	auo.mutation.AddDeletedAt(u)
+	return auo
+}
+
+// SetEntID sets the "ent_id" field.
+func (auo *APIUpdateOne) SetEntID(u uuid.UUID) *APIUpdateOne {
+	auo.mutation.SetEntID(u)
+	return auo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (auo *APIUpdateOne) SetNillableEntID(u *uuid.UUID) *APIUpdateOne {
+	if u != nil {
+		auo.SetEntID(*u)
+	}
 	return auo
 }
 
@@ -859,7 +895,7 @@ func (auo *APIUpdateOne) sqlSave(ctx context.Context) (_node *API, err error) {
 			Table:   api.Table,
 			Columns: api.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: api.FieldID,
 			},
 		},
@@ -928,6 +964,13 @@ func (auo *APIUpdateOne) sqlSave(ctx context.Context) (_node *API, err error) {
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: api.FieldDeletedAt,
+		})
+	}
+	if value, ok := auo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: api.FieldEntID,
 		})
 	}
 	if value, ok := auo.mutation.Protocol(); ok {
