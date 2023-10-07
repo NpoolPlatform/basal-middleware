@@ -250,23 +250,23 @@ func (au *APIUpdate) ClearDomains() *APIUpdate {
 	return au
 }
 
-// SetDepracated sets the "depracated" field.
-func (au *APIUpdate) SetDepracated(b bool) *APIUpdate {
-	au.mutation.SetDepracated(b)
+// SetDeprecated sets the "deprecated" field.
+func (au *APIUpdate) SetDeprecated(b bool) *APIUpdate {
+	au.mutation.SetDeprecated(b)
 	return au
 }
 
-// SetNillableDepracated sets the "depracated" field if the given value is not nil.
-func (au *APIUpdate) SetNillableDepracated(b *bool) *APIUpdate {
+// SetNillableDeprecated sets the "deprecated" field if the given value is not nil.
+func (au *APIUpdate) SetNillableDeprecated(b *bool) *APIUpdate {
 	if b != nil {
-		au.SetDepracated(*b)
+		au.SetDeprecated(*b)
 	}
 	return au
 }
 
-// ClearDepracated clears the value of the "depracated" field.
-func (au *APIUpdate) ClearDepracated() *APIUpdate {
-	au.mutation.ClearDepracated()
+// ClearDeprecated clears the value of the "deprecated" field.
+func (au *APIUpdate) ClearDeprecated() *APIUpdate {
+	au.mutation.ClearDeprecated()
 	return au
 }
 
@@ -521,17 +521,17 @@ func (au *APIUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: api.FieldDomains,
 		})
 	}
-	if value, ok := au.mutation.Depracated(); ok {
+	if value, ok := au.mutation.Deprecated(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: api.FieldDepracated,
+			Column: api.FieldDeprecated,
 		})
 	}
-	if au.mutation.DepracatedCleared() {
+	if au.mutation.DeprecatedCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
-			Column: api.FieldDepracated,
+			Column: api.FieldDeprecated,
 		})
 	}
 	_spec.Modifiers = au.modifiers
@@ -776,23 +776,23 @@ func (auo *APIUpdateOne) ClearDomains() *APIUpdateOne {
 	return auo
 }
 
-// SetDepracated sets the "depracated" field.
-func (auo *APIUpdateOne) SetDepracated(b bool) *APIUpdateOne {
-	auo.mutation.SetDepracated(b)
+// SetDeprecated sets the "deprecated" field.
+func (auo *APIUpdateOne) SetDeprecated(b bool) *APIUpdateOne {
+	auo.mutation.SetDeprecated(b)
 	return auo
 }
 
-// SetNillableDepracated sets the "depracated" field if the given value is not nil.
-func (auo *APIUpdateOne) SetNillableDepracated(b *bool) *APIUpdateOne {
+// SetNillableDeprecated sets the "deprecated" field if the given value is not nil.
+func (auo *APIUpdateOne) SetNillableDeprecated(b *bool) *APIUpdateOne {
 	if b != nil {
-		auo.SetDepracated(*b)
+		auo.SetDeprecated(*b)
 	}
 	return auo
 }
 
-// ClearDepracated clears the value of the "depracated" field.
-func (auo *APIUpdateOne) ClearDepracated() *APIUpdateOne {
-	auo.mutation.ClearDepracated()
+// ClearDeprecated clears the value of the "deprecated" field.
+func (auo *APIUpdateOne) ClearDeprecated() *APIUpdateOne {
+	auo.mutation.ClearDeprecated()
 	return auo
 }
 
@@ -1077,17 +1077,17 @@ func (auo *APIUpdateOne) sqlSave(ctx context.Context) (_node *API, err error) {
 			Column: api.FieldDomains,
 		})
 	}
-	if value, ok := auo.mutation.Depracated(); ok {
+	if value, ok := auo.mutation.Deprecated(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: api.FieldDepracated,
+			Column: api.FieldDeprecated,
 		})
 	}
-	if auo.mutation.DepracatedCleared() {
+	if auo.mutation.DeprecatedCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
-			Column: api.FieldDepracated,
+			Column: api.FieldDeprecated,
 		})
 	}
 	_spec.Modifiers = auo.modifiers

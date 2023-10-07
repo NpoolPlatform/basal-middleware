@@ -23,11 +23,6 @@ func Apply(ctx context.Context, req interface{}) error {
 		return fmt.Errorf("invalid request")
 	}
 
-	type APIHandler struct {
-		api1.Handler
-	}
-	handler := &APIHandler{}
-
 	if len(apis) == 0 {
 		return nil
 	}
@@ -40,15 +35,21 @@ func Apply(ctx context.Context, req interface{}) error {
 	if err != nil {
 		return err
 	}
+	defer func() {
+		_ = Unlock(_key, protocol.String())
+	}()
 
-	_, err = handler.CreateAPIs(ctx, apis)
+	handler, err := api1.NewHandler(
+		ctx,
+		api1.WithReqs(apis),
+	)
+	if err != nil {
+		return err
+	}
+	_, err = handler.CreateAPIs(ctx)
 	if err != nil {
 		return err
 	}
 
-	err = Unlock(_key, protocol.String())
-	if err != nil {
-		return err
-	}
 	return nil
 }

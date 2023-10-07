@@ -64,7 +64,7 @@ func (API) Fields() []ent.Field {
 			Optional().
 			Default([]string{}),
 		field.
-			Bool("depracated").
+			Bool("deprecated").
 			Optional().
 			Default(false),
 	}

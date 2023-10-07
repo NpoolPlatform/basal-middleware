@@ -182,16 +182,16 @@ func (ac *APICreate) SetDomains(s []string) *APICreate {
 	return ac
 }
 
-// SetDepracated sets the "depracated" field.
-func (ac *APICreate) SetDepracated(b bool) *APICreate {
-	ac.mutation.SetDepracated(b)
+// SetDeprecated sets the "deprecated" field.
+func (ac *APICreate) SetDeprecated(b bool) *APICreate {
+	ac.mutation.SetDeprecated(b)
 	return ac
 }
 
-// SetNillableDepracated sets the "depracated" field if the given value is not nil.
-func (ac *APICreate) SetNillableDepracated(b *bool) *APICreate {
+// SetNillableDeprecated sets the "deprecated" field if the given value is not nil.
+func (ac *APICreate) SetNillableDeprecated(b *bool) *APICreate {
 	if b != nil {
-		ac.SetDepracated(*b)
+		ac.SetDeprecated(*b)
 	}
 	return ac
 }
@@ -341,9 +341,9 @@ func (ac *APICreate) defaults() error {
 		v := api.DefaultDomains
 		ac.mutation.SetDomains(v)
 	}
-	if _, ok := ac.mutation.Depracated(); !ok {
-		v := api.DefaultDepracated
-		ac.mutation.SetDepracated(v)
+	if _, ok := ac.mutation.Deprecated(); !ok {
+		v := api.DefaultDeprecated
+		ac.mutation.SetDeprecated(v)
 	}
 	return nil
 }
@@ -492,13 +492,13 @@ func (ac *APICreate) createSpec() (*API, *sqlgraph.CreateSpec) {
 		})
 		_node.Domains = value
 	}
-	if value, ok := ac.mutation.Depracated(); ok {
+	if value, ok := ac.mutation.Deprecated(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: api.FieldDepracated,
+			Column: api.FieldDeprecated,
 		})
-		_node.Depracated = value
+		_node.Deprecated = value
 	}
 	return _node, _spec
 }
@@ -764,21 +764,21 @@ func (u *APIUpsert) ClearDomains() *APIUpsert {
 	return u
 }
 
-// SetDepracated sets the "depracated" field.
-func (u *APIUpsert) SetDepracated(v bool) *APIUpsert {
-	u.Set(api.FieldDepracated, v)
+// SetDeprecated sets the "deprecated" field.
+func (u *APIUpsert) SetDeprecated(v bool) *APIUpsert {
+	u.Set(api.FieldDeprecated, v)
 	return u
 }
 
-// UpdateDepracated sets the "depracated" field to the value that was provided on create.
-func (u *APIUpsert) UpdateDepracated() *APIUpsert {
-	u.SetExcluded(api.FieldDepracated)
+// UpdateDeprecated sets the "deprecated" field to the value that was provided on create.
+func (u *APIUpsert) UpdateDeprecated() *APIUpsert {
+	u.SetExcluded(api.FieldDeprecated)
 	return u
 }
 
-// ClearDepracated clears the value of the "depracated" field.
-func (u *APIUpsert) ClearDepracated() *APIUpsert {
-	u.SetNull(api.FieldDepracated)
+// ClearDeprecated clears the value of the "deprecated" field.
+func (u *APIUpsert) ClearDeprecated() *APIUpsert {
+	u.SetNull(api.FieldDeprecated)
 	return u
 }
 
@@ -1077,24 +1077,24 @@ func (u *APIUpsertOne) ClearDomains() *APIUpsertOne {
 	})
 }
 
-// SetDepracated sets the "depracated" field.
-func (u *APIUpsertOne) SetDepracated(v bool) *APIUpsertOne {
+// SetDeprecated sets the "deprecated" field.
+func (u *APIUpsertOne) SetDeprecated(v bool) *APIUpsertOne {
 	return u.Update(func(s *APIUpsert) {
-		s.SetDepracated(v)
+		s.SetDeprecated(v)
 	})
 }
 
-// UpdateDepracated sets the "depracated" field to the value that was provided on create.
-func (u *APIUpsertOne) UpdateDepracated() *APIUpsertOne {
+// UpdateDeprecated sets the "deprecated" field to the value that was provided on create.
+func (u *APIUpsertOne) UpdateDeprecated() *APIUpsertOne {
 	return u.Update(func(s *APIUpsert) {
-		s.UpdateDepracated()
+		s.UpdateDeprecated()
 	})
 }
 
-// ClearDepracated clears the value of the "depracated" field.
-func (u *APIUpsertOne) ClearDepracated() *APIUpsertOne {
+// ClearDeprecated clears the value of the "deprecated" field.
+func (u *APIUpsertOne) ClearDeprecated() *APIUpsertOne {
 	return u.Update(func(s *APIUpsert) {
-		s.ClearDepracated()
+		s.ClearDeprecated()
 	})
 }
 
@@ -1558,24 +1558,24 @@ func (u *APIUpsertBulk) ClearDomains() *APIUpsertBulk {
 	})
 }
 
-// SetDepracated sets the "depracated" field.
-func (u *APIUpsertBulk) SetDepracated(v bool) *APIUpsertBulk {
+// SetDeprecated sets the "deprecated" field.
+func (u *APIUpsertBulk) SetDeprecated(v bool) *APIUpsertBulk {
 	return u.Update(func(s *APIUpsert) {
-		s.SetDepracated(v)
+		s.SetDeprecated(v)
 	})
 }
 
-// UpdateDepracated sets the "depracated" field to the value that was provided on create.
-func (u *APIUpsertBulk) UpdateDepracated() *APIUpsertBulk {
+// UpdateDeprecated sets the "deprecated" field to the value that was provided on create.
+func (u *APIUpsertBulk) UpdateDeprecated() *APIUpsertBulk {
 	return u.Update(func(s *APIUpsert) {
-		s.UpdateDepracated()
+		s.UpdateDeprecated()
 	})
 }
 
-// ClearDepracated clears the value of the "depracated" field.
-func (u *APIUpsertBulk) ClearDepracated() *APIUpsertBulk {
+// ClearDeprecated clears the value of the "deprecated" field.
+func (u *APIUpsertBulk) ClearDeprecated() *APIUpsertBulk {
 	return u.Update(func(s *APIUpsert) {
-		s.ClearDepracated()
+		s.ClearDeprecated()
 	})
 }
 

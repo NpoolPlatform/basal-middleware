@@ -5,7 +5,6 @@ import (
 
 	"github.com/NpoolPlatform/basal-middleware/api"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db"
-	"github.com/NpoolPlatform/basal-middleware/pkg/migrator"
 	"github.com/NpoolPlatform/basal-middleware/pkg/pubsub"
 	"github.com/NpoolPlatform/go-service-framework/pkg/action"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -15,8 +14,6 @@ import (
 
 	"google.golang.org/grpc"
 )
-
-// const MsgInterval = 3 * time.Second
 
 var runCmd = &cli.Command{
 	Name:    "run",
@@ -34,9 +31,6 @@ var runCmd = &cli.Command{
 }
 
 func run(ctx context.Context) error {
-	if err := migrator.Migrate(ctx); err != nil {
-		return err
-	}
 	if err := db.Init(); err != nil {
 		return err
 	}

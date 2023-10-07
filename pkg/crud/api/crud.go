@@ -21,7 +21,7 @@ type Req struct {
 	Exported    *bool
 	PathPrefix  *string
 	Domains     *[]string
-	Depracated  *bool
+	Deprecated  *bool
 	DeletedAt   *uint32
 }
 
@@ -53,8 +53,8 @@ func CreateSet(c *ent.APICreate, req *Req) *ent.APICreate {
 	if req.Exported != nil {
 		c.SetExported(*req.Exported)
 	}
-	if req.Depracated != nil {
-		c.SetDepracated(*req.Depracated)
+	if req.Deprecated != nil {
+		c.SetDeprecated(*req.Deprecated)
 	}
 	return c
 }
@@ -63,8 +63,8 @@ func UpdateSet(u *ent.APIUpdateOne, req *Req) *ent.APIUpdateOne {
 	if req.Exported != nil {
 		u.SetExported(*req.Exported)
 	}
-	if req.Depracated != nil {
-		u.SetDepracated(*req.Depracated)
+	if req.Deprecated != nil {
+		u.SetDeprecated(*req.Deprecated)
 	}
 	if req.DeletedAt != nil {
 		u.SetDeletedAt(*req.DeletedAt)
@@ -79,7 +79,7 @@ type Conds struct {
 	Method      *cruder.Cond
 	Path        *cruder.Cond
 	Exported    *cruder.Cond
-	Depracated  *cruder.Cond
+	Deprecated  *cruder.Cond
 	EntIDs      *cruder.Cond
 }
 
@@ -156,14 +156,14 @@ func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) { //nol
 			return nil, fmt.Errorf("invalid exported field")
 		}
 	}
-	if conds.Depracated != nil {
-		deprecated, ok := conds.Depracated.Val.(bool)
+	if conds.Deprecated != nil {
+		deprecated, ok := conds.Deprecated.Val.(bool)
 		if !ok {
 			return nil, fmt.Errorf("invalid deprecated")
 		}
-		switch conds.Depracated.Op {
+		switch conds.Deprecated.Op {
 		case cruder.EQ:
-			q.Where(api.Depracated(deprecated))
+			q.Where(api.Deprecated(deprecated))
 		default:
 			return nil, fmt.Errorf("invalid deprecated field")
 		}

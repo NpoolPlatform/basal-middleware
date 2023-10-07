@@ -38,7 +38,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			api.FieldExported:    {Type: field.TypeBool, Column: api.FieldExported},
 			api.FieldPathPrefix:  {Type: field.TypeString, Column: api.FieldPathPrefix},
 			api.FieldDomains:     {Type: field.TypeJSON, Column: api.FieldDomains},
-			api.FieldDepracated:  {Type: field.TypeBool, Column: api.FieldDepracated},
+			api.FieldDeprecated:  {Type: field.TypeBool, Column: api.FieldDeprecated},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -172,9 +172,9 @@ func (f *APIFilter) WhereDomains(p entql.BytesP) {
 	f.Where(p.Field(api.FieldDomains))
 }
 
-// WhereDepracated applies the entql bool predicate on the depracated field.
-func (f *APIFilter) WhereDepracated(p entql.BoolP) {
-	f.Where(p.Field(api.FieldDepracated))
+// WhereDeprecated applies the entql bool predicate on the deprecated field.
+func (f *APIFilter) WhereDeprecated(p entql.BoolP) {
+	f.Where(p.Field(api.FieldDeprecated))
 }
 
 // addPredicate implements the predicateAdder interface.

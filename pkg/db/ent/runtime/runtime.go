@@ -84,10 +84,10 @@ func init() {
 	apiDescDomains := apiFields[7].Descriptor()
 	// api.DefaultDomains holds the default value on creation for the domains field.
 	api.DefaultDomains = apiDescDomains.Default.([]string)
-	// apiDescDepracated is the schema descriptor for depracated field.
-	apiDescDepracated := apiFields[8].Descriptor()
-	// api.DefaultDepracated holds the default value on creation for the depracated field.
-	api.DefaultDepracated = apiDescDepracated.Default.(bool)
+	// apiDescDeprecated is the schema descriptor for deprecated field.
+	apiDescDeprecated := apiFields[8].Descriptor()
+	// api.DefaultDeprecated holds the default value on creation for the deprecated field.
+	api.DefaultDeprecated = apiDescDeprecated.Default.(bool)
 	pubsubmessageMixin := schema.PubsubMessage{}.Mixin()
 	pubsubmessage.Policy = privacy.NewPolicies(pubsubmessageMixin[0], schema.PubsubMessage{})
 	pubsubmessage.Hooks[0] = func(next ent.Mutator) ent.Mutator {

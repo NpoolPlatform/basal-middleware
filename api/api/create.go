@@ -27,7 +27,7 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 		api1.WithPath(req.Path, true),
 		api1.WithPathPrefix(req.PathPrefix, true),
 		api1.WithDomains(&req.Domains, true),
-		api1.WithDeprecated(req.Depracated, true),
+		api1.WithDeprecated(req.Deprecated, true),
 		api1.WithExported(req.Exported, true),
 	)
 	if err != nil {
@@ -80,12 +80,14 @@ func (s *Server) CreateAPIs(ctx context.Context, in *npool.CreateAPIsRequest) (*
 		logger.Sugar().Errorw(
 			"CreateAPIs",
 			"In", in,
-			"Error", err,
 		)
 		return &npool.CreateAPIsResponse{}, status.Error(codes.InvalidArgument, "Infos is empty")
 	}
 
-	handler, err := api1.NewHandler(ctx)
+	handler, err := api1.NewHandler(
+		ctx,
+		api1.WithReqs(in.GetInfos()),
+	)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"CreateAPI",
@@ -95,9 +97,13 @@ func (s *Server) CreateAPIs(ctx context.Context, in *npool.CreateAPIsRequest) (*
 		return &npool.CreateAPIsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	infos, err := handler.CreateAPIs(ctx, in.GetInfos())
+	infos, err := handler.CreateAPIs(ctx)
 	if err != nil {
-		logger.Sugar().Errorf("fail create apis: %v", err)
+		logger.Sugar().Errorw(
+			"CreateAPI",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.CreateAPIsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

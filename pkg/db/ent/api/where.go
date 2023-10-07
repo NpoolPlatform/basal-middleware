@@ -156,10 +156,10 @@ func PathPrefix(v string) predicate.API {
 	})
 }
 
-// Depracated applies equality check predicate on the "depracated" field. It's identical to DepracatedEQ.
-func Depracated(v bool) predicate.API {
+// Deprecated applies equality check predicate on the "deprecated" field. It's identical to DeprecatedEQ.
+func Deprecated(v bool) predicate.API {
 	return predicate.API(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDepracated), v))
+		s.Where(sql.EQ(s.C(FieldDeprecated), v))
 	})
 }
 
@@ -1139,31 +1139,31 @@ func DomainsNotNil() predicate.API {
 	})
 }
 
-// DepracatedEQ applies the EQ predicate on the "depracated" field.
-func DepracatedEQ(v bool) predicate.API {
+// DeprecatedEQ applies the EQ predicate on the "deprecated" field.
+func DeprecatedEQ(v bool) predicate.API {
 	return predicate.API(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDepracated), v))
+		s.Where(sql.EQ(s.C(FieldDeprecated), v))
 	})
 }
 
-// DepracatedNEQ applies the NEQ predicate on the "depracated" field.
-func DepracatedNEQ(v bool) predicate.API {
+// DeprecatedNEQ applies the NEQ predicate on the "deprecated" field.
+func DeprecatedNEQ(v bool) predicate.API {
 	return predicate.API(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDepracated), v))
+		s.Where(sql.NEQ(s.C(FieldDeprecated), v))
 	})
 }
 
-// DepracatedIsNil applies the IsNil predicate on the "depracated" field.
-func DepracatedIsNil() predicate.API {
+// DeprecatedIsNil applies the IsNil predicate on the "deprecated" field.
+func DeprecatedIsNil() predicate.API {
 	return predicate.API(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldDepracated)))
+		s.Where(sql.IsNull(s.C(FieldDeprecated)))
 	})
 }
 
-// DepracatedNotNil applies the NotNil predicate on the "depracated" field.
-func DepracatedNotNil() predicate.API {
+// DeprecatedNotNil applies the NotNil predicate on the "deprecated" field.
+func DeprecatedNotNil() predicate.API {
 	return predicate.API(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldDepracated)))
+		s.Where(sql.NotNull(s.C(FieldDeprecated)))
 	})
 }
 

@@ -50,7 +50,7 @@ type APIMutation struct {
 	exported      *bool
 	path_prefix   *string
 	domains       *[]string
-	depracated    *bool
+	deprecated    *bool
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*API, error)
@@ -757,53 +757,53 @@ func (m *APIMutation) ResetDomains() {
 	delete(m.clearedFields, api.FieldDomains)
 }
 
-// SetDepracated sets the "depracated" field.
-func (m *APIMutation) SetDepracated(b bool) {
-	m.depracated = &b
+// SetDeprecated sets the "deprecated" field.
+func (m *APIMutation) SetDeprecated(b bool) {
+	m.deprecated = &b
 }
 
-// Depracated returns the value of the "depracated" field in the mutation.
-func (m *APIMutation) Depracated() (r bool, exists bool) {
-	v := m.depracated
+// Deprecated returns the value of the "deprecated" field in the mutation.
+func (m *APIMutation) Deprecated() (r bool, exists bool) {
+	v := m.deprecated
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDepracated returns the old "depracated" field's value of the API entity.
+// OldDeprecated returns the old "deprecated" field's value of the API entity.
 // If the API object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *APIMutation) OldDepracated(ctx context.Context) (v bool, err error) {
+func (m *APIMutation) OldDeprecated(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDepracated is only allowed on UpdateOne operations")
+		return v, errors.New("OldDeprecated is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDepracated requires an ID field in the mutation")
+		return v, errors.New("OldDeprecated requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDepracated: %w", err)
+		return v, fmt.Errorf("querying old value for OldDeprecated: %w", err)
 	}
-	return oldValue.Depracated, nil
+	return oldValue.Deprecated, nil
 }
 
-// ClearDepracated clears the value of the "depracated" field.
-func (m *APIMutation) ClearDepracated() {
-	m.depracated = nil
-	m.clearedFields[api.FieldDepracated] = struct{}{}
+// ClearDeprecated clears the value of the "deprecated" field.
+func (m *APIMutation) ClearDeprecated() {
+	m.deprecated = nil
+	m.clearedFields[api.FieldDeprecated] = struct{}{}
 }
 
-// DepracatedCleared returns if the "depracated" field was cleared in this mutation.
-func (m *APIMutation) DepracatedCleared() bool {
-	_, ok := m.clearedFields[api.FieldDepracated]
+// DeprecatedCleared returns if the "deprecated" field was cleared in this mutation.
+func (m *APIMutation) DeprecatedCleared() bool {
+	_, ok := m.clearedFields[api.FieldDeprecated]
 	return ok
 }
 
-// ResetDepracated resets all changes to the "depracated" field.
-func (m *APIMutation) ResetDepracated() {
-	m.depracated = nil
-	delete(m.clearedFields, api.FieldDepracated)
+// ResetDeprecated resets all changes to the "deprecated" field.
+func (m *APIMutation) ResetDeprecated() {
+	m.deprecated = nil
+	delete(m.clearedFields, api.FieldDeprecated)
 }
 
 // Where appends a list predicates to the APIMutation builder.
@@ -862,8 +862,8 @@ func (m *APIMutation) Fields() []string {
 	if m.domains != nil {
 		fields = append(fields, api.FieldDomains)
 	}
-	if m.depracated != nil {
-		fields = append(fields, api.FieldDepracated)
+	if m.deprecated != nil {
+		fields = append(fields, api.FieldDeprecated)
 	}
 	return fields
 }
@@ -897,8 +897,8 @@ func (m *APIMutation) Field(name string) (ent.Value, bool) {
 		return m.PathPrefix()
 	case api.FieldDomains:
 		return m.Domains()
-	case api.FieldDepracated:
-		return m.Depracated()
+	case api.FieldDeprecated:
+		return m.Deprecated()
 	}
 	return nil, false
 }
@@ -932,8 +932,8 @@ func (m *APIMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldPathPrefix(ctx)
 	case api.FieldDomains:
 		return m.OldDomains(ctx)
-	case api.FieldDepracated:
-		return m.OldDepracated(ctx)
+	case api.FieldDeprecated:
+		return m.OldDeprecated(ctx)
 	}
 	return nil, fmt.Errorf("unknown API field %s", name)
 }
@@ -1027,12 +1027,12 @@ func (m *APIMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDomains(v)
 		return nil
-	case api.FieldDepracated:
+	case api.FieldDeprecated:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetDepracated(v)
+		m.SetDeprecated(v)
 		return nil
 	}
 	return fmt.Errorf("unknown API field %s", name)
@@ -1127,8 +1127,8 @@ func (m *APIMutation) ClearedFields() []string {
 	if m.FieldCleared(api.FieldDomains) {
 		fields = append(fields, api.FieldDomains)
 	}
-	if m.FieldCleared(api.FieldDepracated) {
-		fields = append(fields, api.FieldDepracated)
+	if m.FieldCleared(api.FieldDeprecated) {
+		fields = append(fields, api.FieldDeprecated)
 	}
 	return fields
 }
@@ -1168,8 +1168,8 @@ func (m *APIMutation) ClearField(name string) error {
 	case api.FieldDomains:
 		m.ClearDomains()
 		return nil
-	case api.FieldDepracated:
-		m.ClearDepracated()
+	case api.FieldDeprecated:
+		m.ClearDeprecated()
 		return nil
 	}
 	return fmt.Errorf("unknown API nullable field %s", name)
@@ -1215,8 +1215,8 @@ func (m *APIMutation) ResetField(name string) error {
 	case api.FieldDomains:
 		m.ResetDomains()
 		return nil
-	case api.FieldDepracated:
-		m.ResetDepracated()
+	case api.FieldDeprecated:
+		m.ResetDeprecated()
 		return nil
 	}
 	return fmt.Errorf("unknown API field %s", name)

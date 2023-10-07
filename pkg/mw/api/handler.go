@@ -198,7 +198,45 @@ func WithDomains(domains *[]string, must bool) func(context.Context, *Handler) e
 
 func WithReqs(reqs []*npool.APIReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-
+		_reqs := []*crud.Req{}
+		for _, req := range reqs {
+			_req := &crud.Req{
+				Method:     req.Method,
+				Path:       req.Path,
+				PathPrefix: req.PathPrefix,
+				Exported:   req.Exported,
+				Deprecated: req.Deprecated,
+			}
+			if req.EntID != nil {
+				_id, err := uuid.Parse(*req.EntID)
+				if err != nil {
+					return err
+				}
+				_req.EntID = &_id
+			}
+			if req.Protocol != nil {
+				switch *req.Protocol {
+				case npool.Protocol_HTTP:
+				case npool.Protocol_GRPC:
+				default:
+					return fmt.Errorf("invalid protocol")
+				}
+				_req.Protocol = req.Protocol
+			}
+			if req.ServiceName != nil {
+				const leastNameLen = 2
+				if len(*req.ServiceName) < leastNameLen {
+					return fmt.Errorf("service name too short")
+				}
+				_req.ServiceName = req.ServiceName
+			}
+			if len(req.GetDomains()) > 0 {
+				_req.Domains = &req.Domains
+			}
+			_reqs = append(_reqs, _req)
+		}
+		h.Reqs = _reqs
+		return nil
 	}
 }
 
@@ -248,10 +286,10 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: conds.GetExported().GetValue(),
 			}
 		}
-		if conds.Depracated != nil {
-			h.Conds.Depracated = &cruder.Cond{
-				Op:  conds.GetDepracated().Op,
-				Val: conds.GetDepracated().GetValue(),
+		if conds.Deprecated != nil {
+			h.Conds.Deprecated = &cruder.Cond{
+				Op:  conds.GetDeprecated().Op,
+				Val: conds.GetDeprecated().GetValue(),
 			}
 		}
 		if len(conds.GetEntIDs().GetValue()) > 0 {

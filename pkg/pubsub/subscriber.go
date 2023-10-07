@@ -30,7 +30,7 @@ func finish(ctx context.Context, msg *pubsub.Msg, err error) error {
 		c := cli.
 			PubsubMessage.
 			Create().
-			SetID(msg.UID).
+			SetEntID(msg.UID).
 			SetMessageID(msg.MID).
 			SetArguments(msg.Body).
 			SetState(state.String())
@@ -77,7 +77,7 @@ func statReq(ctx context.Context, mid string, uid uuid.UUID) (bool, error) {
 			PubsubMessage.
 			Query().
 			Where(
-				entpubsubmsg.ID(uid),
+				entpubsubmsg.EntID(uid),
 			).
 			Only(_ctx)
 		return err
@@ -125,31 +125,14 @@ func stat(ctx context.Context, mid string, uid uuid.UUID, rid *uuid.UUID) (bool,
 // Process will consume the message and return consuming state
 //  Return
 //   error   reason of error, if nil, means the message should be acked
-func process(ctx context.Context, mid string, uid uuid.UUID, req interface{}) (err error) {
-	defer func() {
-		if err != nil {
-			logger.Sugar().Warnw(
-				"process",
-				"MID", mid,
-				"UID", uid,
-				"Req", req,
-				"Error", err,
-			)
-		}
-	}()
-
+func process(ctx context.Context, mid string, req interface{}) (err error) {
 	switch mid {
 	case basetypes.MsgID_RegisterAPIsReq.String():
 		err = api.Apply(ctx, req)
 	default:
 		return nil
 	}
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // No matter what handler return, the message will be acked, unless handler halt
@@ -158,17 +141,12 @@ func handler(ctx context.Context, msg *pubsub.Msg) (err error) {
 	var req interface{}
 	var appliable bool
 
-	defer func() {
+	defer func(req *interface{}, appliable *bool) {
 		msg.Ack()
-		if req != nil && appliable {
-			err = finish(ctx, msg, err)
-			if err != nil {
-				logger.Sugar().Warnw(
-					"Error", err,
-				)
-			}
+		if *req != nil && *appliable {
+			_ = finish(ctx, msg, err)
 		}
-	}()
+	}(&req, &appliable)
 
 	req, err = prepare(msg.MID, msg.Body)
 	if err != nil {
@@ -186,7 +164,7 @@ func handler(ctx context.Context, msg *pubsub.Msg) (err error) {
 		return nil
 	}
 
-	err = process(ctx, msg.MID, msg.UID, req)
+	err = process(ctx, msg.MID, req)
 	return err
 }
 

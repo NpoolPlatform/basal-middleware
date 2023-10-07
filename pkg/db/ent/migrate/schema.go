@@ -24,7 +24,7 @@ var (
 		{Name: "exported", Type: field.TypeBool, Nullable: true, Default: false},
 		{Name: "path_prefix", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "domains", Type: field.TypeJSON, Nullable: true},
-		{Name: "depracated", Type: field.TypeBool, Nullable: true, Default: false},
+		{Name: "deprecated", Type: field.TypeBool, Nullable: true, Default: false},
 	}
 	// ApisTable holds the schema information for the "apis" table.
 	ApisTable = &schema.Table{

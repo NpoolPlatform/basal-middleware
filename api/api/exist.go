@@ -14,7 +14,10 @@ import (
 )
 
 func (s *Server) ExistAPI(ctx context.Context, in *npool.ExistAPIRequest) (*npool.ExistAPIResponse, error) {
-	handler, err := api1.NewHandler(ctx, api1.WithID(&in.ID))
+	handler, err := api1.NewHandler(
+		ctx,
+		api1.WithEntID(&in.EntID, true),
+	)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"ExistAPI",

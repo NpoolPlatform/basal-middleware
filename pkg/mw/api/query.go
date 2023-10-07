@@ -30,7 +30,7 @@ func (h *queryHandler) selectAPI(stm *ent.APIQuery) {
 		entapi.FieldPathPrefix,
 		entapi.FieldDomains,
 		entapi.FieldExported,
-		entapi.FieldDepracated,
+		entapi.FieldDeprecated,
 		entapi.FieldCreatedAt,
 		entapi.FieldUpdatedAt,
 	)

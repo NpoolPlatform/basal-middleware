@@ -41,8 +41,8 @@ type API struct {
 	PathPrefix string `json:"path_prefix,omitempty"`
 	// Domains holds the value of the "domains" field.
 	Domains []string `json:"domains,omitempty"`
-	// Depracated holds the value of the "depracated" field.
-	Depracated bool `json:"depracated,omitempty"`
+	// Deprecated holds the value of the "deprecated" field.
+	Deprecated bool `json:"deprecated,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -52,7 +52,7 @@ func (*API) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case api.FieldDomains:
 			values[i] = new([]byte)
-		case api.FieldExported, api.FieldDepracated:
+		case api.FieldExported, api.FieldDeprecated:
 			values[i] = new(sql.NullBool)
 		case api.FieldID, api.FieldCreatedAt, api.FieldUpdatedAt, api.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
@@ -155,11 +155,11 @@ func (a *API) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field domains: %w", err)
 				}
 			}
-		case api.FieldDepracated:
+		case api.FieldDeprecated:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field depracated", values[i])
+				return fmt.Errorf("unexpected type %T for field deprecated", values[i])
 			} else if value.Valid {
-				a.Depracated = value.Bool
+				a.Deprecated = value.Bool
 			}
 		}
 	}
@@ -225,8 +225,8 @@ func (a *API) String() string {
 	builder.WriteString("domains=")
 	builder.WriteString(fmt.Sprintf("%v", a.Domains))
 	builder.WriteString(", ")
-	builder.WriteString("depracated=")
-	builder.WriteString(fmt.Sprintf("%v", a.Depracated))
+	builder.WriteString("deprecated=")
+	builder.WriteString(fmt.Sprintf("%v", a.Deprecated))
 	builder.WriteByte(')')
 	return builder.String()
 }

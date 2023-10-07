@@ -15,85 +15,75 @@ import (
 
 type createHandler struct {
 	*Handler
+	ids []uuid.UUID
 }
 
-func (h *Handler) CreateAPIs(ctx context.Context, in []*npool.APIReq) ([]*npool.API, error) {
-	ids := []uuid.UUID{}
+func (h *createHandler) createAPI(ctx context.Context, tx *ent.Tx, req *crud.Req) error {
+	_api, err := tx.
+		API.
+		Query().
+		Where(
+			entapi.Protocol(req.Protocol.String()),
+			entapi.ServiceName(*req.ServiceName),
+			entapi.Method(req.Method.String()),
+			entapi.Path(*req.Path),
+			entapi.DeletedAt(0),
+		).
+		Only(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return err
+		}
+	}
+	if _api != nil {
+		h.ids = append(h.ids, _api.EntID)
+		return nil
+	}
+	_api, err = crud.CreateSet(tx.API.Create(), req).Save(ctx)
+	if err != nil {
+		return err
+	}
+	h.ids = append(h.ids, _api.EntID)
+	return nil
+}
+
+func (h *Handler) CreateAPIs(ctx context.Context) ([]*npool.API, error) {
+	handler := &createHandler{
+		Handler: h,
+		ids:     []uuid.UUID{},
+	}
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-		for _, info := range in {
-			_api, err := tx.
-				API.
-				Query().
-				Where(
-					entapi.Protocol(info.GetProtocol().String()),
-					entapi.ServiceName(info.GetServiceName()),
-					entapi.Method(info.GetMethod().String()),
-					entapi.Path(info.GetPath()),
-				).
-				Only(_ctx)
-			if err != nil {
-				if !ent.IsNotFound(err) {
-					return err
-				}
-			}
-			if _api != nil {
-				ids = append(ids, _api.EntID)
-				continue
-			}
-			_api, err = crud.CreateSet(tx.API.Create(), &crud.Req{
-				Protocol:    info.Protocol,
-				Method:      info.Method,
-				MethodName:  info.MethodName,
-				Path:        info.Path,
-				PathPrefix:  info.PathPrefix,
-				ServiceName: info.ServiceName,
-				Domains:     &info.Domains,
-				Depracated:  info.Depracated,
-				Exported:    info.Exported,
-			}).Save(_ctx)
-			if err != nil {
+		for _, req := range h.Reqs {
+			if err := handler.createAPI(ctx, tx, req); err != nil {
 				return err
 			}
-			ids = append(ids, _api.EntID)
 		}
-
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
-
 	h.Conds = &crud.Conds{
-		EntIDs: &cruder.Cond{Op: cruder.IN, Val: ids},
+		EntIDs: &cruder.Cond{Op: cruder.IN, Val: handler.ids},
 	}
 	h.Offset = 0
-	h.Limit = int32(len(ids))
+	h.Limit = int32(len(handler.ids))
 	infos, _, err := h.GetAPIs(ctx)
 	return infos, err
 }
 
 func (h *Handler) CreateAPI(ctx context.Context) (*npool.API, error) {
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		info, err := crud.CreateSet(
-			cli.API.Create(),
-			&crud.Req{
-				Protocol:    h.Protocol,
-				Method:      h.Method,
-				MethodName:  h.MethodName,
-				Path:        h.Path,
-				PathPrefix:  h.PathPrefix,
-				ServiceName: h.ServiceName,
-				Domains:     h.Domains,
-				Exported:    h.Exported,
-				Depracated:  h.Deprecated,
-			},
-		).Save(_ctx)
-		if err != nil {
-			return err
-		}
+	id := uuid.New()
+	if h.EntID == nil {
+		h.EntID = &id
+	}
 
-		h.EntID = &info.EntID
-		return nil
+	handler := &createHandler{
+		Handler: h,
+	}
+
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		return handler.createAPI(ctx, tx, h.Req)
 	})
 	if err != nil {
 		return nil, err

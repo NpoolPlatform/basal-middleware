@@ -12,7 +12,6 @@ import (
 	config "github.com/NpoolPlatform/go-service-framework/pkg/config"
 	logger "github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	"github.com/NpoolPlatform/go-service-framework/pkg/pubsub"
-	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 
 	"github.com/go-resty/resty/v2"

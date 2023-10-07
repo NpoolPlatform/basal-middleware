@@ -36,8 +36,8 @@ const (
 	FieldPathPrefix = "path_prefix"
 	// FieldDomains holds the string denoting the domains field in the database.
 	FieldDomains = "domains"
-	// FieldDepracated holds the string denoting the depracated field in the database.
-	FieldDepracated = "depracated"
+	// FieldDeprecated holds the string denoting the deprecated field in the database.
+	FieldDeprecated = "deprecated"
 	// Table holds the table name of the api in the database.
 	Table = "apis"
 )
@@ -57,7 +57,7 @@ var Columns = []string{
 	FieldExported,
 	FieldPathPrefix,
 	FieldDomains,
-	FieldDepracated,
+	FieldDeprecated,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -105,6 +105,6 @@ var (
 	DefaultPathPrefix string
 	// DefaultDomains holds the default value on creation for the "domains" field.
 	DefaultDomains []string
-	// DefaultDepracated holds the default value on creation for the "depracated" field.
-	DefaultDepracated bool
+	// DefaultDeprecated holds the default value on creation for the "deprecated" field.
+	DefaultDeprecated bool
 )
