@@ -135,7 +135,7 @@ func GetAPIOnly(ctx context.Context, conds *npool.Conds) (*npool.API, error) {
 	if len(infos.([]*npool.API)) > 1 {
 		return nil, fmt.Errorf("too many records")
 	}
-	return info.([]*npool.API)[0], nil
+	return infos.([]*npool.API)[0], nil
 }
 
 func ExistAPI(ctx context.Context, id string) (bool, error) {
