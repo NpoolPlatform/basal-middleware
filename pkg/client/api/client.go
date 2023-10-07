@@ -141,7 +141,7 @@ func GetAPIOnly(ctx context.Context, conds *npool.Conds) (*npool.API, error) {
 func ExistAPI(ctx context.Context, id string) (bool, error) {
 	_, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistAPI(ctx, &npool.ExistAPIRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail exist api: %v", err)
@@ -154,7 +154,7 @@ func ExistAPI(ctx context.Context, id string) (bool, error) {
 	return true, nil
 }
 
-func DeleteAPI(ctx context.Context, id string) (*npool.API, error) {
+func DeleteAPI(ctx context.Context, id uint32) (*npool.API, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteAPI(ctx, &npool.DeleteAPIRequest{
 			Info: &npool.APIReq{

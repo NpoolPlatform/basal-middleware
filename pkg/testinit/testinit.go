@@ -1,12 +1,14 @@
 package testinit
 
 import (
+	"context"
 	"fmt"
 	"path"
 	"runtime"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/app"
 
+	"github.com/NpoolPlatform/basal-middleware/pkg/db"
 	migrator "github.com/NpoolPlatform/basal-middleware/pkg/migrator"
 	servicename "github.com/NpoolPlatform/basal-middleware/pkg/servicename"
 	mysqlconst "github.com/NpoolPlatform/go-service-framework/pkg/mysql/const"
@@ -37,6 +39,9 @@ func Init() error {
 	)
 	if err != nil {
 		return fmt.Errorf("cannot init app stub: %v", err)
+	}
+	if err := db.Init(); err != nil {
+		return err
 	}
 	if err := migrator.Migrate(context.Background()); err != nil {
 		return fmt.Errorf("fail migrate db: %v", err)
