@@ -7,8 +7,8 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/app"
 
+	migrator "github.com/NpoolPlatform/basal-middleware/pkg/migrator"
 	servicename "github.com/NpoolPlatform/basal-middleware/pkg/servicename"
-
 	mysqlconst "github.com/NpoolPlatform/go-service-framework/pkg/mysql/const"
 	rabbitmqconst "github.com/NpoolPlatform/go-service-framework/pkg/rabbitmq/const"
 	redisconst "github.com/NpoolPlatform/go-service-framework/pkg/redis/const"
@@ -37,6 +37,9 @@ func Init() error {
 	)
 	if err != nil {
 		return fmt.Errorf("cannot init app stub: %v", err)
+	}
+	if err := migrator.Migrate(context.Background()); err != nil {
+		return fmt.Errorf("fail migrate db: %v", err)
 	}
 
 	return nil

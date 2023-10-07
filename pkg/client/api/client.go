@@ -115,19 +115,27 @@ func GetDomains(ctx context.Context) ([]string, error) {
 }
 
 func GetAPIOnly(ctx context.Context, conds *npool.Conds) (*npool.API, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetAPIOnly(ctx, &npool.GetAPIOnlyRequest{
-			Conds: conds,
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetAPIs(ctx, &npool.GetAPIsRequest{
+			Conds:  conds,
+			Offset: 0,
+			Limit:  2,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail get api only: %v", err)
 		}
-		return resp.Info, nil
+		return resp.Infos, nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("fail get api only: %v", err)
 	}
-	return info.(*npool.API), nil
+	if len(infos.([]*npool.API)) == 0 {
+		return nil, nil
+	}
+	if len(infos.([]*npool.API)) > 1 {
+		return nil, fmt.Errorf("too many records")
+	}
+	return info.([]*npool.API)[0], nil
 }
 
 func ExistAPI(ctx context.Context, id string) (bool, error) {
