@@ -70,31 +70,3 @@ func (s *Server) GetDomains(ctx context.Context, in *npool.GetDomainsRequest) (*
 		Infos: infos,
 	}, nil
 }
-
-func (s *Server) GetAPIOnly(ctx context.Context, in *npool.GetAPIOnlyRequest) (*npool.GetAPIOnlyResponse, error) {
-	handler, err := api1.NewHandler(ctx,
-		api1.WithConds(in.GetConds()),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetAPIOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetAPIOnlyResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	info, err := handler.GetAPIOnly(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetAPIOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetAPIOnlyResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
-	return &npool.GetAPIOnlyResponse{
-		Info: info,
-	}, nil
-}

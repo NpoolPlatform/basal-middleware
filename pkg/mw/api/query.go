@@ -37,17 +37,17 @@ func (h *queryHandler) selectAPI(stm *ent.APIQuery) {
 }
 
 func (h *queryHandler) queryAPI(cli *ent.Client) error {
-	if h.ID == nil {
+	if h.EntID == nil && h.ID == nil {
 		return fmt.Errorf("invalid id")
 	}
-	h.selectAPI(
-		cli.API.
-			Query().
-			Where(
-				entapi.ID(*h.ID),
-				entapi.DeletedAt(0),
-			),
-	)
+	stm := cli.API.Query().Where(entapi.DeletedAt(0))
+	if h.EntID != nil {
+		stm.Where(entapi.EntID(*h.EntID))
+	}
+	if h.ID != nil {
+		stm.Where(entapi.ID(*h.ID))
+	}
+	h.selectAPI(stm)
 	return nil
 }
 

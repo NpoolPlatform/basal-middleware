@@ -12,26 +12,22 @@ import (
 	config "github.com/NpoolPlatform/go-service-framework/pkg/config"
 	logger "github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	"github.com/NpoolPlatform/go-service-framework/pkg/pubsub"
+	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-
-	mgrpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
-	eventpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/event"
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"google.golang.org/grpc"
 )
 
 func publish(apis []*mgrpb.APIReq) error {
 	return pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
-		req := &eventpb.RegisterAPIsRequest{
-			Info: apis,
-		}
 		return publisher.Update(
 			basetypes.MsgID_RegisterAPIsReq.String(),
 			nil,
 			nil,
 			nil,
-			req,
+			apis,
 		)
 	})
 }
@@ -186,7 +182,7 @@ func registerHttp(apis []*mgrpb.APIReq) error { //nolint
 	return nil
 }
 
-func reliablePublish(apis []*mgrpb.APIReq) {
+func reliablePublish(apis []*basalmwpb.APIReq) {
 	for {
 		<-time.After(5 * time.Second) //nolint
 		if err := publish(apis); err == nil {

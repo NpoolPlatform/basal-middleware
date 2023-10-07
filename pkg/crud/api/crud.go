@@ -11,7 +11,8 @@ import (
 )
 
 type Req struct {
-	ID          *uuid.UUID
+	ID          *uint32
+	EntID       *uuid.UUID
 	Protocol    *npool.Protocol
 	ServiceName *string
 	Method      *npool.Method
@@ -25,6 +26,9 @@ type Req struct {
 }
 
 func CreateSet(c *ent.APICreate, req *Req) *ent.APICreate {
+	if req.EntID != nil {
+		c.SetEntID(*req.EntID)
+	}
 	if req.Protocol != nil {
 		c.SetProtocol(req.Protocol.String())
 	}
@@ -69,27 +73,27 @@ func UpdateSet(u *ent.APIUpdateOne, req *Req) *ent.APIUpdateOne {
 }
 
 type Conds struct {
-	ID          *cruder.Cond
+	EntID       *cruder.Cond
 	Protocol    *cruder.Cond
 	ServiceName *cruder.Cond
 	Method      *cruder.Cond
 	Path        *cruder.Cond
 	Exported    *cruder.Cond
 	Depracated  *cruder.Cond
-	IDs         *cruder.Cond
+	EntIDs      *cruder.Cond
 }
 
 func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) { //nolint
-	if conds.ID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+	if conds.EntID != nil {
+		id, ok := conds.EntID.Val.(uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid id")
+			return nil, fmt.Errorf("invalid entid")
 		}
-		switch conds.ID.Op {
+		switch conds.EntID.Op {
 		case cruder.EQ:
-			q.Where(api.ID(id))
+			q.Where(api.EntID(id))
 		default:
-			return nil, fmt.Errorf("invalid id field")
+			return nil, fmt.Errorf("invalid entid field")
 		}
 	}
 	if conds.Protocol != nil {
@@ -164,16 +168,16 @@ func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) { //nol
 			return nil, fmt.Errorf("invalid deprecated field")
 		}
 	}
-	if conds.IDs != nil {
-		ids, ok := conds.IDs.Val.([]uuid.UUID)
+	if conds.EntIDs != nil {
+		ids, ok := conds.EntIDs.Val.([]uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid ids")
+			return nil, fmt.Errorf("invalid entids")
 		}
-		switch conds.IDs.Op {
+		switch conds.EntIDs.Op {
 		case cruder.IN:
-			q.Where(api.IDIn(ids...))
+			q.Where(api.EntIDIn(ids...))
 		default:
-			return nil, fmt.Errorf("invalid api ids filed")
+			return nil, fmt.Errorf("invalid api entids filed")
 		}
 	}
 	return q, nil
