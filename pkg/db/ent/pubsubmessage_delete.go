@@ -72,7 +72,7 @@ func (pmd *PubsubMessageDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: pubsubmessage.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint32,
 				Column: pubsubmessage.FieldID,
 			},
 		},

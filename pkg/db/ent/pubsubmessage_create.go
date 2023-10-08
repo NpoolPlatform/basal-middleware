@@ -149,8 +149,8 @@ func (pmc *PubsubMessageCreate) SetNillableEntID(u *uuid.UUID) *PubsubMessageCre
 }
 
 // SetID sets the "id" field.
-func (pmc *PubsubMessageCreate) SetID(i int) *PubsubMessageCreate {
-	pmc.mutation.SetID(i)
+func (pmc *PubsubMessageCreate) SetID(u uint32) *PubsubMessageCreate {
+	pmc.mutation.SetID(u)
 	return pmc
 }
 
@@ -317,7 +317,7 @@ func (pmc *PubsubMessageCreate) sqlSave(ctx context.Context) (*PubsubMessage, er
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = int(id)
+		_node.ID = uint32(id)
 	}
 	return _node, nil
 }
@@ -328,7 +328,7 @@ func (pmc *PubsubMessageCreate) createSpec() (*PubsubMessage, *sqlgraph.CreateSp
 		_spec = &sqlgraph.CreateSpec{
 			Table: pubsubmessage.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint32,
 				Column: pubsubmessage.FieldID,
 			},
 		}
@@ -868,7 +868,7 @@ func (u *PubsubMessageUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *PubsubMessageUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *PubsubMessageUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -877,7 +877,7 @@ func (u *PubsubMessageUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *PubsubMessageUpsertOne) IDX(ctx context.Context) int {
+func (u *PubsubMessageUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -930,7 +930,7 @@ func (pmcb *PubsubMessageCreateBulk) Save(ctx context.Context) ([]*PubsubMessage
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = uint32(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

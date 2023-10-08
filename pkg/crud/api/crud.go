@@ -11,7 +11,7 @@ import (
 )
 
 type Req struct {
-	ID          *int
+	ID          *uint32
 	EntID       *uuid.UUID
 	Protocol    *npool.Protocol
 	ServiceName *string

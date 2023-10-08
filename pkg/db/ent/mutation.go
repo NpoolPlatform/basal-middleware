@@ -34,7 +34,7 @@ type APIMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uint32
 	created_at    *uint32
 	addcreated_at *int32
 	updated_at    *uint32
@@ -77,7 +77,7 @@ func newAPIMutation(c config, op Op, opts ...apiOption) *APIMutation {
 }
 
 // withAPIID sets the ID field of the mutation.
-func withAPIID(id int) apiOption {
+func withAPIID(id uint32) apiOption {
 	return func(m *APIMutation) {
 		var (
 			err   error
@@ -129,13 +129,13 @@ func (m APIMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of API entities.
-func (m *APIMutation) SetID(id int) {
+func (m *APIMutation) SetID(id uint32) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *APIMutation) ID() (id int, exists bool) {
+func (m *APIMutation) ID() (id uint32, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -146,12 +146,12 @@ func (m *APIMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *APIMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *APIMutation) IDs(ctx context.Context) ([]uint32, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uint32{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1275,7 +1275,7 @@ type PubsubMessageMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uint32
 	created_at    *uint32
 	addcreated_at *int32
 	updated_at    *uint32
@@ -1314,7 +1314,7 @@ func newPubsubMessageMutation(c config, op Op, opts ...pubsubmessageOption) *Pub
 }
 
 // withPubsubMessageID sets the ID field of the mutation.
-func withPubsubMessageID(id int) pubsubmessageOption {
+func withPubsubMessageID(id uint32) pubsubmessageOption {
 	return func(m *PubsubMessageMutation) {
 		var (
 			err   error
@@ -1366,13 +1366,13 @@ func (m PubsubMessageMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of PubsubMessage entities.
-func (m *PubsubMessageMutation) SetID(id int) {
+func (m *PubsubMessageMutation) SetID(id uint32) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PubsubMessageMutation) ID() (id int, exists bool) {
+func (m *PubsubMessageMutation) ID() (id uint32, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1383,12 +1383,12 @@ func (m *PubsubMessageMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PubsubMessageMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *PubsubMessageMutation) IDs(ctx context.Context) ([]uint32, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uint32{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):

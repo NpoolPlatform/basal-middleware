@@ -170,7 +170,7 @@ func (c *APIClient) UpdateOne(a *API) *APIUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *APIClient) UpdateOneID(id int) *APIUpdateOne {
+func (c *APIClient) UpdateOneID(id uint32) *APIUpdateOne {
 	mutation := newAPIMutation(c.config, OpUpdateOne, withAPIID(id))
 	return &APIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -187,7 +187,7 @@ func (c *APIClient) DeleteOne(a *API) *APIDeleteOne {
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *APIClient) DeleteOneID(id int) *APIDeleteOne {
+func (c *APIClient) DeleteOneID(id uint32) *APIDeleteOne {
 	builder := c.Delete().Where(api.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -202,12 +202,12 @@ func (c *APIClient) Query() *APIQuery {
 }
 
 // Get returns a API entity by its id.
-func (c *APIClient) Get(ctx context.Context, id int) (*API, error) {
+func (c *APIClient) Get(ctx context.Context, id uint32) (*API, error) {
 	return c.Query().Where(api.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *APIClient) GetX(ctx context.Context, id int) *API {
+func (c *APIClient) GetX(ctx context.Context, id uint32) *API {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -261,7 +261,7 @@ func (c *PubsubMessageClient) UpdateOne(pm *PubsubMessage) *PubsubMessageUpdateO
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PubsubMessageClient) UpdateOneID(id int) *PubsubMessageUpdateOne {
+func (c *PubsubMessageClient) UpdateOneID(id uint32) *PubsubMessageUpdateOne {
 	mutation := newPubsubMessageMutation(c.config, OpUpdateOne, withPubsubMessageID(id))
 	return &PubsubMessageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -278,7 +278,7 @@ func (c *PubsubMessageClient) DeleteOne(pm *PubsubMessage) *PubsubMessageDeleteO
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *PubsubMessageClient) DeleteOneID(id int) *PubsubMessageDeleteOne {
+func (c *PubsubMessageClient) DeleteOneID(id uint32) *PubsubMessageDeleteOne {
 	builder := c.Delete().Where(pubsubmessage.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -293,12 +293,12 @@ func (c *PubsubMessageClient) Query() *PubsubMessageQuery {
 }
 
 // Get returns a PubsubMessage entity by its id.
-func (c *PubsubMessageClient) Get(ctx context.Context, id int) (*PubsubMessage, error) {
+func (c *PubsubMessageClient) Get(ctx context.Context, id uint32) (*PubsubMessage, error) {
 	return c.Query().Where(pubsubmessage.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PubsubMessageClient) GetX(ctx context.Context, id int) *PubsubMessage {
+func (c *PubsubMessageClient) GetX(ctx context.Context, id uint32) *PubsubMessage {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

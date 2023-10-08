@@ -11,7 +11,7 @@ import (
 var (
 	// ApisColumns holds the columns for the "apis" table.
 	ApisColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
@@ -41,7 +41,7 @@ var (
 	}
 	// PubsubMessagesColumns holds the columns for the "pubsub_messages" table.
 	PubsubMessagesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},

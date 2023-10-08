@@ -20,7 +20,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   api.Table,
 			Columns: api.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint32,
 				Column: api.FieldID,
 			},
 		},
@@ -46,7 +46,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   pubsubmessage.Table,
 			Columns: pubsubmessage.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint32,
 				Column: pubsubmessage.FieldID,
 			},
 		},
@@ -107,8 +107,8 @@ func (f *APIFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *APIFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *APIFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(api.FieldID))
 }
 
@@ -212,8 +212,8 @@ func (f *PubsubMessageFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *PubsubMessageFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *PubsubMessageFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(pubsubmessage.FieldID))
 }
 

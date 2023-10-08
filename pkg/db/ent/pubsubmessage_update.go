@@ -284,7 +284,7 @@ func (pmu *PubsubMessageUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Table:   pubsubmessage.Table,
 			Columns: pubsubmessage.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint32,
 				Column: pubsubmessage.FieldID,
 			},
 		},
@@ -699,7 +699,7 @@ func (pmuo *PubsubMessageUpdateOne) sqlSave(ctx context.Context) (_node *PubsubM
 			Table:   pubsubmessage.Table,
 			Columns: pubsubmessage.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUint32,
 				Column: pubsubmessage.FieldID,
 			},
 		},
