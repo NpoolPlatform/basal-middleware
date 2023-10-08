@@ -22,6 +22,7 @@ type queryHandler struct {
 func (h *queryHandler) selectAPI(stm *ent.APIQuery) {
 	h.stm = stm.Select(
 		entapi.FieldID,
+		entapi.FieldEntID,
 		entapi.FieldProtocol,
 		entapi.FieldServiceName,
 		entapi.FieldMethod,

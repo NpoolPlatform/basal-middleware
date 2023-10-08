@@ -56,11 +56,14 @@ func createAPI(t *testing.T) {
 			Path:        &ret.Path,
 			PathPrefix:  &ret.PathPrefix,
 			Domains:     ret.Domains,
+			Deprecated:  &ret.Deprecated,
+			Exported:    &ret.Exported,
 		}
 	)
 	info, err := CreateAPI(context.Background(), req)
 	if assert.Nil(t, err) {
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
@@ -91,10 +94,7 @@ func getAPIs(t *testing.T) {
 
 func getAPIOnly(t *testing.T) {
 	info, err := GetAPIOnly(context.Background(), &npool.Conds{
-		EntID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: ret.EntID,
-		},
+		EntID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 	})
 	if assert.Nil(t, err) {
 		assert.NotNil(t, info)

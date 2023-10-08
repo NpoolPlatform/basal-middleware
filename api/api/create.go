@@ -34,7 +34,7 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 		api1.WithPath(req.Path, true),
 		api1.WithPathPrefix(req.PathPrefix, true),
 		api1.WithDomains(&req.Domains, true),
-		api1.WithDeprecated(req.Deprecated, true),
+		api1.WithDeprecated(req.Deprecated, false),
 		api1.WithExported(req.Exported, true),
 	)
 	if err != nil {
