@@ -6,8 +6,8 @@ require (
 	bou.ke/monkey v1.0.2
 	entgo.io/ent v0.11.2
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230930023319-e48074d9472e
-	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008003000-d2536ff7d90f
-	github.com/NpoolPlatform/message v0.0.0-20231008005455-54f7dfc51d70
+	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008034140-808c78a650ca
+	github.com/NpoolPlatform/message v0.0.0-20231008030256-5d1912e2f3c7
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
