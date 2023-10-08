@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	servicename "github.com/NpoolPlatform/basal-middleware/pkg/servicename"
@@ -72,18 +73,70 @@ func open(hostname string) (conn *sql.DB, err error) {
 	return conn, nil
 }
 
-func migrateEntID(ctx context.Context, table string, tx *sql.Tx) error {
+func tables(ctx context.Context, dbName string, tx *sql.Tx) ([]string, error) {
+	tables := []string{}
+	rows, err := tx.QueryContext(
+		ctx,
+		fmt.Sprintf("select table_name from information_schema.tables where table_schema = '%v'", dbName),
+	)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		table := []byte{}
+		if err := rows.Scan(&table); err != nil {
+			return nil, err
+		}
+		tables = append(tables, string(table))
+	}
+	logger.Sugar().Infow(
+		"tables",
+		"Tables", tables,
+	)
+	return tables, nil
+}
+
+func migrateEntID(ctx context.Context, dbName, table string, tx *sql.Tx) error {
 	logger.Sugar().Infow(
 		"migrateEntID",
+		"db", dbName,
 		"table", table,
 	)
 
-	rc := 0
-	rows, err := tx.
-		QueryContext(
-			ctx,
-			fmt.Sprintf("select 1 from information_schema.columns where table_schema='basal_manager' and table_name='%v' and column_name='ent_id'", table),
+	_type := []byte{}
+	rows, err := tx.QueryContext(
+		ctx,
+		fmt.Sprintf("select data_type from information_schema.columns where table_name='%v' and column_name='id' and table_schema='%v'", table, dbName),
+	)
+	if err != nil {
+		return err
+	}
+	for rows.Next() {
+		if err := rows.Scan(&_type); err != nil {
+			return err
+		}
+	}
+	if strings.Contains(string(_type), "int") {
+		logger.Sugar().Infow(
+			"migrateEntID",
+			"db", dbName,
+			"table", table,
+			"State", "Migrated",
 		)
+		_, err = tx.ExecContext(
+			ctx,
+			fmt.Sprintf("alter table %v.%v change id id int unsigned not null auto_increment", dbName, table),
+		)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	rc := 0
+	rows, err = tx.QueryContext(
+		ctx,
+		fmt.Sprintf("select 1 from information_schema.columns where table_schema='%v' and table_name='%v' and column_name='ent_id'", dbName, table),
+	)
 	if err != nil {
 		return err
 	}
@@ -95,19 +148,38 @@ func migrateEntID(ctx context.Context, table string, tx *sql.Tx) error {
 	if rc != 0 {
 		return nil
 	}
-	_, err = tx.
-		ExecContext(
-			ctx,
-			fmt.Sprintf("alter table basal_manager.%v change column id ent_id char(36)", table),
-		)
+	logger.Sugar().Infow(
+		"migrateEntID",
+		"db", dbName,
+		"table", table,
+		"State", "ID -> EntID",
+	)
+	_, err = tx.ExecContext(
+		ctx,
+		fmt.Sprintf("alter table %v.%v change column id ent_id char(36)", dbName, table),
+	)
 	if err != nil {
 		return err
 	}
-	_, err = tx.
-		ExecContext(
-			ctx,
-			fmt.Sprintf("alter table basal_manager.%v add id int unsigned not null auto_increment, drop primary key, add primary key(id)", table),
-		)
+	logger.Sugar().Infow(
+		"migrateEntID",
+		"db", dbName,
+		"table", table,
+		"State", "ID INT",
+	)
+	_, err = tx.ExecContext(
+		ctx,
+		fmt.Sprintf("alter table %v.%v add id int unsigned not null auto_increment, drop primary key, add primary key(id)", dbName, table),
+	)
+	if err != nil {
+		return err
+	}
+	logger.Sugar().Infow(
+		"migrateEntID",
+		"db", dbName,
+		"table", table,
+		"State", "Migrated",
+	)
 	return err
 }
 
@@ -137,13 +209,18 @@ func Migrate(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if err = migrateEntID(ctx, "apis", tx); err != nil {
-		_ = tx.Rollback()
+
+	dbname := config.GetStringValueWithNameSpace(servicename.ServiceDomain, keyDBName)
+	_tables, err := tables(ctx, dbname, tx)
+	if err != nil {
 		return err
 	}
-	if err = migrateEntID(ctx, "pubsub_messages", tx); err != nil {
-		_ = tx.Rollback()
-		return err
+
+	for _, table := range _tables {
+		if err = migrateEntID(ctx, dbname, table, tx); err != nil {
+			_ = tx.Rollback()
+			return err
+		}
 	}
 	_ = tx.Commit()
 	return nil
