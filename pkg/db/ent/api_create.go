@@ -197,8 +197,8 @@ func (ac *APICreate) SetNillableDeprecated(b *bool) *APICreate {
 }
 
 // SetID sets the "id" field.
-func (ac *APICreate) SetID(u uint32) *APICreate {
-	ac.mutation.SetID(u)
+func (ac *APICreate) SetID(i int) *APICreate {
+	ac.mutation.SetID(i)
 	return ac
 }
 
@@ -375,7 +375,7 @@ func (ac *APICreate) sqlSave(ctx context.Context) (*API, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint32(id)
+		_node.ID = int(id)
 	}
 	return _node, nil
 }
@@ -386,7 +386,7 @@ func (ac *APICreate) createSpec() (*API, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: api.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeInt,
 				Column: api.FieldID,
 			},
 		}
@@ -1114,7 +1114,7 @@ func (u *APIUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *APIUpsertOne) ID(ctx context.Context) (id uint32, err error) {
+func (u *APIUpsertOne) ID(ctx context.Context) (id int, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1123,7 +1123,7 @@ func (u *APIUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *APIUpsertOne) IDX(ctx context.Context) uint32 {
+func (u *APIUpsertOne) IDX(ctx context.Context) int {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1176,7 +1176,7 @@ func (acb *APICreateBulk) Save(ctx context.Context) ([]*API, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint32(id)
+					nodes[i].ID = int(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

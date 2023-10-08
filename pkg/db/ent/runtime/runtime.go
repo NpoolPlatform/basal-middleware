@@ -118,28 +118,24 @@ func init() {
 	pubsubmessageDescDeletedAt := pubsubmessageMixinFields0[2].Descriptor()
 	// pubsubmessage.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	pubsubmessage.DefaultDeletedAt = pubsubmessageDescDeletedAt.Default.(func() uint32)
-	// pubsubmessageDescEntID is the schema descriptor for ent_id field.
-	pubsubmessageDescEntID := pubsubmessageMixinFields1[1].Descriptor()
-	// pubsubmessage.DefaultEntID holds the default value on creation for the ent_id field.
-	pubsubmessage.DefaultEntID = pubsubmessageDescEntID.Default.(func() uuid.UUID)
 	// pubsubmessageDescMessageID is the schema descriptor for message_id field.
-	pubsubmessageDescMessageID := pubsubmessageFields[0].Descriptor()
+	pubsubmessageDescMessageID := pubsubmessageMixinFields1[0].Descriptor()
 	// pubsubmessage.DefaultMessageID holds the default value on creation for the message_id field.
 	pubsubmessage.DefaultMessageID = pubsubmessageDescMessageID.Default.(string)
 	// pubsubmessageDescState is the schema descriptor for state field.
-	pubsubmessageDescState := pubsubmessageFields[1].Descriptor()
+	pubsubmessageDescState := pubsubmessageMixinFields1[1].Descriptor()
 	// pubsubmessage.DefaultState holds the default value on creation for the state field.
 	pubsubmessage.DefaultState = pubsubmessageDescState.Default.(string)
 	// pubsubmessageDescRespToID is the schema descriptor for resp_to_id field.
-	pubsubmessageDescRespToID := pubsubmessageFields[2].Descriptor()
+	pubsubmessageDescRespToID := pubsubmessageMixinFields1[2].Descriptor()
 	// pubsubmessage.DefaultRespToID holds the default value on creation for the resp_to_id field.
 	pubsubmessage.DefaultRespToID = pubsubmessageDescRespToID.Default.(func() uuid.UUID)
 	// pubsubmessageDescUndoID is the schema descriptor for undo_id field.
-	pubsubmessageDescUndoID := pubsubmessageFields[3].Descriptor()
+	pubsubmessageDescUndoID := pubsubmessageMixinFields1[3].Descriptor()
 	// pubsubmessage.DefaultUndoID holds the default value on creation for the undo_id field.
 	pubsubmessage.DefaultUndoID = pubsubmessageDescUndoID.Default.(func() uuid.UUID)
 	// pubsubmessageDescArguments is the schema descriptor for arguments field.
-	pubsubmessageDescArguments := pubsubmessageFields[4].Descriptor()
+	pubsubmessageDescArguments := pubsubmessageMixinFields1[4].Descriptor()
 	// pubsubmessage.DefaultArguments holds the default value on creation for the arguments field.
 	pubsubmessage.DefaultArguments = pubsubmessageDescArguments.Default.(string)
 }

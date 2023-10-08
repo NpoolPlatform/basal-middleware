@@ -356,7 +356,7 @@ func (au *APIUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   api.Table,
 			Columns: api.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeInt,
 				Column: api.FieldID,
 			},
 		},
@@ -895,7 +895,7 @@ func (auo *APIUpdateOne) sqlSave(ctx context.Context) (_node *API, err error) {
 			Table:   api.Table,
 			Columns: api.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
+				Type:   field.TypeInt,
 				Column: api.FieldID,
 			},
 		},

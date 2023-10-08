@@ -11,7 +11,7 @@ import (
 var (
 	// ApisColumns holds the columns for the "apis" table.
 	ApisColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint32, Increment: true},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
@@ -31,16 +31,22 @@ var (
 		Name:       "apis",
 		Columns:    ApisColumns,
 		PrimaryKey: []*schema.Column{ApisColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "api_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{ApisColumns[4]},
+			},
+		},
 	}
 	// PubsubMessagesColumns holds the columns for the "pubsub_messages" table.
 	PubsubMessagesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint32, Increment: true},
+		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
-		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
-		{Name: "message_id", Type: field.TypeString, Nullable: true, Default: "DefaultMsgID"},
-		{Name: "state", Type: field.TypeString, Nullable: true, Default: "DefaultMsgState"},
+		{Name: "message_id", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "state", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "resp_to_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "undo_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "arguments", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
@@ -50,18 +56,6 @@ var (
 		Name:       "pubsub_messages",
 		Columns:    PubsubMessagesColumns,
 		PrimaryKey: []*schema.Column{PubsubMessagesColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "pubsubmessage_state_resp_to_id",
-				Unique:  false,
-				Columns: []*schema.Column{PubsubMessagesColumns[6], PubsubMessagesColumns[7]},
-			},
-			{
-				Name:    "pubsubmessage_state_undo_id",
-				Unique:  false,
-				Columns: []*schema.Column{PubsubMessagesColumns[6], PubsubMessagesColumns[8]},
-			},
-		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
