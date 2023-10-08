@@ -259,8 +259,8 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.Protocol != nil {
 			h.Conds.Protocol = &cruder.Cond{
-				Op:  conds.Protocol.Op,
-				Val: conds.Protocol.String(),
+				Op:  conds.GetProtocol().GetOp(),
+				Val: npool.Protocol(conds.GetProtocol().GetValue()),
 			}
 		}
 		if conds.ServiceName != nil {
@@ -272,7 +272,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		if conds.Method != nil {
 			h.Conds.Method = &cruder.Cond{
 				Op:  conds.GetMethod().GetOp(),
-				Val: conds.Method.String(),
+				Val: npool.Method(conds.GetMethod().GetValue()),
 			}
 		}
 		if conds.Path != nil {
@@ -283,13 +283,13 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.Exported != nil {
 			h.Conds.Exported = &cruder.Cond{
-				Op:  conds.GetExported().Op,
+				Op:  conds.GetExported().GetOp(),
 				Val: conds.GetExported().GetValue(),
 			}
 		}
 		if conds.Deprecated != nil {
 			h.Conds.Deprecated = &cruder.Cond{
-				Op:  conds.GetDeprecated().Op,
+				Op:  conds.GetDeprecated().GetOp(),
 				Val: conds.GetDeprecated().GetValue(),
 			}
 		}
@@ -303,7 +303,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				ids = append(ids, _id)
 			}
 			h.Conds.EntIDs = &cruder.Cond{
-				Op:  conds.GetEntIDs().Op,
+				Op:  conds.GetEntIDs().GetOp(),
 				Val: ids,
 			}
 		}

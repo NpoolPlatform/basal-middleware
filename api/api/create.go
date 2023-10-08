@@ -47,9 +47,9 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 	}
 
 	handler.Conds = &crud.Conds{
-		Protocol:    &cruder.Cond{Op: cruder.EQ, Val: req.Protocol.String()},
+		Protocol:    &cruder.Cond{Op: cruder.EQ, Val: *req.Protocol},
 		ServiceName: &cruder.Cond{Op: cruder.EQ, Val: *req.ServiceName},
-		Method:      &cruder.Cond{Op: cruder.EQ, Val: req.Method.String()},
+		Method:      &cruder.Cond{Op: cruder.EQ, Val: *req.Method},
 		Path:        &cruder.Cond{Op: cruder.EQ, Val: *req.Path},
 	}
 	info, err := handler.GetAPIOnly(ctx)

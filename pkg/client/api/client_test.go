@@ -86,9 +86,21 @@ func updateAPI(t *testing.T) {
 }
 
 func getAPIs(t *testing.T) {
-	infos, _, err := GetAPIs(context.Background(), &npool.Conds{}, 0, 1)
+	infos, total, err := GetAPIs(context.Background(), &npool.Conds{
+		EntID:    &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
+		Protocol: &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(ret.Protocol)},
+		// ServiceName: &basetypes.StringVal{Op: cruder.EQ, Value: ret.ServiceName},
+		// Method:      &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(ret.Method)},
+		// Path:        &basetypes.StringVal{Op: cruder.EQ, Value: ret.Path},
+		// Exported:    &basetypes.BoolVal{Op: cruder.EQ, Value: ret.Exported},
+		// Deprecated:  &basetypes.BoolVal{Op: cruder.EQ, Value: ret.Deprecated},
+		// EntIDs:      &basetypes.StringSliceVal{Op: cruder.IN, Value: []string{ret.EntID}},
+	}, 0, 2)
 	if assert.Nil(t, err) {
-		assert.NotEqual(t, len(infos), 0)
+		if assert.Equal(t, uint32(1), total) &&
+			assert.Equal(t, 1, len(infos)) {
+			assert.Equal(t, &ret, infos[0])
+		}
 	}
 }
 

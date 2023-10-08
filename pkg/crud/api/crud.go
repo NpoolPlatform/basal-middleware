@@ -97,13 +97,13 @@ func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) { //nol
 		}
 	}
 	if conds.Protocol != nil {
-		protocol, ok := conds.Protocol.Val.(string)
+		protocol, ok := conds.Protocol.Val.(npool.Protocol)
 		if !ok {
 			return nil, fmt.Errorf("invalid protocol")
 		}
 		switch conds.Protocol.Op {
 		case cruder.EQ:
-			q.Where(api.Protocol(protocol))
+			q.Where(api.Protocol(protocol.String()))
 		default:
 			return nil, fmt.Errorf("invalid protocol field")
 		}
@@ -121,13 +121,13 @@ func SetQueryConds(q *ent.APIQuery, conds *Conds) (*ent.APIQuery, error) { //nol
 		}
 	}
 	if conds.Method != nil {
-		method, ok := conds.Method.Val.(string)
+		method, ok := conds.Method.Val.(npool.Method)
 		if !ok {
 			return nil, fmt.Errorf("invalid method")
 		}
 		switch conds.Method.Op {
 		case cruder.EQ:
-			q.Where(api.Method(method))
+			q.Where(api.Method(method.String()))
 		default:
 			return nil, fmt.Errorf("invalid method field")
 		}
