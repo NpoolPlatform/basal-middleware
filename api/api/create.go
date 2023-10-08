@@ -18,6 +18,13 @@ import (
 
 func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*npool.CreateAPIResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateAPI",
+			"In", in,
+		)
+		return &npool.CreateAPIResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := api1.NewHandler(
 		ctx,
 		api1.WithProtocol(req.Protocol, true),

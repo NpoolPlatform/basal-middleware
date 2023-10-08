@@ -83,7 +83,7 @@ func (h *Handler) CreateAPI(ctx context.Context) (*npool.API, error) {
 	}
 
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-		return handler.createAPI(ctx, tx, h.Req)
+		return handler.createAPI(ctx, tx, &h.Req)
 	})
 	if err != nil {
 		return nil, err
