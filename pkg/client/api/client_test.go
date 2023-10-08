@@ -42,7 +42,7 @@ var (
 		Domains:     []string{"api.npool.top"},
 		DomainsStr:  "[\"api.npool.top\"]",
 		Exported:    false,
-		Depracated:  false,
+		Deprecated:  false,
 	}
 )
 
@@ -68,11 +68,11 @@ func createAPI(t *testing.T) {
 }
 
 func updateAPI(t *testing.T) {
-	ret.Depracated = true
+	ret.Deprecated = true
 	var (
 		req = &npool.APIReq{
 			ID:         &ret.ID,
-			Depracated: &ret.Depracated,
+			Deprecated: &ret.Deprecated,
 		}
 	)
 	info, err := UpdateAPI(context.Background(), req)
@@ -91,9 +91,9 @@ func getAPIs(t *testing.T) {
 
 func getAPIOnly(t *testing.T) {
 	info, err := GetAPIOnly(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
+		EntID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: ret.ID,
+			Value: ret.EntID,
 		},
 	})
 	if assert.Nil(t, err) {
@@ -102,7 +102,7 @@ func getAPIOnly(t *testing.T) {
 }
 
 func existAPI(t *testing.T) {
-	exist, _ := ExistAPI(context.Background(), ret.ID)
+	exist, _ := ExistAPI(context.Background(), ret.EntID)
 	assert.True(t, exist)
 }
 
@@ -112,9 +112,9 @@ func deleteAPI(t *testing.T) {
 		assert.Equal(t, info, &ret)
 	}
 	info, err = GetAPIOnly(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
+		EntID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: ret.ID,
+			Value: ret.EntID,
 		},
 	})
 	assert.Nil(t, err)

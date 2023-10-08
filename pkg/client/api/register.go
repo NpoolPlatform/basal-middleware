@@ -12,6 +12,7 @@ import (
 	config "github.com/NpoolPlatform/go-service-framework/pkg/config"
 	logger "github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	"github.com/NpoolPlatform/go-service-framework/pkg/pubsub"
+	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 
 	"github.com/go-resty/resty/v2"
@@ -19,7 +20,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func publish(apis []*mgrpb.APIReq) error {
+func publish(apis []*npool.APIReq) error {
 	return pubsub.WithPublisher(func(publisher *pubsub.Publisher) error {
 		return publisher.Update(
 			basetypes.MsgID_RegisterAPIsReq.String(),
@@ -31,10 +32,10 @@ func publish(apis []*mgrpb.APIReq) error {
 	})
 }
 
-func muxAPIs(mux *runtime.ServeMux) []*mgrpb.APIReq {
-	var apis []*mgrpb.APIReq
+func muxAPIs(mux *runtime.ServeMux) []*npool.APIReq {
+	var apis []*npool.APIReq
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
-	protocol := mgrpb.Protocol_HTTP
+	protocol := npool.Protocol_HTTP
 
 	valueOfMux := reflect.ValueOf(mux).Elem()
 	handlers := valueOfMux.FieldByName("handlers")
@@ -45,14 +46,14 @@ func muxAPIs(mux *runtime.ServeMux) []*mgrpb.APIReq {
 			pat := methIter.Value().Index(i).FieldByName("pat")
 			tmp := reflect.NewAt(pat.Type(), unsafe.Pointer(pat.UnsafeAddr())).Elem()
 			str := tmp.MethodByName("String").Call(nil)[0].String()
-			method, ok := mgrpb.Method_value[methIter.Key().String()]
+			method, ok := npool.Method_value[methIter.Key().String()]
 			if !ok {
 				logger.Sugar().Warnw("muxAPIs", "Method", methIter.Key().String())
 				continue
 			}
-			_method := mgrpb.Method(method)
+			_method := npool.Method(method)
 
-			apis = append(apis, &mgrpb.APIReq{
+			apis = append(apis, &npool.APIReq{
 				Protocol:    &protocol,
 				ServiceName: &serviceName,
 				Method:      &_method,
@@ -64,19 +65,19 @@ func muxAPIs(mux *runtime.ServeMux) []*mgrpb.APIReq {
 	return apis
 }
 
-func grpcAPIs(server grpc.ServiceRegistrar) []*mgrpb.APIReq {
+func grpcAPIs(server grpc.ServiceRegistrar) []*npool.APIReq {
 	srvInfo := server.(*grpc.Server).GetServiceInfo()
 
-	var apis []*mgrpb.APIReq
+	var apis []*npool.APIReq
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
-	protocol := mgrpb.Protocol_GRPC
-	method := mgrpb.Method_STREAM
+	protocol := npool.Protocol_GRPC
+	method := npool.Method_STREAM
 
 	for key, info := range srvInfo {
 		for _, _method := range info.Methods {
 			path := fmt.Sprintf("%v/%v", key, _method.Name)
 			methodName := _method.Name
-			apis = append(apis, &mgrpb.APIReq{
+			apis = append(apis, &npool.APIReq{
 				Protocol:    &protocol,
 				ServiceName: &serviceName,
 				Method:      &method,
@@ -141,7 +142,7 @@ func reliableRegister(mux *runtime.ServeMux) {
 	}
 }
 
-func registerHttp(apis []*mgrpb.APIReq) error { //nolint
+func registerHttp(apis []*npool.APIReq) error { //nolint
 	serviceName := config.GetStringValueWithNameSpace("", config.KeyHostname)
 	gatewayRouters, err := getGatewayRouters(serviceName)
 	if err != nil {
@@ -181,7 +182,7 @@ func registerHttp(apis []*mgrpb.APIReq) error { //nolint
 	return nil
 }
 
-func reliablePublish(apis []*basalmwpb.APIReq) {
+func reliablePublish(apis []*npool.APIReq) {
 	for {
 		<-time.After(5 * time.Second) //nolint
 		if err := publish(apis); err == nil {
