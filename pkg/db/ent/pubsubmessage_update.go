@@ -184,6 +184,20 @@ func (pmu *PubsubMessageUpdate) ClearArguments() *PubsubMessageUpdate {
 	return pmu
 }
 
+// SetEntID sets the "ent_id" field.
+func (pmu *PubsubMessageUpdate) SetEntID(u uuid.UUID) *PubsubMessageUpdate {
+	pmu.mutation.SetEntID(u)
+	return pmu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (pmu *PubsubMessageUpdate) SetNillableEntID(u *uuid.UUID) *PubsubMessageUpdate {
+	if u != nil {
+		pmu.SetEntID(*u)
+	}
+	return pmu
+}
+
 // Mutation returns the PubsubMessageMutation object of the builder.
 func (pmu *PubsubMessageUpdate) Mutation() *PubsubMessageMutation {
 	return pmu.mutation
@@ -389,6 +403,13 @@ func (pmu *PubsubMessageUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Column: pubsubmessage.FieldArguments,
 		})
 	}
+	if value, ok := pmu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: pubsubmessage.FieldEntID,
+		})
+	}
 	_spec.Modifiers = pmu.modifiers
 	if n, err = sqlgraph.UpdateNodes(ctx, pmu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -562,6 +583,20 @@ func (pmuo *PubsubMessageUpdateOne) SetNillableArguments(s *string) *PubsubMessa
 // ClearArguments clears the value of the "arguments" field.
 func (pmuo *PubsubMessageUpdateOne) ClearArguments() *PubsubMessageUpdateOne {
 	pmuo.mutation.ClearArguments()
+	return pmuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (pmuo *PubsubMessageUpdateOne) SetEntID(u uuid.UUID) *PubsubMessageUpdateOne {
+	pmuo.mutation.SetEntID(u)
+	return pmuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (pmuo *PubsubMessageUpdateOne) SetNillableEntID(u *uuid.UUID) *PubsubMessageUpdateOne {
+	if u != nil {
+		pmuo.SetEntID(*u)
+	}
 	return pmuo
 }
 
@@ -798,6 +833,13 @@ func (pmuo *PubsubMessageUpdateOne) sqlSave(ctx context.Context) (_node *PubsubM
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: pubsubmessage.FieldArguments,
+		})
+	}
+	if value, ok := pmuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: pubsubmessage.FieldEntID,
 		})
 	}
 	_spec.Modifiers = pmuo.modifiers

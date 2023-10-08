@@ -32,6 +32,8 @@ type PubsubMessage struct {
 	UndoID uuid.UUID `json:"undo_id,omitempty"`
 	// Arguments holds the value of the "arguments" field.
 	Arguments string `json:"arguments,omitempty"`
+	// EntID holds the value of the "ent_id" field.
+	EntID uuid.UUID `json:"ent_id,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -43,7 +45,7 @@ func (*PubsubMessage) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case pubsubmessage.FieldMessageID, pubsubmessage.FieldState, pubsubmessage.FieldArguments:
 			values[i] = new(sql.NullString)
-		case pubsubmessage.FieldRespToID, pubsubmessage.FieldUndoID:
+		case pubsubmessage.FieldRespToID, pubsubmessage.FieldUndoID, pubsubmessage.FieldEntID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type PubsubMessage", columns[i])
@@ -114,6 +116,12 @@ func (pm *PubsubMessage) assignValues(columns []string, values []interface{}) er
 			} else if value.Valid {
 				pm.Arguments = value.String
 			}
+		case pubsubmessage.FieldEntID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field ent_id", values[i])
+			} else if value != nil {
+				pm.EntID = *value
+			}
 		}
 	}
 	return nil
@@ -165,6 +173,9 @@ func (pm *PubsubMessage) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("arguments=")
 	builder.WriteString(pm.Arguments)
+	builder.WriteString(", ")
+	builder.WriteString("ent_id=")
+	builder.WriteString(fmt.Sprintf("%v", pm.EntID))
 	builder.WriteByte(')')
 	return builder.String()
 }

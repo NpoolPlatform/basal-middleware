@@ -135,6 +135,13 @@ func Arguments(v string) predicate.PubsubMessage {
 	})
 }
 
+// EntID applies equality check predicate on the "ent_id" field. It's identical to EntIDEQ.
+func EntID(v uuid.UUID) predicate.PubsubMessage {
+	return predicate.PubsubMessage(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEntID), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v uint32) predicate.PubsubMessage {
 	return predicate.PubsubMessage(func(s *sql.Selector) {
@@ -819,6 +826,70 @@ func ArgumentsEqualFold(v string) predicate.PubsubMessage {
 func ArgumentsContainsFold(v string) predicate.PubsubMessage {
 	return predicate.PubsubMessage(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldArguments), v))
+	})
+}
+
+// EntIDEQ applies the EQ predicate on the "ent_id" field.
+func EntIDEQ(v uuid.UUID) predicate.PubsubMessage {
+	return predicate.PubsubMessage(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEntID), v))
+	})
+}
+
+// EntIDNEQ applies the NEQ predicate on the "ent_id" field.
+func EntIDNEQ(v uuid.UUID) predicate.PubsubMessage {
+	return predicate.PubsubMessage(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEntID), v))
+	})
+}
+
+// EntIDIn applies the In predicate on the "ent_id" field.
+func EntIDIn(vs ...uuid.UUID) predicate.PubsubMessage {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.PubsubMessage(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldEntID), v...))
+	})
+}
+
+// EntIDNotIn applies the NotIn predicate on the "ent_id" field.
+func EntIDNotIn(vs ...uuid.UUID) predicate.PubsubMessage {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.PubsubMessage(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldEntID), v...))
+	})
+}
+
+// EntIDGT applies the GT predicate on the "ent_id" field.
+func EntIDGT(v uuid.UUID) predicate.PubsubMessage {
+	return predicate.PubsubMessage(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldEntID), v))
+	})
+}
+
+// EntIDGTE applies the GTE predicate on the "ent_id" field.
+func EntIDGTE(v uuid.UUID) predicate.PubsubMessage {
+	return predicate.PubsubMessage(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldEntID), v))
+	})
+}
+
+// EntIDLT applies the LT predicate on the "ent_id" field.
+func EntIDLT(v uuid.UUID) predicate.PubsubMessage {
+	return predicate.PubsubMessage(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldEntID), v))
+	})
+}
+
+// EntIDLTE applies the LTE predicate on the "ent_id" field.
+func EntIDLTE(v uuid.UUID) predicate.PubsubMessage {
+	return predicate.PubsubMessage(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldEntID), v))
 	})
 }
 

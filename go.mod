@@ -6,7 +6,7 @@ require (
 	bou.ke/monkey v1.0.2
 	entgo.io/ent v0.11.2
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230930023319-e48074d9472e
-	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008001724-1455abb0a662
+	github.com/NpoolPlatform/libent-cruder v0.0.0-20231008003000-d2536ff7d90f
 	github.com/NpoolPlatform/message v0.0.0-20231007085223-2577c1a0da6e
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.7.0
@@ -110,3 +110,5 @@ require (
 replace google.golang.org/grpc => github.com/grpc/grpc-go v1.41.0
 
 replace ariga.io/atlas => ariga.io/atlas v0.5.1-0.20220717122844-8593d7eb1a8e
+
+replace github.com/NpoolPlatform/message v0.0.0-20231007085223-2577c1a0da6e => ../message

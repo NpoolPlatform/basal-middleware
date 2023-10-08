@@ -28,6 +28,8 @@ const (
 	FieldUndoID = "undo_id"
 	// FieldArguments holds the string denoting the arguments field in the database.
 	FieldArguments = "arguments"
+	// FieldEntID holds the string denoting the ent_id field in the database.
+	FieldEntID = "ent_id"
 	// Table holds the table name of the pubsubmessage in the database.
 	Table = "pubsub_messages"
 )
@@ -43,6 +45,7 @@ var Columns = []string{
 	FieldRespToID,
 	FieldUndoID,
 	FieldArguments,
+	FieldEntID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -82,4 +85,6 @@ var (
 	DefaultUndoID func() uuid.UUID
 	// DefaultArguments holds the default value on creation for the "arguments" field.
 	DefaultArguments string
+	// DefaultEntID holds the default value on creation for the "ent_id" field.
+	DefaultEntID func() uuid.UUID
 )

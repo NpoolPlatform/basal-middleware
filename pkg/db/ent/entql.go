@@ -60,6 +60,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			pubsubmessage.FieldRespToID:  {Type: field.TypeUUID, Column: pubsubmessage.FieldRespToID},
 			pubsubmessage.FieldUndoID:    {Type: field.TypeUUID, Column: pubsubmessage.FieldUndoID},
 			pubsubmessage.FieldArguments: {Type: field.TypeString, Column: pubsubmessage.FieldArguments},
+			pubsubmessage.FieldEntID:     {Type: field.TypeUUID, Column: pubsubmessage.FieldEntID},
 		},
 	}
 	return graph
@@ -254,4 +255,9 @@ func (f *PubsubMessageFilter) WhereUndoID(p entql.ValueP) {
 // WhereArguments applies the entql string predicate on the arguments field.
 func (f *PubsubMessageFilter) WhereArguments(p entql.StringP) {
 	f.Where(p.Field(pubsubmessage.FieldArguments))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *PubsubMessageFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(pubsubmessage.FieldEntID))
 }

@@ -50,12 +50,20 @@ var (
 		{Name: "resp_to_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "undo_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "arguments", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 	}
 	// PubsubMessagesTable holds the schema information for the "pubsub_messages" table.
 	PubsubMessagesTable = &schema.Table{
 		Name:       "pubsub_messages",
 		Columns:    PubsubMessagesColumns,
 		PrimaryKey: []*schema.Column{PubsubMessagesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "pubsubmessage_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{PubsubMessagesColumns[9]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

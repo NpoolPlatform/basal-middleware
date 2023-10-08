@@ -102,6 +102,8 @@ func init() {
 	_ = pubsubmessageMixinFields0
 	pubsubmessageMixinFields1 := pubsubmessageMixin[1].Fields()
 	_ = pubsubmessageMixinFields1
+	pubsubmessageMixinFields2 := pubsubmessageMixin[2].Fields()
+	_ = pubsubmessageMixinFields2
 	pubsubmessageFields := schema.PubsubMessage{}.Fields()
 	_ = pubsubmessageFields
 	// pubsubmessageDescCreatedAt is the schema descriptor for created_at field.
@@ -138,6 +140,10 @@ func init() {
 	pubsubmessageDescArguments := pubsubmessageMixinFields1[4].Descriptor()
 	// pubsubmessage.DefaultArguments holds the default value on creation for the arguments field.
 	pubsubmessage.DefaultArguments = pubsubmessageDescArguments.Default.(string)
+	// pubsubmessageDescEntID is the schema descriptor for ent_id field.
+	pubsubmessageDescEntID := pubsubmessageMixinFields2[1].Descriptor()
+	// pubsubmessage.DefaultEntID holds the default value on creation for the ent_id field.
+	pubsubmessage.DefaultEntID = pubsubmessageDescEntID.Default.(func() uuid.UUID)
 }
 
 const (

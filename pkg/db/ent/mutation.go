@@ -1287,6 +1287,7 @@ type PubsubMessageMutation struct {
 	resp_to_id    *uuid.UUID
 	undo_id       *uuid.UUID
 	arguments     *string
+	ent_id        *uuid.UUID
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*PubsubMessage, error)
@@ -1361,6 +1362,12 @@ func (m PubsubMessageMutation) Tx() (*Tx, error) {
 	tx := &Tx{config: m.config}
 	tx.init()
 	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PubsubMessage entities.
+func (m *PubsubMessageMutation) SetID(id int) {
+	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
@@ -1804,6 +1811,42 @@ func (m *PubsubMessageMutation) ResetArguments() {
 	delete(m.clearedFields, pubsubmessage.FieldArguments)
 }
 
+// SetEntID sets the "ent_id" field.
+func (m *PubsubMessageMutation) SetEntID(u uuid.UUID) {
+	m.ent_id = &u
+}
+
+// EntID returns the value of the "ent_id" field in the mutation.
+func (m *PubsubMessageMutation) EntID() (r uuid.UUID, exists bool) {
+	v := m.ent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEntID returns the old "ent_id" field's value of the PubsubMessage entity.
+// If the PubsubMessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PubsubMessageMutation) OldEntID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEntID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEntID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEntID: %w", err)
+	}
+	return oldValue.EntID, nil
+}
+
+// ResetEntID resets all changes to the "ent_id" field.
+func (m *PubsubMessageMutation) ResetEntID() {
+	m.ent_id = nil
+}
+
 // Where appends a list predicates to the PubsubMessageMutation builder.
 func (m *PubsubMessageMutation) Where(ps ...predicate.PubsubMessage) {
 	m.predicates = append(m.predicates, ps...)
@@ -1823,7 +1866,7 @@ func (m *PubsubMessageMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PubsubMessageMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, pubsubmessage.FieldCreatedAt)
 	}
@@ -1847,6 +1890,9 @@ func (m *PubsubMessageMutation) Fields() []string {
 	}
 	if m.arguments != nil {
 		fields = append(fields, pubsubmessage.FieldArguments)
+	}
+	if m.ent_id != nil {
+		fields = append(fields, pubsubmessage.FieldEntID)
 	}
 	return fields
 }
@@ -1872,6 +1918,8 @@ func (m *PubsubMessageMutation) Field(name string) (ent.Value, bool) {
 		return m.UndoID()
 	case pubsubmessage.FieldArguments:
 		return m.Arguments()
+	case pubsubmessage.FieldEntID:
+		return m.EntID()
 	}
 	return nil, false
 }
@@ -1897,6 +1945,8 @@ func (m *PubsubMessageMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldUndoID(ctx)
 	case pubsubmessage.FieldArguments:
 		return m.OldArguments(ctx)
+	case pubsubmessage.FieldEntID:
+		return m.OldEntID(ctx)
 	}
 	return nil, fmt.Errorf("unknown PubsubMessage field %s", name)
 }
@@ -1961,6 +2011,13 @@ func (m *PubsubMessageMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetArguments(v)
+		return nil
+	case pubsubmessage.FieldEntID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEntID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PubsubMessage field %s", name)
@@ -2106,6 +2163,9 @@ func (m *PubsubMessageMutation) ResetField(name string) error {
 		return nil
 	case pubsubmessage.FieldArguments:
 		m.ResetArguments()
+		return nil
+	case pubsubmessage.FieldEntID:
+		m.ResetEntID()
 		return nil
 	}
 	return fmt.Errorf("unknown PubsubMessage field %s", name)

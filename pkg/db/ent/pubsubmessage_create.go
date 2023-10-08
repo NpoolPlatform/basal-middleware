@@ -134,6 +134,26 @@ func (pmc *PubsubMessageCreate) SetNillableArguments(s *string) *PubsubMessageCr
 	return pmc
 }
 
+// SetEntID sets the "ent_id" field.
+func (pmc *PubsubMessageCreate) SetEntID(u uuid.UUID) *PubsubMessageCreate {
+	pmc.mutation.SetEntID(u)
+	return pmc
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (pmc *PubsubMessageCreate) SetNillableEntID(u *uuid.UUID) *PubsubMessageCreate {
+	if u != nil {
+		pmc.SetEntID(*u)
+	}
+	return pmc
+}
+
+// SetID sets the "id" field.
+func (pmc *PubsubMessageCreate) SetID(i int) *PubsubMessageCreate {
+	pmc.mutation.SetID(i)
+	return pmc
+}
+
 // Mutation returns the PubsubMessageMutation object of the builder.
 func (pmc *PubsubMessageCreate) Mutation() *PubsubMessageMutation {
 	return pmc.mutation
@@ -260,6 +280,13 @@ func (pmc *PubsubMessageCreate) defaults() error {
 		v := pubsubmessage.DefaultArguments
 		pmc.mutation.SetArguments(v)
 	}
+	if _, ok := pmc.mutation.EntID(); !ok {
+		if pubsubmessage.DefaultEntID == nil {
+			return fmt.Errorf("ent: uninitialized pubsubmessage.DefaultEntID (forgotten import ent/runtime?)")
+		}
+		v := pubsubmessage.DefaultEntID()
+		pmc.mutation.SetEntID(v)
+	}
 	return nil
 }
 
@@ -274,6 +301,9 @@ func (pmc *PubsubMessageCreate) check() error {
 	if _, ok := pmc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "PubsubMessage.deleted_at"`)}
 	}
+	if _, ok := pmc.mutation.EntID(); !ok {
+		return &ValidationError{Name: "ent_id", err: errors.New(`ent: missing required field "PubsubMessage.ent_id"`)}
+	}
 	return nil
 }
 
@@ -285,8 +315,10 @@ func (pmc *PubsubMessageCreate) sqlSave(ctx context.Context) (*PubsubMessage, er
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int(id)
+	}
 	return _node, nil
 }
 
@@ -302,6 +334,10 @@ func (pmc *PubsubMessageCreate) createSpec() (*PubsubMessage, *sqlgraph.CreateSp
 		}
 	)
 	_spec.OnConflict = pmc.conflict
+	if id, ok := pmc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := pmc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint32,
@@ -365,6 +401,14 @@ func (pmc *PubsubMessageCreate) createSpec() (*PubsubMessage, *sqlgraph.CreateSp
 			Column: pubsubmessage.FieldArguments,
 		})
 		_node.Arguments = value
+	}
+	if value, ok := pmc.mutation.EntID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: pubsubmessage.FieldEntID,
+		})
+		_node.EntID = value
 	}
 	return _node, _spec
 }
@@ -564,17 +608,37 @@ func (u *PubsubMessageUpsert) ClearArguments() *PubsubMessageUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// SetEntID sets the "ent_id" field.
+func (u *PubsubMessageUpsert) SetEntID(v uuid.UUID) *PubsubMessageUpsert {
+	u.Set(pubsubmessage.FieldEntID, v)
+	return u
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *PubsubMessageUpsert) UpdateEntID() *PubsubMessageUpsert {
+	u.SetExcluded(pubsubmessage.FieldEntID)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.PubsubMessage.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(pubsubmessage.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *PubsubMessageUpsertOne) UpdateNewValues() *PubsubMessageUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(pubsubmessage.FieldID)
+		}
+	}))
 	return u
 }
 
@@ -774,6 +838,20 @@ func (u *PubsubMessageUpsertOne) ClearArguments() *PubsubMessageUpsertOne {
 	})
 }
 
+// SetEntID sets the "ent_id" field.
+func (u *PubsubMessageUpsertOne) SetEntID(v uuid.UUID) *PubsubMessageUpsertOne {
+	return u.Update(func(s *PubsubMessageUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *PubsubMessageUpsertOne) UpdateEntID() *PubsubMessageUpsertOne {
+	return u.Update(func(s *PubsubMessageUpsert) {
+		s.UpdateEntID()
+	})
+}
+
 // Exec executes the query.
 func (u *PubsubMessageUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -850,7 +928,7 @@ func (pmcb *PubsubMessageCreateBulk) Save(ctx context.Context) ([]*PubsubMessage
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = int(id)
 				}
@@ -942,11 +1020,22 @@ type PubsubMessageUpsertBulk struct {
 //	client.PubsubMessage.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(pubsubmessage.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *PubsubMessageUpsertBulk) UpdateNewValues() *PubsubMessageUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(pubsubmessage.FieldID)
+				return
+			}
+		}
+	}))
 	return u
 }
 
@@ -1143,6 +1232,20 @@ func (u *PubsubMessageUpsertBulk) UpdateArguments() *PubsubMessageUpsertBulk {
 func (u *PubsubMessageUpsertBulk) ClearArguments() *PubsubMessageUpsertBulk {
 	return u.Update(func(s *PubsubMessageUpsert) {
 		s.ClearArguments()
+	})
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *PubsubMessageUpsertBulk) SetEntID(v uuid.UUID) *PubsubMessageUpsertBulk {
+	return u.Update(func(s *PubsubMessageUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *PubsubMessageUpsertBulk) UpdateEntID() *PubsubMessageUpsertBulk {
+	return u.Update(func(s *PubsubMessageUpsert) {
+		s.UpdateEntID()
 	})
 }
 

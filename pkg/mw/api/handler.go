@@ -37,7 +37,8 @@ func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
 			}
 			return nil
 		}
-		h.ID = u
+		_u := int(*u)
+		h.ID = &_u
 		return nil
 	}
 }
