@@ -111,4 +111,3 @@ replace google.golang.org/grpc => github.com/grpc/grpc-go v1.41.0
 
 replace ariga.io/atlas => ariga.io/atlas v0.5.1-0.20220717122844-8593d7eb1a8e
 
-replace github.com/NpoolPlatform/libent-cruder v0.0.0-20231008051607-f64457cf6ab6 => ../libent-cruder
