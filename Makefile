@@ -62,7 +62,7 @@ ${SERVICES}:
 	${REPO_ROOT}/hack/verify-build.sh $@
 
 ${SERVICEIMAGES}:
-	${REPO_ROOT}/hack/generate-docker-image.sh $(@:%-image=%) $(DEVELOPMENT) $(DOCKER_REGISTRY)
+	${REPO_ROOT}/hack/generate-docker-image.sh $(@:%-image=%) $(DOCKER_REGISTRY)
 
 ${SERVICEIMAGERELEASES}:
 	${REPO_ROOT}/hack/release-docker-image.sh $(@:%-release=%) $(TAG) $(DOCKER_REGISTRY)

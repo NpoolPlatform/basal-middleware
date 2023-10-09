@@ -109,7 +109,7 @@ pipeline {
       }
       steps {
         sh 'make verify-build'
-        sh 'DEVELOPMENT=development DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
+        sh 'DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
       }
     }
 
@@ -238,7 +238,7 @@ pipeline {
           fi
         '''.stripIndent())
         sh 'make verify-build'
-        sh 'DEVELOPMENT=not-development DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
+        sh 'DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
       }
     }
 
