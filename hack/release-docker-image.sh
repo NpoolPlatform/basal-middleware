@@ -21,7 +21,7 @@ version=latest
 ## For testing or production environment, pass the second variable
 version=`git describe --exact-match --tags $(git log -n1 --pretty='%h')`
 if [ ! $? -eq 0 ]; then
-  branch=`git branch --show-current`
+  branch=`git rev-parse --abbrev-ref HEAD | grep -v ^HEAD$ || git rev-parse HEAD`
   if [ "x$branch" == "xmaster" ]; then
     version=latest
   else
