@@ -16,8 +16,7 @@ if git_status=$(git status --porcelain --untracked=no 2>/dev/null) && [[ -z "${g
     git_tree_state=clean
 fi
 
-version=latest
-
+set +e
 ## For testing or production environment, pass the second variable
 version=`git describe --exact-match --tags $(git log -n1 --pretty='%h')`
 if [ ! $? -eq 0 ]; then
