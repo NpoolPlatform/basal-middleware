@@ -102,20 +102,6 @@ pipeline {
       }
     }
 
-    stage('Generate docker image for feature') {
-      when {
-        expression { BUILD_TARGET == 'true' }
-        expression { BRANCH_NAME != 'master' }
-      }
-      steps {
-        sh 'make verify-build'
-        sh(returnStdout: false, script: '''
-          feature_name=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
-          DEVELOPMENT=$feature_name DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images
-        '''.stripIndent())
-      }
-    }
-
     stage('Generate docker image for development') {
       when {
         expression { BUILD_TARGET == 'true' }
@@ -252,7 +238,7 @@ pipeline {
           fi
         '''.stripIndent())
         sh 'make verify-build'
-        sh 'DEVELOPMENT=other DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
+        sh 'DEVELOPMENT=not-development DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
       }
     }
 
