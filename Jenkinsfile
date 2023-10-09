@@ -249,13 +249,13 @@ pipeline {
       }
       steps {
         sh(returnStdout: false, script: '''
-          feature_name=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
+          branch=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
           set +e
-          docker images | grep basal-middleware | grep $feature_name
+          docker images | grep basal-middleware | grep $branch
           rc=$?
           set -e
           if [ 0 -eq $rc ]; then
-            TAG=$feature_name DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
+            DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
           fi
           images=`docker images | grep entropypool | grep basal-middleware | grep none | awk '{ print $3 }'`
           for image in $images; do
@@ -276,7 +276,7 @@ pipeline {
           rc=$?
           set -e
           if [ 0 -eq $rc ]; then
-            TAG=latest DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
+            DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
           fi
           images=`docker images | grep entropypool | grep basal-middleware | grep none | awk '{ print $3 }'`
           for image in $images; do
@@ -304,7 +304,7 @@ pipeline {
             rc=$?
             set -e
             if [ 0 -eq $rc ]; then
-              TAG=$tag DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
+              DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
             fi
           fi
         '''.stripIndent())
@@ -329,7 +329,7 @@ pipeline {
             rc=$?
             set -e
             if [ 0 -eq $rc ]; then
-              TAG=$tag DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
+              DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
             fi
           fi
         '''.stripIndent())
