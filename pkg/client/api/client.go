@@ -119,7 +119,7 @@ func GetAPIOnly(ctx context.Context, conds *npool.Conds) (*npool.API, error) {
 		resp, err := cli.GetAPIs(ctx, &npool.GetAPIsRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2,
+			Limit:  2, //nolint
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail get api only: %v", err)
