@@ -10,7 +10,7 @@ import (
 )
 
 func Prepare(body string) (interface{}, error) {
-	req := []*npool.API{}
+	req := []*npool.APIReq{}
 	if err := json.Unmarshal([]byte(body), &req); err != nil {
 		return nil, err
 	}
