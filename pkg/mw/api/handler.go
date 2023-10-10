@@ -202,6 +202,7 @@ func WithReqs(reqs []*npool.APIReq) func(context.Context, *Handler) error {
 		for _, req := range reqs {
 			_req := &crud.Req{
 				Method:     req.Method,
+				MethodName: req.MethodName,
 				Path:       req.Path,
 				PathPrefix: req.PathPrefix,
 				Exported:   req.Exported,
