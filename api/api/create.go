@@ -27,6 +27,7 @@ func (s *Server) CreateAPI(ctx context.Context, in *npool.CreateAPIRequest) (*np
 	}
 	handler, err := api1.NewHandler(
 		ctx,
+		api1.WithEntID(req.EntID, false),
 		api1.WithProtocol(req.Protocol, true),
 		api1.WithServiceName(req.ServiceName, true),
 		api1.WithMethod(req.Method, true),
