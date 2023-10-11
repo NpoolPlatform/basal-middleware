@@ -7,15 +7,14 @@ import (
 
 	api1 "github.com/NpoolPlatform/basal-middleware/pkg/mw/api"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
-	eventpb "github.com/NpoolPlatform/message/npool/basal/mw/v1/event"
 )
 
 func Prepare(body string) (interface{}, error) {
-	req := eventpb.RegisterAPIsRequest{}
+	req := []*npool.APIReq{}
 	if err := json.Unmarshal([]byte(body), &req); err != nil {
 		return nil, err
 	}
-	return req.Info, nil
+	return req, nil
 }
 
 func Apply(ctx context.Context, req interface{}) error {
@@ -23,11 +22,6 @@ func Apply(ctx context.Context, req interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid request")
 	}
-
-	type APIHandler struct {
-		api1.Handler
-	}
-	handler := &APIHandler{}
 
 	if len(apis) == 0 {
 		return nil
@@ -41,15 +35,21 @@ func Apply(ctx context.Context, req interface{}) error {
 	if err != nil {
 		return err
 	}
+	defer func() {
+		_ = Unlock(_key, protocol.String())
+	}()
 
-	_, err = handler.CreateAPIs(ctx, apis)
+	handler, err := api1.NewHandler(
+		ctx,
+		api1.WithReqs(apis),
+	)
+	if err != nil {
+		return err
+	}
+	_, err = handler.CreateAPIs(ctx)
 	if err != nil {
 		return err
 	}
 
-	err = Unlock(_key, protocol.String())
-	if err != nil {
-		return err
-	}
 	return nil
 }

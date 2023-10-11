@@ -34,13 +34,14 @@ type APIMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uuid.UUID
+	id            *uint32
 	created_at    *uint32
 	addcreated_at *int32
 	updated_at    *uint32
 	addupdated_at *int32
 	deleted_at    *uint32
 	adddeleted_at *int32
+	ent_id        *uuid.UUID
 	protocol      *string
 	service_name  *string
 	method        *string
@@ -49,7 +50,7 @@ type APIMutation struct {
 	exported      *bool
 	path_prefix   *string
 	domains       *[]string
-	depracated    *bool
+	deprecated    *bool
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*API, error)
@@ -76,7 +77,7 @@ func newAPIMutation(c config, op Op, opts ...apiOption) *APIMutation {
 }
 
 // withAPIID sets the ID field of the mutation.
-func withAPIID(id uuid.UUID) apiOption {
+func withAPIID(id uint32) apiOption {
 	return func(m *APIMutation) {
 		var (
 			err   error
@@ -128,13 +129,13 @@ func (m APIMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of API entities.
-func (m *APIMutation) SetID(id uuid.UUID) {
+func (m *APIMutation) SetID(id uint32) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *APIMutation) ID() (id uuid.UUID, exists bool) {
+func (m *APIMutation) ID() (id uint32, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -145,12 +146,12 @@ func (m *APIMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *APIMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *APIMutation) IDs(ctx context.Context) ([]uint32, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []uint32{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -326,6 +327,42 @@ func (m *APIMutation) AddedDeletedAt() (r int32, exists bool) {
 func (m *APIMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	m.adddeleted_at = nil
+}
+
+// SetEntID sets the "ent_id" field.
+func (m *APIMutation) SetEntID(u uuid.UUID) {
+	m.ent_id = &u
+}
+
+// EntID returns the value of the "ent_id" field in the mutation.
+func (m *APIMutation) EntID() (r uuid.UUID, exists bool) {
+	v := m.ent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEntID returns the old "ent_id" field's value of the API entity.
+// If the API object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIMutation) OldEntID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEntID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEntID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEntID: %w", err)
+	}
+	return oldValue.EntID, nil
+}
+
+// ResetEntID resets all changes to the "ent_id" field.
+func (m *APIMutation) ResetEntID() {
+	m.ent_id = nil
 }
 
 // SetProtocol sets the "protocol" field.
@@ -720,53 +757,53 @@ func (m *APIMutation) ResetDomains() {
 	delete(m.clearedFields, api.FieldDomains)
 }
 
-// SetDepracated sets the "depracated" field.
-func (m *APIMutation) SetDepracated(b bool) {
-	m.depracated = &b
+// SetDeprecated sets the "deprecated" field.
+func (m *APIMutation) SetDeprecated(b bool) {
+	m.deprecated = &b
 }
 
-// Depracated returns the value of the "depracated" field in the mutation.
-func (m *APIMutation) Depracated() (r bool, exists bool) {
-	v := m.depracated
+// Deprecated returns the value of the "deprecated" field in the mutation.
+func (m *APIMutation) Deprecated() (r bool, exists bool) {
+	v := m.deprecated
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDepracated returns the old "depracated" field's value of the API entity.
+// OldDeprecated returns the old "deprecated" field's value of the API entity.
 // If the API object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *APIMutation) OldDepracated(ctx context.Context) (v bool, err error) {
+func (m *APIMutation) OldDeprecated(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDepracated is only allowed on UpdateOne operations")
+		return v, errors.New("OldDeprecated is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDepracated requires an ID field in the mutation")
+		return v, errors.New("OldDeprecated requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDepracated: %w", err)
+		return v, fmt.Errorf("querying old value for OldDeprecated: %w", err)
 	}
-	return oldValue.Depracated, nil
+	return oldValue.Deprecated, nil
 }
 
-// ClearDepracated clears the value of the "depracated" field.
-func (m *APIMutation) ClearDepracated() {
-	m.depracated = nil
-	m.clearedFields[api.FieldDepracated] = struct{}{}
+// ClearDeprecated clears the value of the "deprecated" field.
+func (m *APIMutation) ClearDeprecated() {
+	m.deprecated = nil
+	m.clearedFields[api.FieldDeprecated] = struct{}{}
 }
 
-// DepracatedCleared returns if the "depracated" field was cleared in this mutation.
-func (m *APIMutation) DepracatedCleared() bool {
-	_, ok := m.clearedFields[api.FieldDepracated]
+// DeprecatedCleared returns if the "deprecated" field was cleared in this mutation.
+func (m *APIMutation) DeprecatedCleared() bool {
+	_, ok := m.clearedFields[api.FieldDeprecated]
 	return ok
 }
 
-// ResetDepracated resets all changes to the "depracated" field.
-func (m *APIMutation) ResetDepracated() {
-	m.depracated = nil
-	delete(m.clearedFields, api.FieldDepracated)
+// ResetDeprecated resets all changes to the "deprecated" field.
+func (m *APIMutation) ResetDeprecated() {
+	m.deprecated = nil
+	delete(m.clearedFields, api.FieldDeprecated)
 }
 
 // Where appends a list predicates to the APIMutation builder.
@@ -788,7 +825,7 @@ func (m *APIMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *APIMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, api.FieldCreatedAt)
 	}
@@ -797,6 +834,9 @@ func (m *APIMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, api.FieldDeletedAt)
+	}
+	if m.ent_id != nil {
+		fields = append(fields, api.FieldEntID)
 	}
 	if m.protocol != nil {
 		fields = append(fields, api.FieldProtocol)
@@ -822,8 +862,8 @@ func (m *APIMutation) Fields() []string {
 	if m.domains != nil {
 		fields = append(fields, api.FieldDomains)
 	}
-	if m.depracated != nil {
-		fields = append(fields, api.FieldDepracated)
+	if m.deprecated != nil {
+		fields = append(fields, api.FieldDeprecated)
 	}
 	return fields
 }
@@ -839,6 +879,8 @@ func (m *APIMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case api.FieldDeletedAt:
 		return m.DeletedAt()
+	case api.FieldEntID:
+		return m.EntID()
 	case api.FieldProtocol:
 		return m.Protocol()
 	case api.FieldServiceName:
@@ -855,8 +897,8 @@ func (m *APIMutation) Field(name string) (ent.Value, bool) {
 		return m.PathPrefix()
 	case api.FieldDomains:
 		return m.Domains()
-	case api.FieldDepracated:
-		return m.Depracated()
+	case api.FieldDeprecated:
+		return m.Deprecated()
 	}
 	return nil, false
 }
@@ -872,6 +914,8 @@ func (m *APIMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldUpdatedAt(ctx)
 	case api.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case api.FieldEntID:
+		return m.OldEntID(ctx)
 	case api.FieldProtocol:
 		return m.OldProtocol(ctx)
 	case api.FieldServiceName:
@@ -888,8 +932,8 @@ func (m *APIMutation) OldField(ctx context.Context, name string) (ent.Value, err
 		return m.OldPathPrefix(ctx)
 	case api.FieldDomains:
 		return m.OldDomains(ctx)
-	case api.FieldDepracated:
-		return m.OldDepracated(ctx)
+	case api.FieldDeprecated:
+		return m.OldDeprecated(ctx)
 	}
 	return nil, fmt.Errorf("unknown API field %s", name)
 }
@@ -919,6 +963,13 @@ func (m *APIMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case api.FieldEntID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEntID(v)
 		return nil
 	case api.FieldProtocol:
 		v, ok := value.(string)
@@ -976,12 +1027,12 @@ func (m *APIMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDomains(v)
 		return nil
-	case api.FieldDepracated:
+	case api.FieldDeprecated:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetDepracated(v)
+		m.SetDeprecated(v)
 		return nil
 	}
 	return fmt.Errorf("unknown API field %s", name)
@@ -1076,8 +1127,8 @@ func (m *APIMutation) ClearedFields() []string {
 	if m.FieldCleared(api.FieldDomains) {
 		fields = append(fields, api.FieldDomains)
 	}
-	if m.FieldCleared(api.FieldDepracated) {
-		fields = append(fields, api.FieldDepracated)
+	if m.FieldCleared(api.FieldDeprecated) {
+		fields = append(fields, api.FieldDeprecated)
 	}
 	return fields
 }
@@ -1117,8 +1168,8 @@ func (m *APIMutation) ClearField(name string) error {
 	case api.FieldDomains:
 		m.ClearDomains()
 		return nil
-	case api.FieldDepracated:
-		m.ClearDepracated()
+	case api.FieldDeprecated:
+		m.ClearDeprecated()
 		return nil
 	}
 	return fmt.Errorf("unknown API nullable field %s", name)
@@ -1136,6 +1187,9 @@ func (m *APIMutation) ResetField(name string) error {
 		return nil
 	case api.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case api.FieldEntID:
+		m.ResetEntID()
 		return nil
 	case api.FieldProtocol:
 		m.ResetProtocol()
@@ -1161,8 +1215,8 @@ func (m *APIMutation) ResetField(name string) error {
 	case api.FieldDomains:
 		m.ResetDomains()
 		return nil
-	case api.FieldDepracated:
-		m.ResetDepracated()
+	case api.FieldDeprecated:
+		m.ResetDeprecated()
 		return nil
 	}
 	return fmt.Errorf("unknown API field %s", name)
@@ -1221,7 +1275,7 @@ type PubsubMessageMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uuid.UUID
+	id            *uint32
 	created_at    *uint32
 	addcreated_at *int32
 	updated_at    *uint32
@@ -1233,6 +1287,7 @@ type PubsubMessageMutation struct {
 	resp_to_id    *uuid.UUID
 	undo_id       *uuid.UUID
 	arguments     *string
+	ent_id        *uuid.UUID
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*PubsubMessage, error)
@@ -1259,7 +1314,7 @@ func newPubsubMessageMutation(c config, op Op, opts ...pubsubmessageOption) *Pub
 }
 
 // withPubsubMessageID sets the ID field of the mutation.
-func withPubsubMessageID(id uuid.UUID) pubsubmessageOption {
+func withPubsubMessageID(id uint32) pubsubmessageOption {
 	return func(m *PubsubMessageMutation) {
 		var (
 			err   error
@@ -1311,13 +1366,13 @@ func (m PubsubMessageMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of PubsubMessage entities.
-func (m *PubsubMessageMutation) SetID(id uuid.UUID) {
+func (m *PubsubMessageMutation) SetID(id uint32) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PubsubMessageMutation) ID() (id uuid.UUID, exists bool) {
+func (m *PubsubMessageMutation) ID() (id uint32, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1328,12 +1383,12 @@ func (m *PubsubMessageMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PubsubMessageMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *PubsubMessageMutation) IDs(ctx context.Context) ([]uint32, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []uint32{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1756,6 +1811,42 @@ func (m *PubsubMessageMutation) ResetArguments() {
 	delete(m.clearedFields, pubsubmessage.FieldArguments)
 }
 
+// SetEntID sets the "ent_id" field.
+func (m *PubsubMessageMutation) SetEntID(u uuid.UUID) {
+	m.ent_id = &u
+}
+
+// EntID returns the value of the "ent_id" field in the mutation.
+func (m *PubsubMessageMutation) EntID() (r uuid.UUID, exists bool) {
+	v := m.ent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEntID returns the old "ent_id" field's value of the PubsubMessage entity.
+// If the PubsubMessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PubsubMessageMutation) OldEntID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEntID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEntID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEntID: %w", err)
+	}
+	return oldValue.EntID, nil
+}
+
+// ResetEntID resets all changes to the "ent_id" field.
+func (m *PubsubMessageMutation) ResetEntID() {
+	m.ent_id = nil
+}
+
 // Where appends a list predicates to the PubsubMessageMutation builder.
 func (m *PubsubMessageMutation) Where(ps ...predicate.PubsubMessage) {
 	m.predicates = append(m.predicates, ps...)
@@ -1775,7 +1866,7 @@ func (m *PubsubMessageMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PubsubMessageMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, pubsubmessage.FieldCreatedAt)
 	}
@@ -1799,6 +1890,9 @@ func (m *PubsubMessageMutation) Fields() []string {
 	}
 	if m.arguments != nil {
 		fields = append(fields, pubsubmessage.FieldArguments)
+	}
+	if m.ent_id != nil {
+		fields = append(fields, pubsubmessage.FieldEntID)
 	}
 	return fields
 }
@@ -1824,6 +1918,8 @@ func (m *PubsubMessageMutation) Field(name string) (ent.Value, bool) {
 		return m.UndoID()
 	case pubsubmessage.FieldArguments:
 		return m.Arguments()
+	case pubsubmessage.FieldEntID:
+		return m.EntID()
 	}
 	return nil, false
 }
@@ -1849,6 +1945,8 @@ func (m *PubsubMessageMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldUndoID(ctx)
 	case pubsubmessage.FieldArguments:
 		return m.OldArguments(ctx)
+	case pubsubmessage.FieldEntID:
+		return m.OldEntID(ctx)
 	}
 	return nil, fmt.Errorf("unknown PubsubMessage field %s", name)
 }
@@ -1913,6 +2011,13 @@ func (m *PubsubMessageMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetArguments(v)
+		return nil
+	case pubsubmessage.FieldEntID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEntID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PubsubMessage field %s", name)
@@ -2058,6 +2163,9 @@ func (m *PubsubMessageMutation) ResetField(name string) error {
 		return nil
 	case pubsubmessage.FieldArguments:
 		m.ResetArguments()
+		return nil
+	case pubsubmessage.FieldEntID:
+		m.ResetEntID()
 		return nil
 	}
 	return fmt.Errorf("unknown PubsubMessage field %s", name)

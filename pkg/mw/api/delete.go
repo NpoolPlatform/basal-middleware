@@ -20,7 +20,7 @@ func (h *Handler) DeleteAPI(ctx context.Context) (*mgrpb.API, error) {
 		if _, err := crud.UpdateSet(
 			cli.API.UpdateOneID(*h.ID),
 			&crud.Req{
-				ID:        h.ID,
+				EntID:     h.EntID,
 				DeletedAt: &now,
 			},
 		).Save(_ctx); err != nil {

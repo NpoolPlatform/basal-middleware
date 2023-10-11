@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent/predicate"
-	"github.com/google/uuid"
 )
 
 // APIQuery is the builder for querying API entities.
@@ -87,8 +86,8 @@ func (aq *APIQuery) FirstX(ctx context.Context) *API {
 
 // FirstID returns the first API ID from the query.
 // Returns a *NotFoundError when no API ID was found.
-func (aq *APIQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (aq *APIQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = aq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -100,7 +99,7 @@ func (aq *APIQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (aq *APIQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (aq *APIQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := aq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -138,8 +137,8 @@ func (aq *APIQuery) OnlyX(ctx context.Context) *API {
 // OnlyID is like Only, but returns the only API ID in the query.
 // Returns a *NotSingularError when more than one API ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (aq *APIQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (aq *APIQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = aq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -155,7 +154,7 @@ func (aq *APIQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (aq *APIQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (aq *APIQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := aq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,8 +180,8 @@ func (aq *APIQuery) AllX(ctx context.Context) []*API {
 }
 
 // IDs executes the query and returns a list of API IDs.
-func (aq *APIQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (aq *APIQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := aq.Select(api.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (aq *APIQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (aq *APIQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (aq *APIQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := aq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -377,7 +376,7 @@ func (aq *APIQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   api.Table,
 			Columns: api.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: api.FieldID,
 			},
 		},

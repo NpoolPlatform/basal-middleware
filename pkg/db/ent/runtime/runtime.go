@@ -30,6 +30,8 @@ func init() {
 	}
 	apiMixinFields0 := apiMixin[0].Fields()
 	_ = apiMixinFields0
+	apiMixinFields1 := apiMixin[1].Fields()
+	_ = apiMixinFields1
 	apiFields := schema.API{}.Fields()
 	_ = apiFields
 	// apiDescCreatedAt is the schema descriptor for created_at field.
@@ -46,46 +48,46 @@ func init() {
 	apiDescDeletedAt := apiMixinFields0[2].Descriptor()
 	// api.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	api.DefaultDeletedAt = apiDescDeletedAt.Default.(func() uint32)
+	// apiDescEntID is the schema descriptor for ent_id field.
+	apiDescEntID := apiMixinFields1[1].Descriptor()
+	// api.DefaultEntID holds the default value on creation for the ent_id field.
+	api.DefaultEntID = apiDescEntID.Default.(func() uuid.UUID)
 	// apiDescProtocol is the schema descriptor for protocol field.
-	apiDescProtocol := apiFields[1].Descriptor()
+	apiDescProtocol := apiFields[0].Descriptor()
 	// api.DefaultProtocol holds the default value on creation for the protocol field.
 	api.DefaultProtocol = apiDescProtocol.Default.(string)
 	// apiDescServiceName is the schema descriptor for service_name field.
-	apiDescServiceName := apiFields[2].Descriptor()
+	apiDescServiceName := apiFields[1].Descriptor()
 	// api.DefaultServiceName holds the default value on creation for the service_name field.
 	api.DefaultServiceName = apiDescServiceName.Default.(string)
 	// apiDescMethod is the schema descriptor for method field.
-	apiDescMethod := apiFields[3].Descriptor()
+	apiDescMethod := apiFields[2].Descriptor()
 	// api.DefaultMethod holds the default value on creation for the method field.
 	api.DefaultMethod = apiDescMethod.Default.(string)
 	// apiDescMethodName is the schema descriptor for method_name field.
-	apiDescMethodName := apiFields[4].Descriptor()
+	apiDescMethodName := apiFields[3].Descriptor()
 	// api.DefaultMethodName holds the default value on creation for the method_name field.
 	api.DefaultMethodName = apiDescMethodName.Default.(string)
 	// apiDescPath is the schema descriptor for path field.
-	apiDescPath := apiFields[5].Descriptor()
+	apiDescPath := apiFields[4].Descriptor()
 	// api.DefaultPath holds the default value on creation for the path field.
 	api.DefaultPath = apiDescPath.Default.(string)
 	// apiDescExported is the schema descriptor for exported field.
-	apiDescExported := apiFields[6].Descriptor()
+	apiDescExported := apiFields[5].Descriptor()
 	// api.DefaultExported holds the default value on creation for the exported field.
 	api.DefaultExported = apiDescExported.Default.(bool)
 	// apiDescPathPrefix is the schema descriptor for path_prefix field.
-	apiDescPathPrefix := apiFields[7].Descriptor()
+	apiDescPathPrefix := apiFields[6].Descriptor()
 	// api.DefaultPathPrefix holds the default value on creation for the path_prefix field.
 	api.DefaultPathPrefix = apiDescPathPrefix.Default.(string)
 	// apiDescDomains is the schema descriptor for domains field.
-	apiDescDomains := apiFields[8].Descriptor()
+	apiDescDomains := apiFields[7].Descriptor()
 	// api.DefaultDomains holds the default value on creation for the domains field.
 	api.DefaultDomains = apiDescDomains.Default.([]string)
-	// apiDescDepracated is the schema descriptor for depracated field.
-	apiDescDepracated := apiFields[9].Descriptor()
-	// api.DefaultDepracated holds the default value on creation for the depracated field.
-	api.DefaultDepracated = apiDescDepracated.Default.(bool)
-	// apiDescID is the schema descriptor for id field.
-	apiDescID := apiFields[0].Descriptor()
-	// api.DefaultID holds the default value on creation for the id field.
-	api.DefaultID = apiDescID.Default.(func() uuid.UUID)
+	// apiDescDeprecated is the schema descriptor for deprecated field.
+	apiDescDeprecated := apiFields[8].Descriptor()
+	// api.DefaultDeprecated holds the default value on creation for the deprecated field.
+	api.DefaultDeprecated = apiDescDeprecated.Default.(bool)
 	pubsubmessageMixin := schema.PubsubMessage{}.Mixin()
 	pubsubmessage.Policy = privacy.NewPolicies(pubsubmessageMixin[0], schema.PubsubMessage{})
 	pubsubmessage.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -98,6 +100,10 @@ func init() {
 	}
 	pubsubmessageMixinFields0 := pubsubmessageMixin[0].Fields()
 	_ = pubsubmessageMixinFields0
+	pubsubmessageMixinFields1 := pubsubmessageMixin[1].Fields()
+	_ = pubsubmessageMixinFields1
+	pubsubmessageMixinFields2 := pubsubmessageMixin[2].Fields()
+	_ = pubsubmessageMixinFields2
 	pubsubmessageFields := schema.PubsubMessage{}.Fields()
 	_ = pubsubmessageFields
 	// pubsubmessageDescCreatedAt is the schema descriptor for created_at field.
@@ -115,25 +121,29 @@ func init() {
 	// pubsubmessage.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	pubsubmessage.DefaultDeletedAt = pubsubmessageDescDeletedAt.Default.(func() uint32)
 	// pubsubmessageDescMessageID is the schema descriptor for message_id field.
-	pubsubmessageDescMessageID := pubsubmessageFields[1].Descriptor()
+	pubsubmessageDescMessageID := pubsubmessageMixinFields1[0].Descriptor()
 	// pubsubmessage.DefaultMessageID holds the default value on creation for the message_id field.
 	pubsubmessage.DefaultMessageID = pubsubmessageDescMessageID.Default.(string)
 	// pubsubmessageDescState is the schema descriptor for state field.
-	pubsubmessageDescState := pubsubmessageFields[2].Descriptor()
+	pubsubmessageDescState := pubsubmessageMixinFields1[1].Descriptor()
 	// pubsubmessage.DefaultState holds the default value on creation for the state field.
 	pubsubmessage.DefaultState = pubsubmessageDescState.Default.(string)
 	// pubsubmessageDescRespToID is the schema descriptor for resp_to_id field.
-	pubsubmessageDescRespToID := pubsubmessageFields[3].Descriptor()
+	pubsubmessageDescRespToID := pubsubmessageMixinFields1[2].Descriptor()
 	// pubsubmessage.DefaultRespToID holds the default value on creation for the resp_to_id field.
 	pubsubmessage.DefaultRespToID = pubsubmessageDescRespToID.Default.(func() uuid.UUID)
 	// pubsubmessageDescUndoID is the schema descriptor for undo_id field.
-	pubsubmessageDescUndoID := pubsubmessageFields[4].Descriptor()
+	pubsubmessageDescUndoID := pubsubmessageMixinFields1[3].Descriptor()
 	// pubsubmessage.DefaultUndoID holds the default value on creation for the undo_id field.
 	pubsubmessage.DefaultUndoID = pubsubmessageDescUndoID.Default.(func() uuid.UUID)
 	// pubsubmessageDescArguments is the schema descriptor for arguments field.
-	pubsubmessageDescArguments := pubsubmessageFields[5].Descriptor()
+	pubsubmessageDescArguments := pubsubmessageMixinFields1[4].Descriptor()
 	// pubsubmessage.DefaultArguments holds the default value on creation for the arguments field.
 	pubsubmessage.DefaultArguments = pubsubmessageDescArguments.Default.(string)
+	// pubsubmessageDescEntID is the schema descriptor for ent_id field.
+	pubsubmessageDescEntID := pubsubmessageMixinFields2[1].Descriptor()
+	// pubsubmessage.DefaultEntID holds the default value on creation for the ent_id field.
+	pubsubmessage.DefaultEntID = pubsubmessageDescEntID.Default.(func() uuid.UUID)
 }
 
 const (

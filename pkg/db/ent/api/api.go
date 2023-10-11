@@ -18,6 +18,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldEntID holds the string denoting the ent_id field in the database.
+	FieldEntID = "ent_id"
 	// FieldProtocol holds the string denoting the protocol field in the database.
 	FieldProtocol = "protocol"
 	// FieldServiceName holds the string denoting the service_name field in the database.
@@ -34,8 +36,8 @@ const (
 	FieldPathPrefix = "path_prefix"
 	// FieldDomains holds the string denoting the domains field in the database.
 	FieldDomains = "domains"
-	// FieldDepracated holds the string denoting the depracated field in the database.
-	FieldDepracated = "depracated"
+	// FieldDeprecated holds the string denoting the deprecated field in the database.
+	FieldDeprecated = "deprecated"
 	// Table holds the table name of the api in the database.
 	Table = "apis"
 )
@@ -46,6 +48,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
+	FieldEntID,
 	FieldProtocol,
 	FieldServiceName,
 	FieldMethod,
@@ -54,7 +57,7 @@ var Columns = []string{
 	FieldExported,
 	FieldPathPrefix,
 	FieldDomains,
-	FieldDepracated,
+	FieldDeprecated,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -84,6 +87,8 @@ var (
 	UpdateDefaultUpdatedAt func() uint32
 	// DefaultDeletedAt holds the default value on creation for the "deleted_at" field.
 	DefaultDeletedAt func() uint32
+	// DefaultEntID holds the default value on creation for the "ent_id" field.
+	DefaultEntID func() uuid.UUID
 	// DefaultProtocol holds the default value on creation for the "protocol" field.
 	DefaultProtocol string
 	// DefaultServiceName holds the default value on creation for the "service_name" field.
@@ -100,8 +105,6 @@ var (
 	DefaultPathPrefix string
 	// DefaultDomains holds the default value on creation for the "domains" field.
 	DefaultDomains []string
-	// DefaultDepracated holds the default value on creation for the "depracated" field.
-	DefaultDepracated bool
-	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() uuid.UUID
+	// DefaultDeprecated holds the default value on creation for the "deprecated" field.
+	DefaultDeprecated bool
 )

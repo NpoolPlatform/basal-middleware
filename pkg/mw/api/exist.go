@@ -10,7 +10,7 @@ import (
 )
 
 func (h *Handler) ExistAPI(ctx context.Context) (exist bool, err error) {
-	if h.ID == nil {
+	if h.EntID == nil {
 		return false, fmt.Errorf("invalid id")
 	}
 
@@ -19,7 +19,7 @@ func (h *Handler) ExistAPI(ctx context.Context) (exist bool, err error) {
 			API.
 			Query().
 			Where(
-				entapi.ID(*h.ID),
+				entapi.EntID(*h.EntID),
 				entapi.DeletedAt(0),
 			).Exist(_ctx)
 		if err != nil {
@@ -33,7 +33,7 @@ func (h *Handler) ExistAPI(ctx context.Context) (exist bool, err error) {
 	}
 
 	if !exist {
-		return exist, fmt.Errorf("id %v not exist", *h.ID)
+		return exist, fmt.Errorf("id %v not exist", *h.EntID)
 	}
 
 	return exist, nil

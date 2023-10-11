@@ -14,7 +14,7 @@ func (h *Handler) UpdateAPI(ctx context.Context) (info *npool.API, err error) {
 		if _, err := crud.UpdateSet(
 			cli.API.UpdateOneID(*h.ID),
 			&crud.Req{
-				Depracated: h.Deprecated,
+				Deprecated: h.Deprecated,
 			},
 		).Save(_ctx); err != nil {
 			return err

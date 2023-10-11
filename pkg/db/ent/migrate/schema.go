@@ -11,10 +11,11 @@ import (
 var (
 	// ApisColumns holds the columns for the "apis" table.
 	ApisColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "protocol", Type: field.TypeString, Nullable: true, Default: "DefaultProtocol"},
 		{Name: "service_name", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "method", Type: field.TypeString, Nullable: true, Default: "DefaultMethod"},
@@ -23,25 +24,33 @@ var (
 		{Name: "exported", Type: field.TypeBool, Nullable: true, Default: false},
 		{Name: "path_prefix", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "domains", Type: field.TypeJSON, Nullable: true},
-		{Name: "depracated", Type: field.TypeBool, Nullable: true, Default: false},
+		{Name: "deprecated", Type: field.TypeBool, Nullable: true, Default: false},
 	}
 	// ApisTable holds the schema information for the "apis" table.
 	ApisTable = &schema.Table{
 		Name:       "apis",
 		Columns:    ApisColumns,
 		PrimaryKey: []*schema.Column{ApisColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "api_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{ApisColumns[4]},
+			},
+		},
 	}
 	// PubsubMessagesColumns holds the columns for the "pubsub_messages" table.
 	PubsubMessagesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
-		{Name: "message_id", Type: field.TypeString, Nullable: true, Default: "DefaultMsgID"},
-		{Name: "state", Type: field.TypeString, Nullable: true, Default: "DefaultMsgState"},
+		{Name: "message_id", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "state", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "resp_to_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "undo_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "arguments", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 	}
 	// PubsubMessagesTable holds the schema information for the "pubsub_messages" table.
 	PubsubMessagesTable = &schema.Table{
@@ -50,14 +59,9 @@ var (
 		PrimaryKey: []*schema.Column{PubsubMessagesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "pubsubmessage_state_resp_to_id",
-				Unique:  false,
-				Columns: []*schema.Column{PubsubMessagesColumns[5], PubsubMessagesColumns[6]},
-			},
-			{
-				Name:    "pubsubmessage_state_undo_id",
-				Unique:  false,
-				Columns: []*schema.Column{PubsubMessagesColumns[5], PubsubMessagesColumns[7]},
+				Name:    "pubsubmessage_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{PubsubMessagesColumns[9]},
 			},
 		},
 	}

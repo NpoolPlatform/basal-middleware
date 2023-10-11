@@ -102,28 +102,13 @@ pipeline {
       }
     }
 
-    stage('Generate docker image for feature') {
-      when {
-        expression { BUILD_TARGET == 'true' }
-        expression { BRANCH_NAME != 'master' }
-      }
-      steps {
-        sh 'make verify-build'
-        sh(returnStdout: false, script: '''
-          feature_name=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
-          DEVELOPMENT=$feature_name DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images
-        '''.stripIndent())
-      }
-    }
-
     stage('Generate docker image for development') {
       when {
         expression { BUILD_TARGET == 'true' }
-        expression { BRANCH_NAME == 'master' }
       }
       steps {
         sh 'make verify-build'
-        sh 'DEVELOPMENT=development DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
+        sh 'DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
       }
     }
 
@@ -252,30 +237,7 @@ pipeline {
           fi
         '''.stripIndent())
         sh 'make verify-build'
-        sh 'DEVELOPMENT=other DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
-      }
-    }
-
-    stage('Release docker image for feature') {
-      when {
-        expression { RELEASE_TARGET == 'true' }
-        expression { BRANCH_NAME != 'master' }
-      }
-      steps {
-        sh(returnStdout: false, script: '''
-          feature_name=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
-          set +e
-          docker images | grep basal-middleware | grep $feature_name
-          rc=$?
-          set -e
-          if [ 0 -eq $rc ]; then
-            TAG=$feature_name DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
-          fi
-          images=`docker images | grep entropypool | grep basal-middleware | grep none | awk '{ print $3 }'`
-          for image in $images; do
-            docker rmi $image -f
-          done
-        '''.stripIndent())
+        sh 'DOCKER_REGISTRY=$DOCKER_REGISTRY make generate-docker-images'
       }
     }
 
@@ -285,12 +247,16 @@ pipeline {
       }
       steps {
         sh(returnStdout: false, script: '''
+          branch=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
+          if [ "x$branch" == "xmaster" ]; then
+            branch=latest
+          fi
           set +e
-          docker images | grep basal-middleware | grep latest
+          docker images | grep basal-middleware | grep $branch
           rc=$?
           set -e
           if [ 0 -eq $rc ]; then
-            TAG=latest DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
+            DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
           fi
           images=`docker images | grep entropypool | grep basal-middleware | grep none | awk '{ print $3 }'`
           for image in $images; do
@@ -318,7 +284,7 @@ pipeline {
             rc=$?
             set -e
             if [ 0 -eq $rc ]; then
-              TAG=$tag DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
+              DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
             fi
           fi
         '''.stripIndent())
@@ -343,25 +309,9 @@ pipeline {
             rc=$?
             set -e
             if [ 0 -eq $rc ]; then
-              TAG=$tag DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
+              DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
             fi
           fi
-        '''.stripIndent())
-      }
-    }
-
-    stage('Deploy for feature') {
-      when {
-        expression { DEPLOY_TARGET == 'true' }
-        expression { TARGET_ENV ==~ /.*development.*/ }
-        expression { BRANCH_NAME != 'master' }
-      }
-      steps {
-        sh(returnStdout: false, script: '''
-          feature_name=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
-          sed -i "s/basal-middleware:latest/basal-middleware:$feature_name/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
-          sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
-          TAG=$feature_name make deploy-to-k8s-cluster
         '''.stripIndent())
       }
     }
@@ -370,11 +320,17 @@ pipeline {
       when {
         expression { DEPLOY_TARGET == 'true' }
         expression { TARGET_ENV ==~ /.*development.*/ }
-        expression { BRANCH_NAME == 'master' }
       }
       steps {
-        sh 'sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml'
-        sh 'TAG=latest make deploy-to-k8s-cluster'
+        sh(returnStdout: false, script: '''
+          branch=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
+          if [ "x$branch" == "xmaster" ]; then
+            branch=latest
+          fi
+          sed -i "s/basal-middleware:latest/basal-middleware:$branch/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
+          sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
+          TAG=$feature make deploy-to-k8s-cluster
+        '''.stripIndent())
       }
     }
 

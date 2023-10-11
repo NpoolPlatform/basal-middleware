@@ -20,7 +20,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   api.Table,
 			Columns: api.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: api.FieldID,
 			},
 		},
@@ -29,6 +29,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			api.FieldCreatedAt:   {Type: field.TypeUint32, Column: api.FieldCreatedAt},
 			api.FieldUpdatedAt:   {Type: field.TypeUint32, Column: api.FieldUpdatedAt},
 			api.FieldDeletedAt:   {Type: field.TypeUint32, Column: api.FieldDeletedAt},
+			api.FieldEntID:       {Type: field.TypeUUID, Column: api.FieldEntID},
 			api.FieldProtocol:    {Type: field.TypeString, Column: api.FieldProtocol},
 			api.FieldServiceName: {Type: field.TypeString, Column: api.FieldServiceName},
 			api.FieldMethod:      {Type: field.TypeString, Column: api.FieldMethod},
@@ -37,7 +38,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			api.FieldExported:    {Type: field.TypeBool, Column: api.FieldExported},
 			api.FieldPathPrefix:  {Type: field.TypeString, Column: api.FieldPathPrefix},
 			api.FieldDomains:     {Type: field.TypeJSON, Column: api.FieldDomains},
-			api.FieldDepracated:  {Type: field.TypeBool, Column: api.FieldDepracated},
+			api.FieldDeprecated:  {Type: field.TypeBool, Column: api.FieldDeprecated},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -45,7 +46,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   pubsubmessage.Table,
 			Columns: pubsubmessage.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: pubsubmessage.FieldID,
 			},
 		},
@@ -59,6 +60,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			pubsubmessage.FieldRespToID:  {Type: field.TypeUUID, Column: pubsubmessage.FieldRespToID},
 			pubsubmessage.FieldUndoID:    {Type: field.TypeUUID, Column: pubsubmessage.FieldUndoID},
 			pubsubmessage.FieldArguments: {Type: field.TypeString, Column: pubsubmessage.FieldArguments},
+			pubsubmessage.FieldEntID:     {Type: field.TypeUUID, Column: pubsubmessage.FieldEntID},
 		},
 	}
 	return graph
@@ -105,8 +107,8 @@ func (f *APIFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *APIFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *APIFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(api.FieldID))
 }
 
@@ -123,6 +125,11 @@ func (f *APIFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *APIFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(api.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *APIFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(api.FieldEntID))
 }
 
 // WhereProtocol applies the entql string predicate on the protocol field.
@@ -165,9 +172,9 @@ func (f *APIFilter) WhereDomains(p entql.BytesP) {
 	f.Where(p.Field(api.FieldDomains))
 }
 
-// WhereDepracated applies the entql bool predicate on the depracated field.
-func (f *APIFilter) WhereDepracated(p entql.BoolP) {
-	f.Where(p.Field(api.FieldDepracated))
+// WhereDeprecated applies the entql bool predicate on the deprecated field.
+func (f *APIFilter) WhereDeprecated(p entql.BoolP) {
+	f.Where(p.Field(api.FieldDeprecated))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -205,8 +212,8 @@ func (f *PubsubMessageFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *PubsubMessageFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *PubsubMessageFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(pubsubmessage.FieldID))
 }
 
@@ -248,4 +255,9 @@ func (f *PubsubMessageFilter) WhereUndoID(p entql.ValueP) {
 // WhereArguments applies the entql string predicate on the arguments field.
 func (f *PubsubMessageFilter) WhereArguments(p entql.StringP) {
 	f.Where(p.Field(pubsubmessage.FieldArguments))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *PubsubMessageFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(pubsubmessage.FieldEntID))
 }

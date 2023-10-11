@@ -6,8 +6,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/mixin"
-	"github.com/google/uuid"
-
+	crudermixin "github.com/NpoolPlatform/libent-cruder/pkg/mixin"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
 )
 
@@ -19,6 +18,7 @@ type API struct {
 func (API) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.TimeMixin{},
+		crudermixin.AutoIDMixin{},
 	}
 }
 
@@ -31,10 +31,6 @@ func (API) Annotations() []schema.Annotation {
 // Fields of the API.
 func (API) Fields() []ent.Field {
 	return []ent.Field{
-		field.
-			UUID("id", uuid.UUID{}).
-			Default(uuid.New).
-			Unique(),
 		field.
 			String("protocol").
 			Optional().
@@ -68,7 +64,7 @@ func (API) Fields() []ent.Field {
 			Optional().
 			Default([]string{}),
 		field.
-			Bool("depracated").
+			Bool("deprecated").
 			Optional().
 			Default(false),
 	}

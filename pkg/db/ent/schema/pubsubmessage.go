@@ -2,11 +2,9 @@ package schema
 
 import (
 	"entgo.io/ent"
-	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/index"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/mixin"
-	msgpb "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	"github.com/google/uuid"
+	crudermixin "github.com/NpoolPlatform/libent-cruder/pkg/mixin"
+	pubsub "github.com/NpoolPlatform/libent-cruder/pkg/pubsub"
 )
 
 // PubsubMessage holds the schema definition for the PubsubMessage entity.
@@ -17,50 +15,7 @@ type PubsubMessage struct {
 func (PubsubMessage) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.TimeMixin{},
-	}
-}
-
-// Fields of the PubsubMessage.
-func (PubsubMessage) Fields() []ent.Field {
-	return []ent.Field{
-		field.
-			UUID("id", uuid.UUID{}).
-			Unique(),
-		field.
-			String("message_id").
-			Optional().
-			Default(msgpb.MsgID_DefaultMsgID.String()),
-		field.
-			String("state").
-			Optional().
-			Default(msgpb.MsgState_DefaultMsgState.String()),
-		field.
-			UUID("resp_to_id", uuid.UUID{}).
-			Optional().
-			Default(func() uuid.UUID {
-				return uuid.UUID{}
-			}),
-		field.
-			UUID("undo_id", uuid.UUID{}).
-			Optional().
-			Default(func() uuid.UUID {
-				return uuid.UUID{}
-			}),
-		field.
-			Text("arguments").
-			Optional().
-			Default(""),
-	}
-}
-
-// Edges of the PubsubMessage.
-func (PubsubMessage) Edges() []ent.Edge {
-	return nil
-}
-
-func (PubsubMessage) Indexes() []ent.Index {
-	return []ent.Index{
-		index.Fields("state", "resp_to_id"),
-		index.Fields("state", "undo_id"),
+		pubsub.PubsubMessage{},
+		crudermixin.AutoIDMixin{},
 	}
 }

@@ -42,7 +42,7 @@ var (
 		Domains:     []string{"api.npool.top"},
 		DomainsStr:  "[\"api.npool.top\"]",
 		Exported:    false,
-		Depracated:  false,
+		Deprecated:  false,
 	}
 )
 
@@ -56,11 +56,14 @@ func createAPI(t *testing.T) {
 			Path:        &ret.Path,
 			PathPrefix:  &ret.PathPrefix,
 			Domains:     ret.Domains,
+			Deprecated:  &ret.Deprecated,
+			Exported:    &ret.Exported,
 		}
 	)
 	info, err := CreateAPI(context.Background(), req)
 	if assert.Nil(t, err) {
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
@@ -68,11 +71,11 @@ func createAPI(t *testing.T) {
 }
 
 func updateAPI(t *testing.T) {
-	ret.Depracated = true
+	ret.Deprecated = true
 	var (
 		req = &npool.APIReq{
 			ID:         &ret.ID,
-			Depracated: &ret.Depracated,
+			Deprecated: &ret.Deprecated,
 		}
 	)
 	info, err := UpdateAPI(context.Background(), req)
@@ -83,18 +86,27 @@ func updateAPI(t *testing.T) {
 }
 
 func getAPIs(t *testing.T) {
-	infos, _, err := GetAPIs(context.Background(), &npool.Conds{}, 0, 1)
+	infos, total, err := GetAPIs(context.Background(), &npool.Conds{
+		EntID:       &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
+		Protocol:    &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(ret.Protocol)},
+		ServiceName: &basetypes.StringVal{Op: cruder.EQ, Value: ret.ServiceName},
+		Method:      &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(ret.Method)},
+		Path:        &basetypes.StringVal{Op: cruder.EQ, Value: ret.Path},
+		Exported:    &basetypes.BoolVal{Op: cruder.EQ, Value: ret.Exported},
+		Deprecated:  &basetypes.BoolVal{Op: cruder.EQ, Value: ret.Deprecated},
+		EntIDs:      &basetypes.StringSliceVal{Op: cruder.IN, Value: []string{ret.EntID}},
+	}, 0, 2)
 	if assert.Nil(t, err) {
-		assert.NotEqual(t, len(infos), 0)
+		if assert.Equal(t, uint32(1), total) &&
+			assert.Equal(t, 1, len(infos)) {
+			assert.Equal(t, &ret, infos[0])
+		}
 	}
 }
 
 func getAPIOnly(t *testing.T) {
 	info, err := GetAPIOnly(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: ret.ID,
-		},
+		EntID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 	})
 	if assert.Nil(t, err) {
 		assert.NotNil(t, info)
@@ -102,7 +114,7 @@ func getAPIOnly(t *testing.T) {
 }
 
 func existAPI(t *testing.T) {
-	exist, _ := ExistAPI(context.Background(), ret.ID)
+	exist, _ := ExistAPI(context.Background(), ret.EntID)
 	assert.True(t, exist)
 }
 
@@ -112,10 +124,7 @@ func deleteAPI(t *testing.T) {
 		assert.Equal(t, info, &ret)
 	}
 	info, err = GetAPIOnly(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: ret.ID,
-		},
+		EntID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 	})
 	assert.Nil(t, err)
 	assert.Nil(t, info)

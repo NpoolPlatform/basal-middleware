@@ -16,8 +16,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-// const MsgInterval = 3 * time.Second
-
 var runCmd = &cli.Command{
 	Name:    "run",
 	Aliases: []string{"s"},

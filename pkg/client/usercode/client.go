@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	servicename "github.com/NpoolPlatform/basal-middleware/pkg/servicename"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
-
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/usercode"
-
-	constant "github.com/NpoolPlatform/basal-middleware/pkg/message/const"
 )
 
 var timeout = 10 * time.Second
@@ -21,7 +19,7 @@ func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
 	_ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	conn, err := grpc2.GetGRPCConn(constant.ServiceName, grpc2.GRPCTAG)
+	conn, err := grpc2.GetGRPCConn(servicename.ServiceDomain, grpc2.GRPCTAG)
 	if err != nil {
 		return nil, fmt.Errorf("fail get usercode connection: %v", err)
 	}

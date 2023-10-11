@@ -14,9 +14,16 @@ import (
 
 func (s *Server) UpdateAPI(ctx context.Context, in *npool.UpdateAPIRequest) (*npool.UpdateAPIResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"UpdateAPI",
+			"In", in,
+		)
+		return &npool.UpdateAPIResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := api1.NewHandler(ctx,
-		api1.WithID(req.ID),
-		api1.WithDeprecated(req.Depracated),
+		api1.WithID(req.ID, true),
+		api1.WithDeprecated(req.Deprecated, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

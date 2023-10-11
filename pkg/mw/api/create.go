@@ -3,107 +3,87 @@ package api
 import (
 	"context"
 
+	crud "github.com/NpoolPlatform/basal-middleware/pkg/crud/api"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent"
-
-	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-
-	converter "github.com/NpoolPlatform/basal-middleware/pkg/converter/api"
-	crud "github.com/NpoolPlatform/basal-middleware/pkg/crud/api"
 	entapi "github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
-
+	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
+
+	"github.com/google/uuid"
 )
 
 type createHandler struct {
 	*Handler
+	ids []uuid.UUID
 }
 
-func (h *createHandler) validate() error {
+func (h *createHandler) createAPI(ctx context.Context, tx *ent.Tx, req *crud.Req) error {
+	_api, err := tx.
+		API.
+		Query().
+		Where(
+			entapi.Protocol(req.Protocol.String()),
+			entapi.ServiceName(*req.ServiceName),
+			entapi.Method(req.Method.String()),
+			entapi.Path(*req.Path),
+			entapi.DeletedAt(0),
+		).
+		Only(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return err
+		}
+	}
+	if _api != nil {
+		h.ids = append(h.ids, _api.EntID)
+		return nil
+	}
+	_api, err = crud.CreateSet(tx.API.Create(), req).Save(ctx)
+	if err != nil {
+		return err
+	}
+	h.ids = append(h.ids, _api.EntID)
 	return nil
 }
 
-func (h *Handler) CreateAPIs(ctx context.Context, in []*npool.APIReq) ([]*npool.API, error) {
-	var infos []*npool.API
-
+func (h *Handler) CreateAPIs(ctx context.Context) ([]*npool.API, error) {
+	handler := &createHandler{
+		Handler: h,
+		ids:     []uuid.UUID{},
+	}
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-		for _, info := range in {
-			rets, err := tx.
-				API.
-				Query().
-				Where(
-					entapi.Protocol(info.GetProtocol().String()),
-					entapi.ServiceName(info.GetServiceName()),
-					entapi.Method(info.GetMethod().String()),
-					entapi.Path(info.GetPath()),
-				).
-				All(_ctx)
-			if err != nil {
+		for _, req := range h.Reqs {
+			if err := handler.createAPI(ctx, tx, req); err != nil {
 				return err
 			}
-			if len(rets) > 1 {
-				logger.Sugar().Warnw("CreateAPIs", "Rets", rets, "Warn", "> 1")
-			}
-			if len(rets) > 0 {
-				infos = append(infos, converter.Ent2Grpc(rets[0]))
-				continue
-			}
-			info2, err := crud.CreateSet(tx.API.Create(), &crud.Req{
-				Protocol:    info.Protocol,
-				Method:      info.Method,
-				MethodName:  info.MethodName,
-				Path:        info.Path,
-				PathPrefix:  info.PathPrefix,
-				ServiceName: info.ServiceName,
-				Domains:     &info.Domains,
-				Depracated:  info.Depracated,
-				Exported:    info.Exported,
-			}).Save(_ctx)
-			if err != nil {
-				return err
-			}
-			infos = append(infos, converter.Ent2Grpc(info2))
 		}
-
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
-
-	return infos, nil
+	h.Conds = &crud.Conds{
+		EntIDs: &cruder.Cond{Op: cruder.IN, Val: handler.ids},
+	}
+	h.Offset = 0
+	h.Limit = int32(len(handler.ids))
+	infos, _, err := h.GetAPIs(ctx)
+	return infos, err
 }
 
 func (h *Handler) CreateAPI(ctx context.Context) (*npool.API, error) {
+	id := uuid.New()
+	if h.EntID == nil {
+		h.EntID = &id
+	}
+
 	handler := &createHandler{
 		Handler: h,
 	}
 
-	if err := handler.validate(); err != nil {
-		return nil, err
-	}
-
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		info, err := crud.CreateSet(
-			cli.API.Create(),
-			&crud.Req{
-				Protocol:    handler.Protocol,
-				Method:      handler.Method,
-				MethodName:  handler.MethodName,
-				Path:        handler.Path,
-				PathPrefix:  handler.PathPrefix,
-				ServiceName: handler.ServiceName,
-				Domains:     handler.Domains,
-				Exported:    handler.Exported,
-				Depracated:  handler.Deprecated,
-			},
-		).Save(_ctx)
-		if err != nil {
-			return err
-		}
-
-		h.ID = &info.ID
-		return nil
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		return handler.createAPI(ctx, tx, &h.Req)
 	})
 	if err != nil {
 		return nil, err

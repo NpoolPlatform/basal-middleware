@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"time"
 
+	servicename "github.com/NpoolPlatform/basal-middleware/pkg/servicename"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
-
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/basal/mw/v1/api"
-
-	constant "github.com/NpoolPlatform/basal-middleware/pkg/message/const"
 )
 
 var timeout = 10 * time.Second
@@ -22,7 +20,7 @@ func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
 	_ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	conn, err := grpc2.GetGRPCConn(constant.ServiceName, grpc2.GRPCTAG)
+	conn, err := grpc2.GetGRPCConn(servicename.ServiceDomain, grpc2.GRPCTAG)
 	if err != nil {
 		return nil, fmt.Errorf("fail get api connection: %v", err)
 	}
@@ -117,25 +115,33 @@ func GetDomains(ctx context.Context) ([]string, error) {
 }
 
 func GetAPIOnly(ctx context.Context, conds *npool.Conds) (*npool.API, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetAPIOnly(ctx, &npool.GetAPIOnlyRequest{
-			Conds: conds,
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetAPIs(ctx, &npool.GetAPIsRequest{
+			Conds:  conds,
+			Offset: 0,
+			Limit:  2, //nolint
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail get api only: %v", err)
 		}
-		return resp.Info, nil
+		return resp.Infos, nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("fail get api only: %v", err)
 	}
-	return info.(*npool.API), nil
+	if len(infos.([]*npool.API)) == 0 {
+		return nil, nil
+	}
+	if len(infos.([]*npool.API)) > 1 {
+		return nil, fmt.Errorf("too many records")
+	}
+	return infos.([]*npool.API)[0], nil
 }
 
 func ExistAPI(ctx context.Context, id string) (bool, error) {
 	_, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistAPI(ctx, &npool.ExistAPIRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail exist api: %v", err)
@@ -148,7 +154,7 @@ func ExistAPI(ctx context.Context, id string) (bool, error) {
 	return true, nil
 }
 
-func DeleteAPI(ctx context.Context, id string) (*npool.API, error) {
+func DeleteAPI(ctx context.Context, id uint32) (*npool.API, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteAPI(ctx, &npool.DeleteAPIRequest{
 			Info: &npool.APIReq{
