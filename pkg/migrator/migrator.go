@@ -8,6 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/NpoolPlatform/basal-middleware/pkg/db"
+	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent"
+	entapi "github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
 	servicename "github.com/NpoolPlatform/basal-middleware/pkg/servicename"
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -252,6 +255,40 @@ func migrateEntID(ctx context.Context, dbName, table string, tx *sql.Tx) error {
 	return err
 }
 
+func deleteDuplicatedApi(ctx context.Context, tx *ent.Tx) error {
+	apis, err := tx.API.Query().Where(entapi.DeletedAt(0)).All(ctx)
+	if err != nil {
+		return err
+	}
+
+	apiMap := map[string][]*ent.API{}
+	for _, api := range apis {
+		key := fmt.Sprintf("%v-%v-%v-%v-%v-%v", api.Protocol, api.ServiceName, api.Method, api.MethodName, api.Path, api.PathPrefix)
+		_apis, ok := apiMap[key]
+		if !ok {
+			_apis = []*ent.API{}
+		}
+		_apis = append(_apis, api)
+		apiMap[key] = _apis
+	}
+
+	now := time.Now().Unix()
+	for _, _apis := range apiMap {
+		for index, api := range _apis {
+			if index > 0 {
+				if _, err := tx.
+					API.
+					UpdateOneID(api.ID).
+					SetDeletedAt(uint32(now)).
+					Save(ctx); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func Migrate(ctx context.Context) error {
 	var err error
 	var conn *sql.DB
@@ -296,5 +333,12 @@ func Migrate(ctx context.Context) error {
 		}
 	}
 	_ = tx.Commit()
-	return nil
+
+	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		if err := deleteDuplicatedApi(ctx, tx); err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
 }
