@@ -256,6 +256,7 @@ func migrateEntID(ctx context.Context, dbName, table string, tx *sql.Tx) error {
 }
 
 func deleteDuplicatedApi(ctx context.Context, tx *ent.Tx) error {
+    logger.Sugar().Infow("deleteDuplicatedApi start")
 	apis, err := tx.API.Query().Where(entapi.DeletedAt(0)).All(ctx)
 	if err != nil {
 		return err
@@ -286,6 +287,10 @@ func deleteDuplicatedApi(ctx context.Context, tx *ent.Tx) error {
 			}
 		}
 	}
+	logger.Sugar().Infow(
+		"deleteDuplicatedApi",
+		"State", "Migrated",
+	)
 	return nil
 }
 
