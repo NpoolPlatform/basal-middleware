@@ -8,9 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/NpoolPlatform/basal-middleware/pkg/db"
 	"github.com/NpoolPlatform/basal-middleware/pkg/db/ent"
-	entapi "github.com/NpoolPlatform/basal-middleware/pkg/db/ent/api"
 	servicename "github.com/NpoolPlatform/basal-middleware/pkg/servicename"
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -255,11 +253,23 @@ func migrateEntID(ctx context.Context, dbName, table string, tx *sql.Tx) error {
 	return err
 }
 
-func deleteDuplicatedApi(ctx context.Context, tx *ent.Tx) error {
-    logger.Sugar().Infow("deleteDuplicatedApi start")
-	apis, err := tx.API.Query().Where(entapi.DeletedAt(0)).All(ctx)
+func deleteDuplicatedApi(ctx context.Context, dbName, table string, tx *sql.Tx) error {
+	logger.Sugar().Infow("deleteDuplicatedApi start")
+	rows, err := tx.QueryContext(
+		ctx,
+		fmt.Sprintf("select id,protocol,service_name,method,method_name,path,path_prefix from %v.%v where deleted_at=0", dbName, table),
+	)
 	if err != nil {
 		return err
+	}
+
+	apis := []*ent.API{}
+	for rows.Next() {
+		_api := &ent.API{}
+		if err := rows.Scan(&_api.ID, &_api.Protocol, &_api.ServiceName, &_api.Method, &_api.MethodName, &_api.Path, &_api.PathPrefix); err != nil {
+			return err
+		}
+		apis = append(apis, _api)
 	}
 
 	apiMap := map[string][]*ent.API{}
@@ -277,11 +287,10 @@ func deleteDuplicatedApi(ctx context.Context, tx *ent.Tx) error {
 	for _, _apis := range apiMap {
 		for index, api := range _apis {
 			if index > 0 {
-				if _, err := tx.
-					API.
-					UpdateOneID(api.ID).
-					SetDeletedAt(uint32(now)).
-					Save(ctx); err != nil {
+				if _, err := tx.ExecContext(
+					ctx,
+					fmt.Sprintf("update %v.%v set deleted_at='%v' where id=%v", dbName, table, now, api.ID),
+				); err != nil {
 					return err
 				}
 			}
@@ -336,14 +345,11 @@ func Migrate(ctx context.Context) error {
 			_ = tx.Rollback()
 			return err
 		}
-	}
-	_ = tx.Commit()
-
-	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-		if err := deleteDuplicatedApi(ctx, tx); err != nil {
+		if err = deleteDuplicatedApi(ctx, dbname, table, tx); err != nil {
+			_ = tx.Rollback()
 			return err
 		}
-		return nil
-	})
+	}
+	_ = tx.Commit()
 	return err
 }
