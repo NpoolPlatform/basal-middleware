@@ -254,6 +254,9 @@ func migrateEntID(ctx context.Context, dbName, table string, tx *sql.Tx) error {
 }
 
 func deleteDuplicatedApi(ctx context.Context, dbName, table string, tx *sql.Tx) error {
+	if table != "apis" {
+		return nil
+	}
 	logger.Sugar().Infow("deleteDuplicatedApi start")
 	rows, err := tx.QueryContext(
 		ctx,
