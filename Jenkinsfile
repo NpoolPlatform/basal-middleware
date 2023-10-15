@@ -329,7 +329,7 @@ pipeline {
           fi
           sed -i "s/basal-middleware:latest/basal-middleware:$branch/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
           sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
-          TAG=$feature make deploy-to-k8s-cluster
+          make deploy-to-k8s-cluster
         '''.stripIndent())
       }
     }
@@ -354,7 +354,7 @@ pipeline {
           git checkout $tag
           sed -i "s/basal-middleware:latest/basal-middleware:$tag/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
           sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
-          TAG=$tag make deploy-to-k8s-cluster
+          make deploy-to-k8s-cluster
         '''.stripIndent())
       }
     }
@@ -378,7 +378,7 @@ pipeline {
           git checkout $tag
           sed -i "s/basal-middleware:latest/basal-middleware:$tag/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
           sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
-          TAG=$tag make deploy-to-k8s-cluster
+          make deploy-to-k8s-cluster
         '''.stripIndent())
       }
     }
