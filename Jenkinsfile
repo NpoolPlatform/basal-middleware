@@ -247,9 +247,9 @@ pipeline {
       }
       steps {
         sh(returnStdout: false, script: '''
-          branch=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
-          if [ "x$branch" == "xmaster" ]; then
-            branch=latest
+          branch=latest
+          if [ "x$BRANCH_NAME" != "xmaster" ]; then
+            branch=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
           fi
           set +e
           docker images | grep basal-middleware | grep $branch
@@ -323,9 +323,9 @@ pipeline {
       }
       steps {
         sh(returnStdout: false, script: '''
-          branch=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
-          if [ "x$branch" == "xmaster" ]; then
-            branch=latest
+          branch=latest
+          if [ "x$BRANCH_NAME" != "xmaster" ]; then
+            branch=`echo $BRANCH_NAME | awk -F '/' '{ print $2 }'`
           fi
           sed -i "s/basal-middleware:latest/basal-middleware:$branch/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
           sed -i "s/uhub.service.ucloud.cn/$DOCKER_REGISTRY/g" cmd/basal-middleware/k8s/02-basal-middleware.yaml
